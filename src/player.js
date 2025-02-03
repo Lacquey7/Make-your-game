@@ -1,56 +1,51 @@
 class Player {
     constructor() {
+        this.element = document.getElementById('player');
         this.x = 50;
         this.y = 50;
-        this.sprite = new Image();
-        this.sprite.src = './assets/img/player/888.png';
-        this.speed = 3;
+        this.speed = 2;
 
         // Animation
         this.frameX = 0;
-        this.frameY = 0;       // Pour gérer les lignes de direction
         this.frameDelay = 10;
         this.frameCount = 0;
         this.maxFrames = 3;
         this.isMoving = false;
-        this.direction = 'down'; // Direction par défaut
+        this.direction = 'down';
+
+        // Position initiale
+        this.updatePosition();
     }
 
-    draw(context) {
+    updatePosition() {
+        this.element.style.left = this.x + 'px';
+        this.element.style.top = this.y + 'px';
+    }
+
+    updateSprite() {
         if (!this.isMoving) {
             // Position statique
-            context.drawImage(
-                this.sprite,
-                12, 0,
-                50, 65,
-                this.x, this.y,
-                32, 32
-            );
+            this.element.style.backgroundPosition = '-12px 0';
         } else {
             // Position selon la direction
             let sourceY;
             switch(this.direction) {
                 case 'down':
-                    sourceY = 0;  // Première ligne d'animation
+                    sourceY = -0;
                     break;
                 case 'right':
-                    sourceY = 320; // Deuxième ligne
+                    sourceY = -250;
                     break;
                 case 'left':
-                    sourceY = 127; // Troisième ligne
+                    sourceY = -98;
                     break;
                 case 'up':
-                    sourceY = 63; // Quatrième ligne
+                    sourceY = -50;
                     break;
             }
 
-            context.drawImage(
-                this.sprite,
-                this.frameX * 72, sourceY,   // 72 pixels entre chaque frame
-                50, 65,
-                this.x, this.y,
-                32, 32
-            );
+            this.element.style.backgroundPosition =
+                `${-this.frameX * 56}px ${sourceY}px`;
         }
     }
 
@@ -87,5 +82,8 @@ class Player {
         } else {
             this.frameX = 0;
         }
+
+        this.updatePosition();
+        this.updateSprite();
     }
 }

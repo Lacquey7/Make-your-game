@@ -11,3 +11,12 @@ body {
 #board {
     background-color: white;
 }
+
+#player {
+    width: 40px;
+    height: 54px;
+    position: absolute;
+    background-image: url('./assets/img/player/888.png');
+    transform: scale(1);
+    background-size: 600px auto; /* Ajustez selon la taille de votre spritesheet */
+}
