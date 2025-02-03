@@ -1,12 +1,27 @@
+//1 bordure gauche et droite
+//2 bordure du haut et du bas
+//3 block pas cassable
+//4 herbe
+//5 block cassable
+
 export default class Tilemap {
-  constructor(map) {
+  constructor(map, Countbonus, bonus, totalBlockBreakable) {
     this.map = map;
-    this.imageCol = this.#image('block.png');
-    this.imageBackFront = this.#image('bordureRelief.png');
-    this.imageBlock = this.#image('blockRelief.png');
-    this.imageHerbe = this.#image('herbe.png');
-    this.imageBlockBreakable = this.#image('blockBreakable.png');
-    this.tilesInitialized = false; // Pour éviter de recréer en boucle
+    this.Countbonus = Countbonus;
+    this.bonus = bonus;
+    this.totalBlockBreakable = totalBlockBreakable;
+    this.imageBordureLeftRight = this.#image('block.png');
+    this.imageBordureBackFront = this.#image('bordureRelief.png');
+    this.imageBlockUnbreakable = this.#image('bordureRelief.png');
+    this.imageHerbe = this.#image('herbe2.png');
+    this.imageBlockBreakable = this.#image('block2.png');
+    this.imageBonus1 = this.#image('bonus1.png');
+    this.imageBonus2 = this.#image('bonus2.png');
+    this.imageBonus3 = this.#image('bonus3.png');
+
+    this.tilesInitialized = false;
+    this.randomBlockGetBonus = this.randomBlockGetBonus();
+    this.currentBlock = 0;
   }
 
   #image(filename) {
@@ -27,15 +42,15 @@ export default class Tilemap {
       let image = null;
       switch (tile) {
         case 1:
-          image = this.imageCol;
+          image = this.imageBordureLeftRight;
           tileDiv.style.backgroundImage = `url(${image.src})`;
           break;
         case 2:
-          image = this.imageCol;
+          image = this.imageBordureBackFront;
           tileDiv.style.backgroundImage = `url(${image.src})`;
           break;
         case 3:
-          image = this.imageBackFront;
+          image = this.imageBlockUnbreakable;
           tileDiv.style.backgroundImage = `url(${image.src})`;
           break;
         case 4:
@@ -43,13 +58,60 @@ export default class Tilemap {
           tileDiv.style.backgroundImage = `url(${image.src})`;
           break;
         case 5:
-          tileDiv.dataset.breakable = 'true';
-          image = this.imageBlockBreakable;
-          tileDiv.style.backgroundImage = `url(${image.src})`;
-          break;
+          this.currentBlock++;
+
+          console.log(this.randomBlockGetBonus, row, this.currentBlock);
+
+          if (this.randomBlockGetBonus.includes(this.currentBlock)) {
+            console.log('bonus', this.currentBlock);
+            tileDiv.dataset.breakable = 'true';
+            image = this.imageBlockBreakable;
+            tileDiv.style.backgroundImage = `url(${image.src})`;
+            this.#addRandomBonus(tileDiv);
+            tileDiv.addEventListener('click', () => this.destroyBlock(tileDiv));
+          } else {
+            tileDiv.dataset.breakable = 'true';
+            image = this.imageBlockBreakable;
+            tileDiv.style.backgroundImage = `url(${image.src})`;
+            tileDiv.addEventListener('click', () => this.destroyBlock(tileDiv));
+            break;
+          }
       }
       tilemapElement.appendChild(tileDiv);
     }
     this.tilesInitialized = true;
+  }
+
+  randomBlockGetBonus() {
+    let tab = [];
+    for (let i = 0; i < this.Countbonus; i++) {
+      let r = Math.floor(Math.random() * this.totalBlockBreakable) + 1;
+      if (!tab.includes(r)) {
+        tab.push(r);
+      } else {
+        i--;
+      }
+    }
+    return tab;
+  }
+
+  #addRandomBonus(tileDiv) {
+    let r = Math.floor(Math.random() * this.bonus.length);
+    const bonusImage = document.createElement('img');
+    bonusImage.src = 'assets/img/map/' + this.bonus[r] + '.png';
+    bonusImage.classList.add('bonus');
+    bonusImage.style.display = 'none';
+    tileDiv.appendChild(bonusImage);
+  }
+
+  destroyBlock(tileDiv) {
+    let image = this.imageHerbe;
+    tileDiv.style.backgroundImage = `url(${image.src})`;
+    tileDiv.dataset.breakable = 'false';
+    const bonusImage = tileDiv.querySelector('.bonus');
+    if (bonusImage) {
+      tileDiv.classList.add('bonus');
+      bonusImage.style.display = 'block';
+    }
   }
 }
