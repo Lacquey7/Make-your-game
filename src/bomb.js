@@ -1,9 +1,11 @@
 export class Bomb {
-    constructor(x, y, flameLength) {
+
+    constructor(x, y, flameLength, grid) {
         this.x = x;
         this.y = y;
-        this.bombElement = null;  // Référence au div de la bombe
-        this.flameLength = flameLength;  // Utilisation correcte de flameLength
+        this.bombElement = null;
+        this.flameLength = flameLength;
+        this.grid = grid;  // Utiliser la grille locale
     }
 
     dropBomb() {
@@ -16,17 +18,12 @@ export class Bomb {
         bomb.style.left = `${this.x - 15}px`;
         bomb.style.top = `${this.y - 15}px`;
 
-        // Image de fond
         bomb.style.backgroundImage = "url('/assets/img/bomb/dynamite.png')";
         bomb.style.width = "32px";
         bomb.style.height = "32px";
         bomb.style.backgroundPosition = "0px 0px";
 
-        bomb.style.transform = "scale(1)";
-        bomb.style.transformOrigin = "top left";
-
         divId.appendChild(bomb);
-
         this.bombElement = bomb;
 
         // Lancer l’animation
@@ -34,8 +31,8 @@ export class Bomb {
     }
 
     animateBomb() {
-        let frame = 2;  // Commence à la troisième image
-        const frameDelay = 400;  // Délai entre chaque frame
+        let frame = 2;
+        const frameDelay = 400;
         let alternationCount = 6;
 
         const animate = () => {
@@ -71,42 +68,69 @@ export class Bomb {
         this.createFlame(divId, this.x, this.y);
 
         const directions = [
-            { dx: 1, dy: 0 },   // Droite
-            { dx: -1, dy: 0 },  // Gauche
-            { dx: 0, dy: 1 },   // Bas
-            { dx: 0, dy: -1 }   // Haut
+            { dx: 1, dy: 0, isActive: true },   // Droite
+            { dx: -1, dy: 0, isActive: true },  // Gauche
+            { dx: 0, dy: 1, isActive: true },   // Bas
+            { dx: 0, dy: -1, isActive: true }   // Haut
         ];
 
-        // Créer les flammes dans chaque direction avec des délais progressifs selon la distance
-        for (const { dx, dy } of directions) {
+        for (let direction of directions) {
             for (let i = 1; i <= this.flameLength; i++) {
-                const flameX = this.x + dx * i * 32;
-                const flameY = this.y + dy * i * 32;
-                const delay =  i* 140;  // Plus la distance est grande, plus le délai est long
-                this.createFlame(divId, flameX, flameY);
+                if (!direction.isActive) break;
+
+                const flameX = this.x + direction.dx * i * 32;
+                const flameY = this.y + direction.dy * i * 32;
+
+                // Vérifier si la cellule suivante est un obstacle
+                if (this.checkFlame(flameX, flameY)) {
+                    direction.isActive = false;  // Arrêter la propagation avant l’obstacle
+                    break;
+                }
+
+                // Créer la flamme si aucune cellule bloquante n’est rencontrée
+                setTimeout(() => {
+                    this.createFlame(divId, flameX, flameY);
+                }, i * 140);
             }
         }
+    }
+
+    checkFlame(x, y) {
+        const row = Math.floor(y / 32);  // Convertir la position en indices de grille
+        const col = Math.floor(x / 32);
+
+        if (row >= 0 && row < this.grid.length && col >= 0 && col < this.grid[row].length) {
+            if (this.grid[row][col] === "unbreakable") {
+                console.log(`Obstacle unbreakable détecté à (${row}, ${col})`);
+                return true;
+            }
+            if (this.grid[row][col] === "box") {
+                console.log(`Obstacle box détecté à (${row}, ${col})`);
+                return true;
+            }
+        }
+        return false;
     }
 
     createFlame(parent, x, y) {
         const flame = document.createElement('div');
         flame.style.position = 'absolute';
-        flame.style.left = `${x - 16}px`;  // Centrer la flamme
+        flame.style.left = `${x - 16}px`;  // Centrer la flamme sur la cellule
         flame.style.top = `${y - 16}px`;
 
         flame.style.backgroundImage = "url('/assets/img/bomb/explosion.png')";
         flame.style.width = "32px";
         flame.style.height = "32px";
-        flame.style.backgroundPosition = "64px 64px";  // Début de l'animation
+        flame.style.backgroundPosition = "64px 64px";
 
         parent.appendChild(flame);
 
-        // Lancer l'animation de disparition
+        // Animation de disparition
         setTimeout(() => {
             flame.style.opacity = "0";
         }, this.flameLength * 240);
 
-        // Supprimer la flamme après la transition
+        // Suppression de la flamme après la transition
         setTimeout(() => {
             if (flame.parentNode) {
                 flame.parentNode.removeChild(flame);
