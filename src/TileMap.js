@@ -78,8 +78,8 @@ export default class Tilemap {
             image = this.imageBlockBreakable;
             tileDiv.style.backgroundImage = `url(${image.src})`;
             tileDiv.addEventListener('click', () => this.destroyBlock(tileDiv));
-            break;
           }
+          break;
       }
       tilemapElement.appendChild(tileDiv);
     }
