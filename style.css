@@ -25,13 +25,30 @@ h1 {
   gap: 0;
 }
 
-.tile {
+.border {
   position: relative;
   width: 100%;
   height: 100%;
   background-size: cover;
 }
-
+.block-unbreakable {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+}
+.herbe {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+}
+.block-breakable {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+}
 .tile img.bonus {
   position: absolute;
   top: 50%;
