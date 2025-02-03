@@ -34,6 +34,8 @@ export default class Tilemap {
     const tilemapElement = document.getElementById('tilemap');
     tilemapElement.innerHTML = '';
 
+    console.log('block qui recoit un bonus', this.randomBlockGetBonus);
+
     if (this.tilesInitialized) return;
     for (let row = 0; row < this.map.length; row++) {
       const tile = this.map[row];
@@ -64,7 +66,7 @@ export default class Tilemap {
           tileDiv.classList.add('block-breakable');
           this.currentBlock++;
 
-          console.log(this.randomBlockGetBonus, row, this.currentBlock);
+          console.log('block:', row, 'block breakable actuelle:', this.currentBlock);
 
           if (this.randomBlockGetBonus.includes(this.currentBlock)) {
             console.log('bonus', this.currentBlock);
