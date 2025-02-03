@@ -38,26 +38,30 @@ export default class Tilemap {
     for (let row = 0; row < this.map.length; row++) {
       const tile = this.map[row];
       const tileDiv = document.createElement('div');
-      tileDiv.classList.add('tile', `tile-${tile}`);
       let image = null;
       switch (tile) {
         case 1:
+          tileDiv.classList.add('border');
           image = this.imageBordureLeftRight;
           tileDiv.style.backgroundImage = `url(${image.src})`;
           break;
         case 2:
+          tileDiv.classList.add('border');
           image = this.imageBordureBackFront;
           tileDiv.style.backgroundImage = `url(${image.src})`;
           break;
         case 3:
+          tileDiv.classList.add('block-unbreakable');
           image = this.imageBlockUnbreakable;
           tileDiv.style.backgroundImage = `url(${image.src})`;
           break;
         case 4:
+          tileDiv.classList.add('herbe');
           image = this.imageHerbe;
           tileDiv.style.backgroundImage = `url(${image.src})`;
           break;
         case 5:
+          tileDiv.classList.add('block-breakable');
           this.currentBlock++;
 
           console.log(this.randomBlockGetBonus, row, this.currentBlock);
@@ -109,6 +113,7 @@ export default class Tilemap {
     tileDiv.style.backgroundImage = `url(${image.src})`;
     tileDiv.dataset.breakable = 'false';
     const bonusImage = tileDiv.querySelector('.bonus');
+    console.log(bonusImage);
     if (bonusImage) {
       tileDiv.classList.add('bonus');
       bonusImage.style.display = 'block';
