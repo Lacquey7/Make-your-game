@@ -1,0 +1,32 @@
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  background-color: #000; /* Fond noir */
+}
+
+h1 {
+  color: #fff;
+  text-align: center;
+}
+
+#tilemap {
+  width: 800px;
+  height: 600px;
+  background-color: #1a1515;
+  display: grid; /* Retirer flex */
+  padding: 10px; /* Réduire le padding */
+  border-radius: 10px;
+  border: 2px solid #fff;
+  grid-template-columns: repeat(13, 1fr); /* Rendre plus flexible */
+  grid-template-rows: repeat(11, 1fr); /* Adapte en fonction des lignes */
+  gap: 0;
+}
+
+.tile {
+  width: 100%; /* Ajustement automatique */
+  height: 100%;
+  background-size: cover;
+}
