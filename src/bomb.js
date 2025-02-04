@@ -15,14 +15,12 @@ export class Bomb {
             return;
         }
 
-        // Vérifier si un conteneur existe déjà dans cette div
         let explosionContainer = targetDiv.querySelector('.explosion-container');
         if (explosionContainer) {
             console.log("Une bombe ou une flamme existe déjà ici. Impossible de poser une autre bombe.");
             return;
         }
 
-        // Créer un conteneur global pour la bombe et les flammes
         explosionContainer = document.createElement('div');
         explosionContainer.classList.add('explosion-container');
         explosionContainer.style.position = 'relative';
@@ -31,7 +29,6 @@ export class Bomb {
 
         targetDiv.appendChild(explosionContainer);
 
-        // Créer un élément div pour la bombe
         const bomb = document.createElement('div');
         bomb.classList.add('bomb');
         bomb.style.position = 'absolute';
@@ -41,14 +38,13 @@ export class Bomb {
         bomb.style.backgroundPosition = "0px 0px";
         bomb.style.transform = "scale(1.5)";
         bomb.style.margin = "auto";
-        bomb.style.zIndex = "2";  // La bombe doit être au-dessus de la flamme
-        bomb.style.left = '16px';  // Centrer dans le conteneur (32px de largeur, 64px de conteneur)
+        bomb.style.zIndex = "2";
+        bomb.style.left = '16px';
         bomb.style.top = '16px';
 
         explosionContainer.appendChild(bomb);
         this.bombElement = bomb;
 
-        // Lancer l'animation
         this.animateBomb();
     }
 
@@ -81,13 +77,12 @@ export class Bomb {
 
     flame() {
         const directions = [
-            { dx: 1, dy: 0, isActive: true },   // Droite
-            { dx: -1, dy: 0, isActive: true },  // Gauche
-            { dx: 0, dy: 1, isActive: true },   // Bas
-            { dx: 0, dy: -1, isActive: true }   // Haut
+            { dx: 1, dy: 0, isActive: true },
+            { dx: -1, dy: 0, isActive: true },
+            { dx: 0, dy: 1, isActive: true },
+            { dx: 0, dy: -1, isActive: true }
         ];
 
-        // Flamme centrale
         this.createFlame(this.getDivAtPosition(this.x, this.y));
 
         for (let direction of directions) {
@@ -123,8 +118,8 @@ export class Bomb {
             }
             if (targetDiv.classList.contains("block-breakable")) {
                 console.log("Obstacle block-breakable détecté. Destruction du bloc.");
-                this.destroyBlock(targetDiv);  // Détruire le bloc cassable
-                return true;  // Arrêter la propagation après avoir détruit le bloc
+                this.destroyBlock(targetDiv);
+                return true;
             }
             if (targetDiv.classList.contains("border")) {
                 console.log("Obstacle border détecté.");
@@ -137,9 +132,8 @@ export class Bomb {
     destroyBlock(targetDiv) {
         targetDiv.classList.remove('block-breakable');
         targetDiv.classList.add('herbe');
-        targetDiv.style.backgroundImage = "url('/assets/img/map/herbe2.png')";  // Image de fond de l’herbe
+        targetDiv.style.backgroundImage = "url('/assets/img/map/herbe2.png')";
 
-        // Si un bonus est caché sous le bloc, l'afficher
         const bonusImage = targetDiv.querySelector('.bonus');
         if (bonusImage) {
             bonusImage.style.display = 'block';
@@ -149,7 +143,6 @@ export class Bomb {
     createFlame(targetDiv) {
         if (!targetDiv) return;
 
-        // Vérifier s'il y a déjà un conteneur global, sinon le créer
         let explosionContainer = targetDiv.querySelector('.explosion-container');
         if (!explosionContainer) {
             explosionContainer = document.createElement('div');
@@ -160,55 +153,89 @@ export class Bomb {
             targetDiv.appendChild(explosionContainer);
         }
 
-        // Supprimer l'ancienne flamme s'il y en a déjà une
         const existingFlame = explosionContainer.querySelector('.flame');
         if (existingFlame) {
             explosionContainer.removeChild(existingFlame);
         }
 
-        // Créer une nouvelle flamme
         const flame = document.createElement('div');
         flame.classList.add('flame');
-        flame.style.position = 'absolute';  // Position absolue pour gérer le z-index
+        flame.style.position = 'absolute';
         flame.style.backgroundImage = "url('/assets/img/bomb/explosion.png')";
         flame.style.width = "32px";
         flame.style.height = "32px";
         flame.style.backgroundPosition = "64px 64px";
         flame.style.margin = "auto";
         flame.style.scale = "1.3";
-        flame.style.zIndex = "0";  // La flamme est en arrière-plan
-        flame.style.left = '16px';  // Centrer la flamme
+        flame.style.zIndex = "0";
+        flame.style.left = '16px';
         flame.style.top = '16px';
 
         explosionContainer.appendChild(flame);
+
+        // Vérifier la collision
+        this.checkCollisionWithPlayerOrBot(flame);
 
         setTimeout(() => {
             flame.style.opacity = "0";
         }, this.flameLength * 240);
 
         setTimeout(() => {
-            flame.remove();  // Supprimer la flamme elle-même
-            this.checkAndRemoveContainer(explosionContainer);  // Vérifier et supprimer le conteneur si nécessaire
+            flame.remove();
+            this.checkAndRemoveContainer(explosionContainer);
         }, 900);
+    }
+
+    checkCollisionWithPlayerOrBot(element) {
+        const flameRect = element.getBoundingClientRect();
+        const player = document.querySelector('#player');
+        const bot = document.querySelector('#bot');
+
+        if (player && this.isColliding(flameRect, player.getBoundingClientRect())) {
+            console.log("Collision détectée avec le joueur !");
+            this.removePlayerLife();
+        }
+
+        if (bot && this.isColliding(flameRect, bot.getBoundingClientRect())) {
+            console.log("Collision détectée avec le bot !");
+            this.removeBotLife();
+        }
+    }
+
+    isColliding(rect1, rect2) {
+        return (
+            rect1.left < rect2.right &&
+            rect1.right > rect2.left &&
+            rect1.top < rect2.bottom &&
+            rect1.bottom > rect2.top
+        );
+    }
+
+    removePlayerLife() {
+        console.log("Vie du joueur -1");
+        // playerLives--; ou gestion spécifique de la vie
+    }
+
+    removeBotLife() {
+        console.log("Vie du bot -1");
+        // botLives--; ou gestion spécifique de la vie
+    }
+
+    checkAndRemoveContainer(container) {
+        const remainingFlames = container.querySelectorAll('.flame');
+        if (remainingFlames.length === 0 && container.parentNode) {
+            container.remove();
+            console.log("Conteneur global supprimé");
+        }
     }
 
     deleteBomb() {
         if (this.bombElement && this.bombElement.parentNode) {
             const explosionContainer = this.bombElement.parentNode;
+            this.checkCollisionWithPlayerOrBot(explosionContainer);
             this.bombElement.remove();
             console.log("Bombe supprimée après l'animation");
-
-            // Supprimer le conteneur global si toutes les flammes sont terminées
             this.checkAndRemoveContainer(explosionContainer);
-        }
-    }
-
-    checkAndRemoveContainer(container) {
-        // Vérifie s'il reste des flammes dans le conteneur
-        const remainingFlames = container.querySelectorAll('.flame');
-        if (remainingFlames.length === 0 && container.parentNode) {
-            container.remove();  // Supprime le conteneur si aucune flamme n'est présente
-            console.log("Conteneur global supprimé");
         }
     }
 
@@ -222,7 +249,6 @@ export class Bomb {
             return null;
         }
 
-        const targetDiv = document.querySelector(`.grid-container > div:nth-child(${index})`);
-        return targetDiv;
+        return document.querySelector(`.grid-container > div:nth-child(${index})`);
     }
 }
