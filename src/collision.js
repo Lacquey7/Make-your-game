@@ -1,4 +1,4 @@
-class Collision {
+export default class Collision {
     static checkCollision(object1, object2) {
         return (object1.x < object2.x + 32 &&
             object1.x + 32 > object2.x &&
