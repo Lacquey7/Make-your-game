@@ -1,9 +1,9 @@
 export default class Bot {
     constructor() {
         this.element = document.getElementById('bot');
-        this.x = 500;
-        this.y = 200;
-        this.speed = 6;
+        this.x = 700;
+        this.y = 505;
+        this.speed = 0;
         this.mapWidth = 800;
         this.mapHeight = 600;
 
@@ -24,7 +24,6 @@ export default class Bot {
         this.updatePosition();
     }
 
-    // ... reste des méthodes de Bot ...
 
     getRandomDirection() {
         const directions = ['up', 'down', 'left', 'right'];
@@ -37,11 +36,14 @@ export default class Bot {
     }
 
     updateSprite() {
-        if (!this.isMoving) {
-            this.element.style.backgroundPosition = '35.2px -988';
+        let sourceY;
+        let sourceX;
+        if (!this.isMoving || this.speed === 0) {
+            sourceY = -50;
+            sourceX = -this.frameX * 30.2 - 7.7;
+            this.element.style.backgroundPosition = `${-205}px ${-15}px`;
         } else {
-            let sourceY;
-            let sourceX;
+
             switch (this.direction) {
                 case 'down':
                     sourceY = -988;
