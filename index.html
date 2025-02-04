@@ -8,6 +8,15 @@
     </script>
 </head>
 <body>
-    <div id="app"></div>
+<div id="map">
+    <div id="player"></div>
+    <div id="bot"></div>
+</div>
+
+<!-- Changer l'ordre des scripts -->
+<script src="src/player.js"></script>  <!-- Charger player.js en premier -->
+<script src="src/game.js"></script><!-- Puis game.js -->
+<script src="src/bot.js"></script> <!-- Et enfin bot.js -->
+<script src="src/collision.js"></script>
 </body>
 </html>
