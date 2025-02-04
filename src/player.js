@@ -1,9 +1,9 @@
 class Player {
     constructor() {
         this.element = document.getElementById('player');
-        this.x = 50;
-        this.y = 50;
-        this.speed = 2;
+        this.x = 390;
+        this.y = 90;
+        this.speed = 9;
 
         // Animation
         this.frameX = 0;
@@ -12,6 +12,10 @@ class Player {
         this.maxFrames = 3;
         this.isMoving = false;
         this.direction = 'down';
+
+        this.map = document.getElementById('map');
+        this.mapWidth = 800;
+        this.mapHeight = 600;
 
         // Position initiale
         this.updatePosition();
@@ -25,7 +29,7 @@ class Player {
     updateSprite() {
         if (!this.isMoving) {
             // Position statique
-            this.element.style.backgroundPosition = '-12px 0';
+            this.element.style.backgroundPosition = '0px 0';
         } else {
             // Position selon la direction
             let sourceY;
@@ -37,7 +41,7 @@ class Player {
                     sourceY = -250;
                     break;
                 case 'left':
-                    sourceY = -98;
+                    sourceY = -100;
                     break;
                 case 'up':
                     sourceY = -50;
@@ -50,25 +54,27 @@ class Player {
     }
 
     move(keys) {
+        let newX = this.x;
+        let newY = this.y;
         this.isMoving = false;
 
         if (keys.ArrowLeft) {
-            this.x -= this.speed;
+            newX -= this.speed;
             this.direction = 'left';
             this.isMoving = true;
         }
         if (keys.ArrowRight) {
-            this.x += this.speed;
+            newX += this.speed;
             this.direction = 'right';
             this.isMoving = true;
         }
         if (keys.ArrowUp) {
-            this.y -= this.speed;
+            newY -= this.speed;
             this.direction = 'up';
             this.isMoving = true;
         }
         if (keys.ArrowDown) {
-            this.y += this.speed;
+            newY += this.speed;
             this.direction = 'down';
             this.isMoving = true;
         }
@@ -81,6 +87,14 @@ class Player {
             }
         } else {
             this.frameX = 0;
+        }
+
+        // Collisions avec les bords de la map
+        if (newX >= 0 && newX <= this.mapWidth - 32) {  // 32 est la largeur du player
+            this.x = newX;
+        }
+        if (newY >= 0 && newY <= this.mapHeight - 58) { // 32 est la hauteur du player
+            this.y = newY;
         }
 
         this.updatePosition();
