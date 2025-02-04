@@ -60,6 +60,10 @@ export default class Game {
                 this.keys[e.code] = false;
             }
         });
+
+        document.addEventListener('keypress', (e) => {
+
+        })
     }
 
     countBlockBreakable() {
