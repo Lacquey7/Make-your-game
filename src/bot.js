@@ -82,6 +82,10 @@ class Bot {
                 this.currentMove = this.getRandomDirection();
             }
 
+            // Sauvegarde la position actuelle
+            const oldX = this.x;
+            const oldY = this.y;
+
             // Applique le mouvement selon la direction actuelle
             switch (this.currentMove) {
                 case 'left':
@@ -107,6 +111,22 @@ class Bot {
             if (this.frameCount >= this.frameDelay) {
                 this.frameCount = 0;
                 this.frameX = (this.frameX + 1) % this.maxFrames;
+            }
+
+            // Vérifie la collision avant de bouger
+            const player = document.querySelector('#player');
+            const playerPos = {
+                x: parseInt(player.style.left),
+                y: parseInt(player.style.top)
+            };
+
+            // Si il y a collision avec le joueur, on ne bouge pas
+            if (Collision.checkCollision({x: newX, y: newY}, playerPos)) {
+                // Revient à l'ancienne position
+                newX = oldX;
+                newY = oldY;
+                // Change de direction
+                this.currentMove = this.getRandomDirection();
             }
 
             // Collisions avec les bords de la map
