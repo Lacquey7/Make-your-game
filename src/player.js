@@ -2,7 +2,7 @@ export default class Player {
   constructor() {
     this.element = document.getElementById('player');
     this.x = 80;
-    this.y = 80;
+    this.y = 65;
     this.speed = 5;
 
     // Animation
