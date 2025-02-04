@@ -1,10 +1,4 @@
-//1 bordure gauche et droite
-//2 bordure du haut et du bas
-//3 block pas cassable
-//4 herbe
-//5 block cassable
-
-export default class Tilemap {
+export default class TileMap {
   constructor(map, Countbonus, bonus, totalBlockBreakable) {
     this.map = map;
     this.Countbonus = Countbonus;
@@ -32,9 +26,14 @@ export default class Tilemap {
 
   draw() {
     const tilemapElement = document.getElementById('tilemap');
-    tilemapElement.innerHTML = '';
 
-    console.log('block qui recoit un bonus', this.randomBlockGetBonus);
+    // Sauvegarder les éléments player et bot
+    const playerElement = document.getElementById('player');
+    const botElement = document.getElementById('bot');
+
+    // Créer un conteneur pour la grille
+    const gridContainer = document.createElement('div');
+    gridContainer.classList.add('grid-container');
 
     if (this.tilesInitialized) return;
     for (let row = 0; row < this.map.length; row++) {
@@ -66,10 +65,7 @@ export default class Tilemap {
           tileDiv.classList.add('block-breakable');
           this.currentBlock++;
 
-          console.log('block:', row, 'block breakable actuelle:', this.currentBlock);
-
           if (this.randomBlockGetBonus.includes(this.currentBlock)) {
-            console.log('bonus', this.currentBlock);
             tileDiv.dataset.breakable = 'true';
             image = this.imageBlockBreakable;
             tileDiv.style.backgroundImage = `url(${image.src})`;
@@ -83,8 +79,19 @@ export default class Tilemap {
           }
           break;
       }
-      tilemapElement.appendChild(tileDiv);
+      gridContainer.appendChild(tileDiv);
     }
+
+    // Vider le tilemap
+    tilemapElement.innerHTML = '';
+
+    // Ajouter la grille
+    tilemapElement.appendChild(gridContainer);
+
+    // Réajouter les éléments player et bot
+    if (playerElement) tilemapElement.appendChild(playerElement);
+    if (botElement) tilemapElement.appendChild(botElement);
+
     this.tilesInitialized = true;
   }
 

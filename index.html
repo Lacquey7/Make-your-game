@@ -4,29 +4,13 @@
     <meta charset="UTF-8">
     <title>BomberMan</title>
     <link rel="stylesheet" href="style.css">
-    <script src="index.js" type="module">
-        menu()
-    </script>
 </head>
 <body>
-<div id="map">
+<div class="tilemap" id="tilemap">
     <div id="player"></div>
     <div id="bot"></div>
 </div>
 
-<!-- Changer l'ordre des scripts -->
-<script src="src/player.js"></script>  <!-- Charger player.js en premier -->
-<script src="src/game.js"></script><!-- Puis game.js -->
-<script src="src/bot.js"></script> <!-- Et enfin bot.js -->
-<script src="src/collision.js"></script>
+<script type="module" src="src/game.js"></script>
 </body>
-    <link rel="stylesheet" href="./style.css" />
-  </head>
-  <body>
-    <div>
-      <h1>BomberMan</h1>
-      <div class="tilemap" id="tilemap"></div>
-    </div>
-    <script src="./src/game.js" type="module"></script>
-  </body>
 </html>

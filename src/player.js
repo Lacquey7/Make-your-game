@@ -1,9 +1,11 @@
-class Player {
+export default class Player {
     constructor() {
         this.element = document.getElementById('player');
-        this.x = 390;
-        this.y = 90;
-        this.speed = 9;
+        this.x = 60;
+        this.y = 60;
+        this.speed = 5;
+        this.mapWidth = 800;
+        this.mapHeight = 600;
 
         // Animation
         this.frameX = 0;
@@ -12,10 +14,6 @@ class Player {
         this.maxFrames = 3;
         this.isMoving = false;
         this.direction = 'down';
-
-        this.map = document.getElementById('map');
-        this.mapWidth = 800;
-        this.mapHeight = 600;
 
         // Position initiale
         this.updatePosition();
@@ -90,10 +88,10 @@ class Player {
         }
 
         // Collisions avec les bords de la map
-        if (newX >= 0 && newX <= this.mapWidth - 32) {  // 32 est la largeur du player
+        if (newX >= 0 && newX <= this.mapWidth - 32) {
             this.x = newX;
         }
-        if (newY >= 0 && newY <= this.mapHeight - 58) { // 32 est la hauteur du player
+        if (newY >= 0 && newY <= this.mapHeight - 58) {
             this.y = newY;
         }
 
