@@ -9,8 +9,8 @@ body {
 }
 
 #tilemap {
-    width: 800px;
-    height: 600px;
+    width: 832px;
+    height: 704px;
     position: relative;
     background-color: #1a1515;
     padding: 10px;
