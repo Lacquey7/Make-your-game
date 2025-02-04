@@ -100,14 +100,27 @@ export class Bomb {
         const col = Math.floor(x / 32);
 
         if (row >= 0 && row < this.grid.length && col >= 0 && col < this.grid[row].length) {
+            //Détecte si une case unbreakable se trouve a cette coordonnée
             if (this.grid[row][col] === "unbreakable") {
                 console.log(`Obstacle unbreakable détecté à (${row}, ${col})`);
                 return true;
             }
+            //Détecte si une box se trouve a cette coordonnée
             if (this.grid[row][col] === "box") {
                 console.log(`Obstacle box détecté à (${row}, ${col})`);
                 return true;
             }
+            //Détecte si un player se trouve a cette coordonnée
+            if (this.grid[row][col] === "player") {
+                console.log(`Player détecter à (${row}, ${col}), retrait d'un point de vie`);
+                return false;
+            }
+            //Détecte si un bot se trouve a cette coordonnée
+            if (this.grid[row][col] === "bot") {
+                console.log(`Bot détecter à (${row}, ${col}), retrait d'un point de vie`);
+                return false;
+            }
+
         }
         return false;
     }
