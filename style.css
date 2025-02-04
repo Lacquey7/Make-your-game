@@ -1,16 +1,18 @@
-body {
+html, body {
+    height: 100%;
     margin: 0;
-    padding: 0;
+}
+
+body {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh;
-    background-color: #000;
+    background-color: #2e2e2e; /* Pour bien voir le contraste */
 }
 
 #tilemap {
-    width: 800px;
-    height: 600px;
+    width: 832px;
+    height: 704px;
     position: relative;
     background-color: #1a1515;
     padding: 10px;
