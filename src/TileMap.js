@@ -37,49 +37,51 @@ export default class TileMap {
 
     if (this.tilesInitialized) return;
     for (let row = 0; row < this.map.length; row++) {
-      const tile = this.map[row];
-      const tileDiv = document.createElement('div');
-      let image = null;
-      switch (tile) {
-        case 1:
-          tileDiv.classList.add('border');
-          image = this.imageBordureLeftRight;
-          tileDiv.style.backgroundImage = `url(${image.src})`;
-          break;
-        case 2:
-          tileDiv.classList.add('border');
-          image = this.imageBordureBackFront;
-          tileDiv.style.backgroundImage = `url(${image.src})`;
-          break;
-        case 3:
-          tileDiv.classList.add('block-unbreakable');
-          image = this.imageBlockUnbreakable;
-          tileDiv.style.backgroundImage = `url(${image.src})`;
-          break;
-        case 4:
-          tileDiv.classList.add('herbe');
-          image = this.imageHerbe;
-          tileDiv.style.backgroundImage = `url(${image.src})`;
-          break;
-        case 5:
-          tileDiv.classList.add('block-breakable');
-          this.currentBlock++;
+      for (let col = 0; col < this.map[row].length; col++) {
+        const tile = this.map[row][col];
+        const tileDiv = document.createElement('div');
+        let image = null;
+        switch (tile) {
+          case 1:
+            tileDiv.classList.add('border');
+            image = this.imageBordureLeftRight;
+            tileDiv.style.backgroundImage = `url(${image.src})`;
+            break;
+          case 2:
+            tileDiv.classList.add('border');
+            image = this.imageBordureBackFront;
+            tileDiv.style.backgroundImage = `url(${image.src})`;
+            break;
+          case 3:
+            tileDiv.classList.add('block-unbreakable');
+            image = this.imageBlockUnbreakable;
+            tileDiv.style.backgroundImage = `url(${image.src})`;
+            break;
+          case 4:
+            tileDiv.classList.add('herbe');
+            image = this.imageHerbe;
+            tileDiv.style.backgroundImage = `url(${image.src})`;
+            break;
+          case 5:
+            tileDiv.classList.add('block-breakable');
+            this.currentBlock++;
 
-          if (this.randomBlockGetBonus.includes(this.currentBlock)) {
-            tileDiv.dataset.breakable = 'true';
-            image = this.imageBlockBreakable;
-            tileDiv.style.backgroundImage = `url(${image.src})`;
-            this.#addRandomBonus(tileDiv);
-            tileDiv.addEventListener('click', () => this.destroyBlock(tileDiv));
-          } else {
-            tileDiv.dataset.breakable = 'true';
-            image = this.imageBlockBreakable;
-            tileDiv.style.backgroundImage = `url(${image.src})`;
-            tileDiv.addEventListener('click', () => this.destroyBlock(tileDiv));
-          }
-          break;
+            if (this.randomBlockGetBonus.includes(this.currentBlock)) {
+              tileDiv.dataset.breakable = 'true';
+              image = this.imageBlockBreakable;
+              tileDiv.style.backgroundImage = `url(${image.src})`;
+              this.#addRandomBonus(tileDiv);
+              tileDiv.addEventListener('click', () => this.destroyBlock(tileDiv));
+            } else {
+              tileDiv.dataset.breakable = 'true';
+              image = this.imageBlockBreakable;
+              tileDiv.style.backgroundImage = `url(${image.src})`;
+              tileDiv.addEventListener('click', () => this.destroyBlock(tileDiv));
+            }
+            break;
+        }
+        gridContainer.appendChild(tileDiv);
       }
-      gridContainer.appendChild(tileDiv);
     }
 
     // Vider le tilemap
@@ -121,9 +123,12 @@ export default class TileMap {
     let image = this.imageHerbe;
     tileDiv.style.backgroundImage = `url(${image.src})`;
     tileDiv.dataset.breakable = 'false';
+    tileDiv.classList.remove('block-breakable');
+    tileDiv.classList.add('herbe');
     const bonusImage = tileDiv.querySelector('.bonus');
     console.log(bonusImage);
     if (bonusImage) {
+      tileDiv.classList.remove('block-breakable');
       tileDiv.classList.add('bonus');
       bonusImage.style.display = 'block';
     }
