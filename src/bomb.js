@@ -1,32 +1,50 @@
 export class Bomb {
-
-    constructor(x, y, flameLength, grid) {
+    constructor(x, y, flameLength) {
         this.x = x;
         this.y = y;
         this.bombElement = null;
         this.flameLength = flameLength;
-        this.grid = grid;  // Utiliser la grille locale
+        this.tileSize = 64;  // Taille d'une tuile
     }
 
     dropBomb() {
-        const divId = document.getElementById("app");
+        const targetDiv = this.getDivAtPosition(this.x, this.y);
 
-        // Créer un élément div pour la bombe
+        if (!targetDiv) {
+            console.log("Aucune div trouvée à la position spécifiée.");
+            return;
+        }
+
+        let explosionContainer = targetDiv.querySelector('.explosion-container');
+        if (explosionContainer) {
+            console.log("Une bombe ou une flamme existe déjà ici. Impossible de poser une autre bombe.");
+            return;
+        }
+
+        explosionContainer = document.createElement('div');
+        explosionContainer.classList.add('explosion-container');
+        explosionContainer.style.position = 'relative';
+        explosionContainer.style.width = '64px';
+        explosionContainer.style.height = '64px';
+
+        targetDiv.appendChild(explosionContainer);
+
         const bomb = document.createElement('div');
-        bomb.id = "bomb";
+        bomb.classList.add('bomb');
         bomb.style.position = 'absolute';
-        bomb.style.left = `${this.x - 15}px`;
-        bomb.style.top = `${this.y - 15}px`;
-
         bomb.style.backgroundImage = "url('/assets/img/bomb/dynamite.png')";
         bomb.style.width = "32px";
         bomb.style.height = "32px";
         bomb.style.backgroundPosition = "0px 0px";
+        bomb.style.transform = "scale(1.5)";
+        bomb.style.margin = "auto";
+        bomb.style.zIndex = "2";
+        bomb.style.left = '16px';
+        bomb.style.top = '16px';
 
-        divId.appendChild(bomb);
+        explosionContainer.appendChild(bomb);
         this.bombElement = bomb;
 
-        // Lancer l’animation
         this.animateBomb();
     }
 
@@ -36,13 +54,10 @@ export class Bomb {
         let alternationCount = 6;
 
         const animate = () => {
-            let xOffset;
-
             if (alternationCount > 0) {
                 frame = (frame === 1) ? 0 : 1;
-                xOffset = frame * -32;
+                const xOffset = frame * -64;
                 this.bombElement.style.backgroundPosition = `${xOffset}px 0px`;
-
                 alternationCount--;
 
                 setTimeout(() => {
@@ -50,7 +65,6 @@ export class Bomb {
                 }, frameDelay);
             } else {
                 this.bombElement.style.backgroundPosition = "0px 0px";
-
                 setTimeout(() => {
                     this.deleteBomb();
                     this.flame();
@@ -62,99 +76,179 @@ export class Bomb {
     }
 
     flame() {
-        const divId = document.getElementById("app");
-
-        // Créer la flamme centrale
-        this.createFlame(divId, this.x, this.y);
-
         const directions = [
-            { dx: 1, dy: 0, isActive: true },   // Droite
-            { dx: -1, dy: 0, isActive: true },  // Gauche
-            { dx: 0, dy: 1, isActive: true },   // Bas
-            { dx: 0, dy: -1, isActive: true }   // Haut
+            { dx: 1, dy: 0, isActive: true },
+            { dx: -1, dy: 0, isActive: true },
+            { dx: 0, dy: 1, isActive: true },
+            { dx: 0, dy: -1, isActive: true }
         ];
+
+        this.createFlame(this.getDivAtPosition(this.x, this.y));
 
         for (let direction of directions) {
             for (let i = 1; i <= this.flameLength; i++) {
                 if (!direction.isActive) break;
 
-                const flameX = this.x + direction.dx * i * 32;
-                const flameY = this.y + direction.dy * i * 32;
+                const flameX = this.x + direction.dx * i * this.tileSize;
+                const flameY = this.y + direction.dy * i * this.tileSize;
+                const targetDiv = this.getDivAtPosition(flameX, flameY);
 
-                // Vérifier si la cellule suivante est un obstacle
-                if (this.checkFlame(flameX, flameY)) {
-                    direction.isActive = false;  // Arrêter la propagation avant l’obstacle
+                if (!targetDiv) {
+                    direction.isActive = false;
                     break;
                 }
 
-                // Créer la flamme si aucune cellule bloquante n’est rencontrée
+                if (this.checkFlame(targetDiv)) {
+                    direction.isActive = false;
+                    break;
+                }
+
                 setTimeout(() => {
-                    this.createFlame(divId, flameX, flameY);
+                    this.createFlame(targetDiv);
                 }, i * 140);
             }
         }
     }
 
-    checkFlame(x, y) {
-        const row = Math.floor(y / 32);  // Convertir la position en indices de grille
-        const col = Math.floor(x / 32);
-
-        if (row >= 0 && row < this.grid.length && col >= 0 && col < this.grid[row].length) {
-            //Détecte si une case unbreakable se trouve a cette coordonnée
-            if (this.grid[row][col] === "unbreakable") {
-                console.log(`Obstacle unbreakable détecté à (${row}, ${col})`);
+    checkFlame(targetDiv) {
+        if (targetDiv) {
+            if (targetDiv.classList.contains("block-unbreakable")) {
+                console.log("Obstacle block-unbreakable détecté.");
                 return true;
             }
-            //Détecte si une box se trouve a cette coordonnée
-            if (this.grid[row][col] === "box") {
-                console.log(`Obstacle box détecté à (${row}, ${col})`);
+            if (targetDiv.classList.contains("block-breakable")) {
+                console.log("Obstacle block-breakable détecté. Destruction du bloc.");
+                this.destroyBlock(targetDiv);
                 return true;
             }
-            //Détecte si un player se trouve a cette coordonnée
-            if (this.grid[row][col] === "player") {
-                console.log(`Player détecter à (${row}, ${col}), retrait d'un point de vie`);
-                return false;
+            if (targetDiv.classList.contains("border")) {
+                console.log("Obstacle border détecté.");
+                return true;
             }
-            //Détecte si un bot se trouve a cette coordonnée
-            if (this.grid[row][col] === "bot") {
-                console.log(`Bot détecter à (${row}, ${col}), retrait d'un point de vie`);
-                return false;
-            }
-
         }
         return false;
     }
 
-    createFlame(parent, x, y) {
-        const flame = document.createElement('div');
-        flame.style.position = 'absolute';
-        flame.style.left = `${x - 16}px`;  // Centrer la flamme sur la cellule
-        flame.style.top = `${y - 16}px`;
+    destroyBlock(targetDiv) {
+        targetDiv.classList.remove('block-breakable');
+        targetDiv.classList.add('herbe');
+        targetDiv.style.backgroundImage = "url('/assets/img/map/herbe2.png')";
 
+        const bonusImage = targetDiv.querySelector('.bonus');
+        if (bonusImage) {
+            bonusImage.style.display = 'block';
+        }
+    }
+
+    createFlame(targetDiv) {
+        if (!targetDiv) return;
+
+        let explosionContainer = targetDiv.querySelector('.explosion-container');
+        if (!explosionContainer) {
+            explosionContainer = document.createElement('div');
+            explosionContainer.classList.add('explosion-container');
+            explosionContainer.style.position = 'relative';
+            explosionContainer.style.width = '64px';
+            explosionContainer.style.height = '64px';
+            targetDiv.appendChild(explosionContainer);
+        }
+
+        const existingFlame = explosionContainer.querySelector('.flame');
+        if (existingFlame) {
+            explosionContainer.removeChild(existingFlame);
+        }
+
+        const flame = document.createElement('div');
+        flame.classList.add('flame');
+        flame.style.position = 'absolute';
         flame.style.backgroundImage = "url('/assets/img/bomb/explosion.png')";
         flame.style.width = "32px";
         flame.style.height = "32px";
         flame.style.backgroundPosition = "64px 64px";
+        flame.style.margin = "auto";
+        flame.style.scale = "1.3";
+        flame.style.zIndex = "0";
+        flame.style.left = '16px';
+        flame.style.top = '16px';
 
-        parent.appendChild(flame);
+        explosionContainer.appendChild(flame);
 
-        // Animation de disparition
+        // Vérifier la collision
+        this.checkCollisionWithPlayerOrBot(flame);
+
         setTimeout(() => {
             flame.style.opacity = "0";
         }, this.flameLength * 240);
 
-        // Suppression de la flamme après la transition
         setTimeout(() => {
-            if (flame.parentNode) {
-                flame.parentNode.removeChild(flame);
-            }
+            flame.remove();
+            this.checkAndRemoveContainer(explosionContainer);
         }, 900);
+    }
+
+    checkCollisionWithPlayerOrBot(element) {
+        const flameRect = element.getBoundingClientRect();
+        const player = document.querySelector('#player');
+        const bot = document.querySelector('#bot');
+
+        if (player && this.isColliding(flameRect, player.getBoundingClientRect())) {
+            console.log("Collision détectée avec le joueur !");
+            this.removePlayerLife();
+        }
+
+        if (bot && this.isColliding(flameRect, bot.getBoundingClientRect())) {
+            console.log("Collision détectée avec le bot !");
+            this.removeBotLife();
+        }
+    }
+
+    isColliding(rect1, rect2) {
+        return (
+            rect1.left < rect2.right &&
+            rect1.right > rect2.left &&
+            rect1.top < rect2.bottom &&
+            rect1.bottom > rect2.top
+        );
+    }
+
+    removePlayerLife() {
+        console.log("Vie du joueur -1");
+        // playerLives--; ou gestion spécifique de la vie
+    }
+
+    removeBotLife() {
+        console.log("Vie du bot -1");
+        // botLives--; ou gestion spécifique de la vie
+    }
+
+    checkAndRemoveContainer(container) {
+        const remainingFlames = container.querySelectorAll('.flame');
+        if (remainingFlames.length === 0 && container.parentNode) {
+            container.remove();
+            console.log("Conteneur global supprimé");
+        }
     }
 
     deleteBomb() {
         if (this.bombElement && this.bombElement.parentNode) {
-            this.bombElement.parentNode.removeChild(this.bombElement);
-            console.log("Bombe supprimée après l’animation");
+            const explosionContainer = this.bombElement.parentNode;
+            this.checkCollisionWithPlayerOrBot(explosionContainer);
+            this.bombElement.remove();
+            console.log("Bombe supprimée après l'animation");
+            this.checkAndRemoveContainer(explosionContainer);
         }
+    }
+
+    getDivAtPosition(x, y) {
+        const row = Math.floor(y / this.tileSize);
+        const col = Math.floor(x / this.tileSize);
+        const index = row * 13 + col + 1;
+
+        if (index <= 0) {
+            console.log("Position hors de la grille");
+            return null;
+        }
+
+        return document.querySelector(`.grid-container > div:nth-child(${index})`);
     }
 }

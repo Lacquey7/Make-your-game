@@ -4,6 +4,7 @@ export default class Player {
     this.x = 80;
     this.y = 65;
     this.speed = 5;
+    this.flame = 3;
 
     // Animation
     this.frameX = 0;
@@ -14,8 +15,8 @@ export default class Player {
     this.direction = 'down';
 
     // Définir des limites pour la carte (adapter ces valeurs selon votre layout)
-    this.mapWidth = 800; // exemple
-    this.mapHeight = 600; // exemple
+    this.mapWidth = 832; // exemple
+    this.mapHeight = 704; // exemple
 
     // Position initiale
     this.updatePosition();
