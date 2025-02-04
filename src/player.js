@@ -55,10 +55,26 @@ export default class Player {
   }
 
   // Fonction d'aide pour vérifier si deux rectangles se chevauchent
-  isColliding(rect1, rect2) {
-    return !(rect1.x + rect1.width <= rect2.x || rect1.x >= rect2.x + rect2.width || rect1.y + rect1.height <= rect2.y || rect1.y >= rect2.y + rect2.height);
-  }
+   isColliding(rect1, rect2) {
+    // Définir une marge (en pixels) pour réduire la hitbox du joueur
+    const margin = 7; // Vous pouvez ajuster cette valeur en fonction de vos besoins
 
+    // Créer une nouvelle hitbox pour le joueur en appliquant la marge
+    const playerHitbox = {
+      x: rect1.x + margin,
+      y: rect1.y + margin,
+      width: rect1.width - 2 * margin,
+      height: rect1.height - 2 * margin
+    };
+
+    // Vérifier la collision entre la hitbox ajustée et l'autre rectangle
+    return !(
+        playerHitbox.x + playerHitbox.width <= rect2.x ||
+        playerHitbox.x >= rect2.x + rect2.width ||
+        playerHitbox.y + playerHitbox.height <= rect2.y ||
+        playerHitbox.y >= rect2.y + rect2.height
+    );
+  }
   move(keys) {
     let newX = this.x;
     let newY = this.y;
