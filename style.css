@@ -8,15 +8,30 @@ body {
     background-color: #000;
 }
 
-#board {
-    background-color: white;
+#map {
+    width: 800px;
+    height: 600px;
+    position: relative;
+    border: 2px solid black;
+    margin: 0 auto;  /* Pour centrer la map */
+    background-color: #fff;
 }
 
 #player {
-    width: 40px;
-    height: 54px;
+    width: 42px;
+    height: 50px;
     position: absolute;
     background-image: url('./assets/img/player/888.png');
     transform: scale(1);
     background-size: 600px auto; /* Ajustez selon la taille de votre spritesheet */
 }
+
+#bot {
+    width: 32.5px;
+    height: 50px;
+    position: absolute;
+    background-image: url('./assets/img/player/badbomber.png');
+    transform: scale(1);
+    background-size: 400px auto;
+}
+
