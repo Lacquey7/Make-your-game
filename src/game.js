@@ -24,6 +24,13 @@ document.addEventListener('DOMContentLoaded', () => {
     function gameLoop() {
         player.move(keys);
         bot.moveAutonomously();
+
+        // Vérifier la collision
+        if (Collision.checkCollision(player, bot)) {
+            console.log("Collision détectée !");
+            // Ajoutez ici ce qui doit se passer lors d'une collision
+        }
+
         requestAnimationFrame(gameLoop);
     }
 
