@@ -108,7 +108,6 @@ export default class Game {
       ArrowRight: false,
       Space: false,
     };
-
     this.setupEventListeners();
     this.startGameLoop();
   }
