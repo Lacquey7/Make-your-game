@@ -3,7 +3,7 @@ export default class Player {
     this.element = document.getElementById('player');
     this.x = 80;
     this.y = 65;
-    this.speed = 5;
+    this.speed = 3;
     this.flame = 3;
 
     // Animation
@@ -55,27 +55,24 @@ export default class Player {
     }
   }
 
-  // Fonction d'aide pour vérifier si deux rectangles se chevauchent
-   isColliding(rect1, rect2) {
-    // Définir une marge (en pixels) pour réduire la hitbox du joueur
+  isColliding(rect1, rect2) {
     const margin = 7; // Vous pouvez ajuster cette valeur en fonction de vos besoins
 
-    // Créer une nouvelle hitbox pour le joueur en appliquant la marge
     const playerHitbox = {
       x: rect1.x + margin,
       y: rect1.y + margin,
       width: rect1.width - 2 * margin,
-      height: rect1.height - 2 * margin
+      height: rect1.height - 2 * margin,
     };
 
     // Vérifier la collision entre la hitbox ajustée et l'autre rectangle
-    return !(
-        playerHitbox.x + playerHitbox.width <= rect2.x ||
-        playerHitbox.x >= rect2.x + rect2.width ||
-        playerHitbox.y + playerHitbox.height <= rect2.y ||
-        playerHitbox.y >= rect2.y + rect2.height
-    );
+    return !(playerHitbox.x + playerHitbox.width <= rect2.x || playerHitbox.x >= rect2.x + rect2.width || playerHitbox.y + playerHitbox.height <= rect2.y || playerHitbox.y >= rect2.y + rect2.height);
   }
+
+  isCollidingBonus(rect1, rect2) {
+    return rect1.x < rect2.x + rect2.width && rect1.x + rect1.width > rect2.x && rect1.y < rect2.y + rect2.height && rect1.y + rect1.height > rect2.y;
+  }
+
   move(keys) {
     let newX = this.x;
     let newY = this.y;
@@ -175,7 +172,39 @@ export default class Player {
       this.y = proposedY;
     }
 
+    //bonus
+    const bonus = document.querySelectorAll('.bonus');
+    const playerRect = document.getElementById('player').getBoundingClientRect();
+
+    for (const bon of bonus) {
+      let bonRect = bon.getBoundingClientRect();
+
+      const playerCollisionRect = {
+        x: playerRect.left + playerRect.width * 0.2,
+        y: playerRect.top + playerRect.height * 0.2,
+        width: playerRect.width * 0.6,
+        height: playerRect.height * 0.6,
+      };
+
+      if (this.isCollidingBonus(playerCollisionRect, bonRect)) {
+        console.log('bonus detecter:', bon.classList[1]);
+        this.bonus(bon.classList[1]);
+
+        bon.remove();
+      }
+    }
+
     this.updatePosition();
     this.updateSprite();
+  }
+
+  bonus(bon) {
+    if (bon === 'Bonus1') {
+      console.log('bonus-heart active');
+    } else if (bon === 'Bonus2') {
+      console.log('bonus-flame active');
+    } else if (bon === 'Bonus3') {
+      console.log('bonus-speed active');
+    }
   }
 }

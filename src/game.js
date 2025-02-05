@@ -2,7 +2,7 @@ import TileMap from './TileMap.js';
 import Player from './player.js';
 import Bot from './bot.js';
 import Collision from './collision.js';
-import { Bomb } from "./bomb.js";
+import { Bomb } from './bomb.js';
 
 export default class Game {
   constructor() {
@@ -55,7 +55,7 @@ export default class Game {
       if (this.keys.hasOwnProperty(e.code)) {
         this.keys[e.code] = true;
         // Si la barre d'espace est pressée, déposer la bombe
-        if (e.code === "Space") {
+        if (e.code === 'Space') {
           this.dropBomb();
         }
       }
@@ -78,7 +78,6 @@ export default class Game {
     // Définition des dimensions d'une cellule dans la grille
     const cellWidth = 64;
 
-
     // Calcul de la colonne et de la ligne en fonction de la position du joueur
     // On suppose que this.player.x et this.player.y indiquent la position en pixels du joueur.
     const col = Math.floor(this.player.x / cellWidth);
@@ -93,6 +92,7 @@ export default class Game {
 
     // Création de la bombe en lui passant sa position et la longueur de l'explosion
     const bomb = new Bomb(bombX, bombY, flameLength);
+
     bomb.dropBomb();
   }
 
