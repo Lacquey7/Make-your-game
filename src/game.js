@@ -8,13 +8,19 @@ export default class Game {
   constructor() {
     this.isPaused = false;
     document.querySelector('body').__game = this;
-    this.init();
-    this.setupPauseButton();
-    this.menu()
+    // Ne pas initialiser le jeu ici, juste le menu
+    this.menu();
   }
 
   menu() {
     const divTileMap = document.querySelector('#tilemap');
+    divTileMap.innerHTML = ''; // Nettoyer le contenu existant
+
+    // Supprimer le bouton pause s'il existe
+    const pauseContainer = document.querySelector('.pause-container');
+    if (pauseContainer) {
+      pauseContainer.remove();
+    }
 
     // Créer le conteneur principal du menu
     const menuContainer = document.createElement('div');
@@ -23,60 +29,47 @@ export default class Game {
     menuContainer.style.justifyContent = 'center';
     menuContainer.style.alignItems = 'center';
     menuContainer.style.height = '100%';
-    menuContainer.style.backgroundImage = "url('assets/img/background/photo2pixel_download.png')"
-    menuContainer.style.backgroundSize = "100% 100%"
+    menuContainer.style.backgroundImage = "url('assets/img/background/photo2pixel_download.png')";
+    menuContainer.style.backgroundSize = "100% 100%";
     menuContainer.style.color = 'white';
-
-
 
     // Bouton Start
     const startButton = document.createElement('button');
     startButton.textContent = 'START';
-
-
-    // Gérer l'événement du clic sur le bouton Start
     startButton.addEventListener('click', () => {
       this.startGame();
-      // Tu peux lancer le jeu ici (exemple : this.startGame())
-      menuContainer.style.display = 'none'; // Cacher le menu après le démarrage
+      menuContainer.remove(); // Utiliser remove() au lieu de display none
     });
 
     // Zone d'affichage du score
     const scoreDisplay = document.createElement('button');
-    scoreDisplay.style.marginTop = "20px"
+    scoreDisplay.style.marginTop = "20px";
     scoreDisplay.textContent = 'SCORE';
-
     scoreDisplay.addEventListener('click', () => {
-      this.score()
-    })
-
-
-    // Ajouter les éléments au conteneur
+      this.score();
+    });
 
     menuContainer.appendChild(startButton);
     menuContainer.appendChild(scoreDisplay);
-
-    // Ajouter le menu dans l'élément tilemap
     divTileMap.appendChild(menuContainer);
   }
 
-  async score() {
-    const fetchScore = await fetch()
-    const data = fetchScore.json()
-  }
-
   startGame() {
-    const divTileMap = document.querySelector('#tilemap')
-    const player = document.createElement("div")
-    player.id = "player"
-    const bot  = document.createElement("div")
-    bot.id = "bot"
-    divTileMap.appendChild(player)
-    divTileMap.appendChild(bot)
-    this.init()
+    const divTileMap = document.querySelector('#tilemap');
+    divTileMap.innerHTML = ''; // Nettoyer le contenu existant
+
+    const player = document.createElement("div");
+    player.id = "player";
+    const bot = document.createElement("div");
+    bot.id = "bot";
+    divTileMap.appendChild(player);
+    divTileMap.appendChild(bot);
+
+    this.setupPauseButton(); // Ajouter le bouton pause uniquement au démarrage du jeu
+    this.initGame(); // Renommer init() en initGame() pour plus de clarté
   }
 
-  init() {
+  initGame() {
     // Map configuration
     this.Countbonus = 6;
     this.bonus = ['Bonus1', 'Bonus2', 'Bonus3'];
@@ -98,11 +91,9 @@ export default class Game {
     this.tileMap = new TileMap(this.map, this.Countbonus, this.bonus, this.totalBlockBreakable);
     this.tileMap.draw();
 
-    // Création des objets de jeu
     this.player = new Player();
     this.bot = new Bot();
 
-    // Gestion des touches (on ajoute ici la touche "Space" pour déposer la bombe)
     this.keys = {
       ArrowUp: false,
       ArrowDown: false,
@@ -116,6 +107,11 @@ export default class Game {
   }
 
   setupPauseButton() {
+    const existingContainer = document.querySelector('.pause-container');
+    if (existingContainer) {
+      existingContainer.remove();
+    }
+
     const uiContainer = document.createElement('div');
     uiContainer.classList.add('pause-container');
 
