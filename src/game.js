@@ -19,25 +19,16 @@ export default class Game {
     menuContainer.style.justifyContent = 'center';
     menuContainer.style.alignItems = 'center';
     menuContainer.style.height = '100%';
-    menuContainer.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+    menuContainer.style.backgroundImage = "url('assets/img/background/photo2pixel_download.png')"
+    menuContainer.style.backgroundSize = "100% 100%"
     menuContainer.style.color = 'white';
-    menuContainer.style.borderRadius = '12px';
 
-    // Titre du menu
-    const title = document.createElement('h1');
-    title.innerText = 'Menu de Jeu';
-    title.style.marginBottom = '20px';
+
 
     // Bouton Start
     const startButton = document.createElement('button');
-    startButton.innerText = 'Start';
-    startButton.style.padding = '10px 20px';
-    startButton.style.fontSize = '20px';
-    startButton.style.border = 'none';
-    startButton.style.borderRadius = '8px';
-    startButton.style.backgroundColor = '#28a745';
-    startButton.style.color = 'white';
-    startButton.style.cursor = 'pointer';
+    startButton.textContent = 'START';
+
 
     // Gérer l'événement du clic sur le bouton Start
     startButton.addEventListener('click', () => {
@@ -47,18 +38,27 @@ export default class Game {
     });
 
     // Zone d'affichage du score
-    const scoreDisplay = document.createElement('div');
-    scoreDisplay.innerText = 'Score: 0';
-    scoreDisplay.style.fontSize = '18px';
-    scoreDisplay.style.marginTop = '20px';
+    const scoreDisplay = document.createElement('button');
+    scoreDisplay.style.marginTop = "20px"
+    scoreDisplay.textContent = 'SCORE';
+
+    scoreDisplay.addEventListener('click', () => {
+      this.score()
+    })
+
 
     // Ajouter les éléments au conteneur
-    menuContainer.appendChild(title);
+
     menuContainer.appendChild(startButton);
     menuContainer.appendChild(scoreDisplay);
 
     // Ajouter le menu dans l'élément tilemap
     divTileMap.appendChild(menuContainer);
+  }
+
+  async score() {
+    const fetchScore = await fetch()
+    const data = fetchScore.json()
   }
 
   startGame() {
