@@ -5,7 +5,7 @@ export default class Bot {
         this.element = document.getElementById('bot');
         this.x = 720;
         this.y = 540;
-        this.speed = 2;
+        this.speed = 4;
         this.mapWidth = 832;
         this.mapHeight = 704;
 
