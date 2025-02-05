@@ -6,7 +6,70 @@ import { Bomb } from "./bomb.js";
 
 export default class Game {
   constructor() {
-    this.init();
+    this.menu()
+  }
+
+  menu() {
+    const divTileMap = document.querySelector('#tilemap');
+
+    // Créer le conteneur principal du menu
+    const menuContainer = document.createElement('div');
+    menuContainer.style.display = 'flex';
+    menuContainer.style.flexDirection = 'column';
+    menuContainer.style.justifyContent = 'center';
+    menuContainer.style.alignItems = 'center';
+    menuContainer.style.height = '100%';
+    menuContainer.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+    menuContainer.style.color = 'white';
+    menuContainer.style.borderRadius = '12px';
+
+    // Titre du menu
+    const title = document.createElement('h1');
+    title.innerText = 'Menu de Jeu';
+    title.style.marginBottom = '20px';
+
+    // Bouton Start
+    const startButton = document.createElement('button');
+    startButton.innerText = 'Start';
+    startButton.style.padding = '10px 20px';
+    startButton.style.fontSize = '20px';
+    startButton.style.border = 'none';
+    startButton.style.borderRadius = '8px';
+    startButton.style.backgroundColor = '#28a745';
+    startButton.style.color = 'white';
+    startButton.style.cursor = 'pointer';
+
+    // Gérer l'événement du clic sur le bouton Start
+    startButton.addEventListener('click', () => {
+      this.startGame();
+      // Tu peux lancer le jeu ici (exemple : this.startGame())
+      menuContainer.style.display = 'none'; // Cacher le menu après le démarrage
+    });
+
+    // Zone d'affichage du score
+    const scoreDisplay = document.createElement('div');
+    scoreDisplay.innerText = 'Score: 0';
+    scoreDisplay.style.fontSize = '18px';
+    scoreDisplay.style.marginTop = '20px';
+
+    // Ajouter les éléments au conteneur
+    menuContainer.appendChild(title);
+    menuContainer.appendChild(startButton);
+    menuContainer.appendChild(scoreDisplay);
+
+    // Ajouter le menu dans l'élément tilemap
+    divTileMap.appendChild(menuContainer);
+  }
+
+  startGame() {
+    const divTileMap = document.querySelector('#tilemap')
+    const player = document.createElement("div")
+    player.id = "player"
+    const bot  = document.createElement("div")
+    bot.id = "bot"
+    divTileMap.appendChild(player)
+    divTileMap.appendChild(bot)
+    this.init()
   }
 
   init() {
