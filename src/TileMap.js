@@ -9,9 +9,9 @@ export default class TileMap {
     this.imageBlockUnbreakable = this.#image('bordureRelief.png');
     this.imageHerbe = this.#image('herbe2.png');
     this.imageBlockBreakable = this.#image('block2.png');
-    this.imageBonus1 = this.#image('bonus1.png');
-    this.imageBonus2 = this.#image('bonus2.png');
-    this.imageBonus3 = this.#image('bonus3.png');
+    this.imageBonus1 = this.#image('Bonus1.png');
+    this.imageBonus2 = this.#image('Bonus2.png');
+    this.imageBonus3 = this.#image('Bonus3.png');
 
     this.tilesInitialized = false;
     this.randomBlockGetBonus = this.randomBlockGetBonus();
@@ -111,10 +111,24 @@ export default class TileMap {
   }
 
   #addRandomBonus(tileDiv) {
+    let image = null;
     let r = Math.floor(Math.random() * this.bonus.length);
-    const bonusImage = document.createElement('img');
-    bonusImage.src = 'assets/img/map/' + this.bonus[r] + '.png';
-    bonusImage.classList.add('bonus');
+    switch (r) {
+      case 0:
+        image = this.imageBonus1;
+        break;
+      case 1:
+        image = this.imageBonus2;
+        break;
+      case 2:
+        image = this.imageBonus3;
+        break;
+    }
+    const bonusImage = document.createElement('div');
+    bonusImage.style.backgroundImage = `url(${image.src})`;
+    bonusImage.classList.add('bonus', this.bonus[r]);
+    bonusImage.style.backgroundSize = 'cover';
+    bonusImage.style.backgroundPosition = 'center';
     bonusImage.style.display = 'none';
     tileDiv.appendChild(bonusImage);
   }
@@ -126,10 +140,9 @@ export default class TileMap {
     tileDiv.classList.remove('block-breakable');
     tileDiv.classList.add('herbe');
     const bonusImage = tileDiv.querySelector('.bonus');
-    console.log(bonusImage);
     if (bonusImage) {
       tileDiv.classList.remove('block-breakable');
-      tileDiv.classList.add('bonus');
+      //tileDiv.classList.add('bonus');
       bonusImage.style.display = 'block';
     }
   }
