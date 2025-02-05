@@ -44,7 +44,8 @@ export default class Player {
     }
   }
 
-  move(keys) {
+  move(keys, isPaused) {
+    if (isPaused) return;
     let newX = this.x;
     let newY = this.y;
     this.isMoving = false;
