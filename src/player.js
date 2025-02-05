@@ -1,3 +1,5 @@
+import Bonus from './powerUp.js';
+
 export default class Player {
   constructor() {
     this.element = document.getElementById('player');
@@ -67,10 +69,6 @@ export default class Player {
 
     // Vérifier la collision entre la hitbox ajustée et l'autre rectangle
     return !(playerHitbox.x + playerHitbox.width <= rect2.x || playerHitbox.x >= rect2.x + rect2.width || playerHitbox.y + playerHitbox.height <= rect2.y || playerHitbox.y >= rect2.y + rect2.height);
-  }
-
-  isCollidingBonus(rect1, rect2) {
-    return rect1.x < rect2.x + rect2.width && rect1.x + rect1.width > rect2.x && rect1.y < rect2.y + rect2.height && rect1.y + rect1.height > rect2.y;
   }
 
   move(keys) {
@@ -163,48 +161,21 @@ export default class Player {
         break;
       }
     }
-
     // Appliquer les limites de la carte
     if (proposedX >= 0 && proposedX <= this.mapWidth - playerWidth) {
       this.x = proposedX;
     }
+
     if (proposedY >= 0 && proposedY <= this.mapHeight - playerHeight) {
       this.y = proposedY;
     }
 
-    //bonus
-    const bonus = document.querySelectorAll('.bonus');
-    const playerRect = document.getElementById('player').getBoundingClientRect();
+    //   //bonus
+    const playerRect = document.getElementById('player');
+    const bonusPlayer = new Bonus(playerRect);
 
-    for (const bon of bonus) {
-      let bonRect = bon.getBoundingClientRect();
-
-      const playerCollisionRect = {
-        x: playerRect.left + playerRect.width * 0.2,
-        y: playerRect.top + playerRect.height * 0.2,
-        width: playerRect.width * 0.6,
-        height: playerRect.height * 0.6,
-      };
-
-      if (this.isCollidingBonus(playerCollisionRect, bonRect)) {
-        console.log('bonus detecter:', bon.classList[1]);
-        this.bonus(bon.classList[1]);
-
-        bon.remove();
-      }
-    }
-
+    bonusPlayer.checkCollisions();
     this.updatePosition();
     this.updateSprite();
-  }
-
-  bonus(bon) {
-    if (bon === 'Bonus1') {
-      console.log('bonus-heart active');
-    } else if (bon === 'Bonus2') {
-      console.log('bonus-flame active');
-    } else if (bon === 'Bonus3') {
-      console.log('bonus-speed active');
-    }
   }
 }
