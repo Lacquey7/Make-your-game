@@ -6,6 +6,7 @@ export default class Bot {
         this.x = 720;
         this.y = 540;
         this.speed = 2;
+        this.life = 2
         this.mapWidth = 832;
         this.mapHeight = 704;
 
@@ -23,6 +24,11 @@ export default class Bot {
         this.currentMove = this.getRandomDirection();
 
         this.updatePosition();
+    }
+
+    decreaseLife() {
+        this.life--;
+        console.log(`Vie du bot : ${this.life}`);
     }
 
     getRandomDirection() {
