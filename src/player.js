@@ -1,3 +1,5 @@
+import Collision from './collision.js';
+
 export default class Player {
   constructor() {
     this.element = document.getElementById('player');
@@ -6,7 +8,7 @@ export default class Player {
     this.speed = 5;
     this.flame = 3;
 
-    // Animation
+    // Animation properties
     this.frameX = 0;
     this.frameDelay = 10;
     this.frameCount = 0;
@@ -14,11 +16,10 @@ export default class Player {
     this.isMoving = false;
     this.direction = 'down';
 
-    // Définir des limites pour la carte (adapter ces valeurs selon votre layout)
-    this.mapWidth = 832; // exemple
-    this.mapHeight = 704; // exemple
+    // Map boundaries
+    this.mapWidth = 832;
+    this.mapHeight = 704;
 
-    // Position initiale
     this.updatePosition();
   }
 
@@ -29,59 +30,26 @@ export default class Player {
 
   updateSprite() {
     if (!this.isMoving) {
-      // Position statique (image par défaut)
       this.element.style.backgroundPosition = '0px 0';
     } else {
-      // Position selon la direction
       let sourceY;
       switch (this.direction) {
-        case 'down':
-          sourceY = 0;
-          break;
-        case 'right':
-          sourceY = -250;
-          break;
-        case 'left':
-          sourceY = -100;
-          break;
-        case 'up':
-          sourceY = -50;
-          break;
-        default:
-          sourceY = 0;
+        case 'down': sourceY = 0; break;
+        case 'right': sourceY = -250; break;
+        case 'left': sourceY = -100; break;
+        case 'up': sourceY = -50; break;
+        default: sourceY = 0;
       }
-
       this.element.style.backgroundPosition = `${-this.frameX * 56}px ${sourceY}px`;
     }
   }
 
-  // Fonction d'aide pour vérifier si deux rectangles se chevauchent
-   isColliding(rect1, rect2) {
-    // Définir une marge (en pixels) pour réduire la hitbox du joueur
-    const margin = 7; // Vous pouvez ajuster cette valeur en fonction de vos besoins
-
-    // Créer une nouvelle hitbox pour le joueur en appliquant la marge
-    const playerHitbox = {
-      x: rect1.x + margin,
-      y: rect1.y + margin,
-      width: rect1.width - 2 * margin,
-      height: rect1.height - 2 * margin
-    };
-
-    // Vérifier la collision entre la hitbox ajustée et l'autre rectangle
-    return !(
-        playerHitbox.x + playerHitbox.width <= rect2.x ||
-        playerHitbox.x >= rect2.x + rect2.width ||
-        playerHitbox.y + playerHitbox.height <= rect2.y ||
-        playerHitbox.y >= rect2.y + rect2.height
-    );
-  }
   move(keys) {
     let newX = this.x;
     let newY = this.y;
     this.isMoving = false;
 
-    // Calcul du déplacement selon les touches pressées
+    // Calculate movement based on keys
     if (keys.ArrowLeft) {
       newX -= this.speed;
       this.direction = 'left';
@@ -103,7 +71,7 @@ export default class Player {
       this.isMoving = true;
     }
 
-    // Gestion de l'animation
+    // Handle animation
     if (this.isMoving) {
       this.frameCount++;
       if (this.frameCount >= this.frameDelay) {
@@ -114,66 +82,42 @@ export default class Player {
       this.frameX = 0;
     }
 
-    // Récupérer les dimensions du joueur (taille de l'élément)
-    const playerWidth = this.element.offsetWidth;
-    const playerHeight = this.element.offsetHeight;
-
-    // Récupérer tous les obstacles (div avec class 'unbeakable' et 'box')
-    const obstacles = document.querySelectorAll('.block-unbreakable, .border, .block-breakable ');
-
-    // Vérification du déplacement horizontal (pour permettre le glissement le long des obstacles)
-    let proposedX = newX;
-    const horizontalRect = {
-      x: proposedX,
-      y: this.y,
-      width: playerWidth,
-      height: playerHeight,
+    const obstacles = document.querySelectorAll('.block-unbreakable, .border, .block-breakable');
+    const size = {
+      width: this.element.offsetWidth,
+      height: this.element.offsetHeight
     };
 
-    for (const obstacle of obstacles) {
-      const obstacleRect = {
-        x: obstacle.offsetLeft,
-        y: obstacle.offsetTop,
-        width: obstacle.offsetWidth,
-        height: obstacle.offsetHeight,
-      };
-      if (this.isColliding(horizontalRect, obstacleRect)) {
-        // Annule le déplacement horizontal en cas de collision
-        proposedX = this.x;
-        break;
-      }
-    }
-
-    // Vérification du déplacement vertical
-    let proposedY = newY;
-    const verticalRect = {
-      x: proposedX, // utiliser la position horizontale déjà validée
-      y: proposedY,
-      width: playerWidth,
-      height: playerHeight,
+    // Check horizontal movement
+    const horizontalMove = {
+      x: newX,
+      y: this.y
     };
 
-    for (const obstacle of obstacles) {
-      const obstacleRect = {
-        x: obstacle.offsetLeft,
-        y: obstacle.offsetTop,
-        width: obstacle.offsetWidth,
-        height: obstacle.offsetHeight,
-      };
-      if (this.isColliding(verticalRect, obstacleRect)) {
-        // Annule le déplacement vertical en cas de collision
-        proposedY = this.y;
-        break;
-      }
+    if (!Collision.getCollisionWithObstacles(horizontalMove, size, obstacles, 7)) {
+      this.x = newX;
     }
 
-    // Appliquer les limites de la carte
-    if (proposedX >= 0 && proposedX <= this.mapWidth - playerWidth) {
-      this.x = proposedX;
+    // Check vertical movement
+    const verticalMove = {
+      x: this.x,
+      y: newY
+    };
+
+    if (!Collision.getCollisionWithObstacles(verticalMove, size, obstacles, 7)) {
+      this.y = newY;
     }
-    if (proposedY >= 0 && proposedY <= this.mapHeight - playerHeight) {
-      this.y = proposedY;
-    }
+
+    // Apply map boundaries
+    const mapSize = { width: this.mapWidth, height: this.mapHeight };
+    const boundedPosition = Collision.checkMapBoundaries(
+        { x: this.x, y: this.y },
+        size,
+        mapSize
+    );
+
+    this.x = boundedPosition.x;
+    this.y = boundedPosition.y;
 
     this.updatePosition();
     this.updateSprite();
