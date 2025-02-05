@@ -4,7 +4,8 @@ export class Bomb {
         this.y = y;
         this.bombElement = null;
         this.flameLength = flameLength;
-        this.tileSize = 64;  // Taille d'une tuile
+        this.tileSize = 64;
+        this.game = document.querySelector('body').__game; // Accès à l'instance du jeu
     }
 
     dropBomb() {
@@ -52,24 +53,47 @@ export class Bomb {
         let frame = 2;
         const frameDelay = 400;
         let alternationCount = 6;
+        let lastTimestamp = 0;
+        let accumulatedTime = 0;
 
-        const animate = () => {
-            if (alternationCount > 0) {
-                frame = (frame === 1) ? 0 : 1;
-                const xOffset = frame * -64;
-                this.bombElement.style.backgroundPosition = `${xOffset}px 0px`;
-                alternationCount--;
+        const animate = (timestamp) => {
+            if (!lastTimestamp) lastTimestamp = timestamp;
+            const deltaTime = timestamp - lastTimestamp;
 
-                setTimeout(() => {
-                    requestAnimationFrame(animate);
-                }, frameDelay);
-            } else {
-                this.bombElement.style.backgroundPosition = "0px 0px";
-                setTimeout(() => {
-                    this.deleteBomb();
-                    this.flame();
-                }, frameDelay);
+            if (!this.game.isPaused) {
+                accumulatedTime += deltaTime;
+
+                if (accumulatedTime >= frameDelay) {
+                    if (alternationCount > 0) {
+                        frame = (frame === 1) ? 0 : 1;
+                        const xOffset = frame * -64;
+                        this.bombElement.style.backgroundPosition = `${xOffset}px 0px`;
+                        alternationCount--;
+                        accumulatedTime = 0;
+                    } else {
+                        this.bombElement.style.backgroundPosition = "0px 0px";
+                        setTimeout(() => {
+                            if (!this.game.isPaused) {
+                                this.deleteBomb();
+                                this.flame();
+                            } else {
+                                // Si le jeu est en pause, on attend la reprise
+                                const checkPause = setInterval(() => {
+                                    if (!this.game.isPaused) {
+                                        this.deleteBomb();
+                                        this.flame();
+                                        clearInterval(checkPause);
+                                    }
+                                }, 100);
+                            }
+                        }, frameDelay);
+                        return;
+                    }
+                }
             }
+
+            lastTimestamp = timestamp;
+            requestAnimationFrame(animate);
         };
 
         requestAnimationFrame(animate);
@@ -103,9 +127,16 @@ export class Bomb {
                     break;
                 }
 
+                // Ajout d'une vérification de pause pour la propagation des flammes
+                const createFlameWithPauseCheck = () => {
+                    if (!this.game.isPaused) {
+                        this.createFlame(targetDiv);
+                    } else {
+                        setTimeout(createFlameWithPauseCheck, 100);
+                    }
+                };
 
-                    this.createFlame(targetDiv);
-
+                setTimeout(createFlameWithPauseCheck, i * 140);
             }
         }
     }
@@ -113,16 +144,13 @@ export class Bomb {
     checkFlame(targetDiv) {
         if (targetDiv) {
             if (targetDiv.classList.contains("block-unbreakable")) {
-                console.log("Obstacle block-unbreakable détecté.");
                 return true;
             }
             if (targetDiv.classList.contains("block-breakable")) {
-                console.log("Obstacle block-breakable détecté. Destruction du bloc.");
                 this.destroyBlock(targetDiv);
                 return true;
             }
             if (targetDiv.classList.contains("border")) {
-                console.log("Obstacle border détecté.");
                 return true;
             }
         }
@@ -173,19 +201,28 @@ export class Bomb {
 
         explosionContainer.appendChild(flame);
 
-        // Vérifier la collision
         this.checkCollisionWithPlayerOrBot(flame);
 
-        setTimeout(() => {
-            flame.style.opacity = "0";
-        }, this.flameLength * 240);
+        const removeFlame = () => {
+            if (!this.game.isPaused) {
+                flame.style.opacity = "0";
+                setTimeout(() => {
+                    if (!this.game.isPaused) {
+                        flame.remove();
+                        this.checkAndRemoveContainer(explosionContainer);
+                    } else {
+                        setTimeout(removeFlame, 100);
+                    }
+                }, 900);
+            } else {
+                setTimeout(removeFlame, 100);
+            }
+        };
 
-        setTimeout(() => {
-            flame.remove();
-            this.checkAndRemoveContainer(explosionContainer);
-        }, 900);
+        setTimeout(removeFlame, this.flameLength * 240);
     }
 
+    // Reste des méthodes inchangées...
     checkCollisionWithPlayerOrBot(element) {
         const flameRect = element.getBoundingClientRect();
         const player = document.querySelector('#player');
@@ -213,19 +250,16 @@ export class Bomb {
 
     removePlayerLife() {
         console.log("Vie du joueur -1");
-        // playerLives--; ou gestion spécifique de la vie
     }
 
     removeBotLife() {
         console.log("Vie du bot -1");
-        // botLives--; ou gestion spécifique de la vie
     }
 
     checkAndRemoveContainer(container) {
         const remainingFlames = container.querySelectorAll('.flame');
         if (remainingFlames.length === 0 && container.parentNode) {
             container.remove();
-            console.log("Conteneur global supprimé");
         }
     }
 
@@ -234,7 +268,6 @@ export class Bomb {
             const explosionContainer = this.bombElement.parentNode;
             this.checkCollisionWithPlayerOrBot(explosionContainer);
             this.bombElement.remove();
-            console.log("Bombe supprimée après l'animation");
             this.checkAndRemoveContainer(explosionContainer);
         }
     }
