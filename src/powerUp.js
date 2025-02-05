@@ -1,5 +1,6 @@
 export default class Bonus {
-  constructor(player) {
+  constructor(player, playerElement) {
+    this.playerElement = playerElement; // Référence à l'élément du joueur
     this.player = player; // Référence à l'élément du joueur
     this.bonuses = document.querySelectorAll('.bonus'); // Récupère tous les éléments bonus
   }
@@ -30,12 +31,25 @@ export default class Bonus {
   }
 
   activateBonus(bonusType) {
-    if (bonusType === 'Bonus1') {
-      console.log('bonus-heart actif');
-    } else if (bonusType === 'Bonus2') {
-      console.log('bonus-flame actif');
-    } else if (bonusType === 'Bonus3') {
-      console.log('bonus-speed actif');
+    switch (bonusType) {
+      case 'Bonus1':
+        console.log('bonus-speed activé');
+        console.log('vitesse actuelle:', this.playerElement.speed);
+        this.playerElement.speed++;
+        console.log('nouvelle vitesse:', this.playerElement.speed);
+        break;
+      case 'Bonus2':
+        console.log('bonus-fire activé');
+        console.log('nombre de bombes actuelles:', this.playerElement.flame);
+        this.playerElement.flame++;
+        console.log('nouveau nombre de bombes:', this.playerElement.flame);
+        break;
+      case 'Bonus3':
+        console.log('bonus-heart activé');
+        console.log('nombre de vies actuelles:', this.playerElement.life);
+        this.playerElement.life++;
+        console.log('nouveau nombre de vies:', this.playerElement.life);
+        break;
     }
   }
 }
