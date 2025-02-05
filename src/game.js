@@ -66,110 +66,145 @@ export default class Game {
         method: "GET"
       });
 
-        const scores = await response.json();
-        scores.sort((a, b) => b.score - a.score);
-        console.log("Scores triés :", scores);
+      const scores = await response.json();
+      scores.sort((a, b) => b.score - a.score);
 
+      let currentPage = 0; // Page actuelle
+      const scoresPerPage = 6; // Nombre de scores par page
 
+      const renderScores = () => {
+        divTileMap.innerHTML = ''; // Réinitialiser la divTileMap à chaque changement de page
 
+        // Créer le tableau
+        const table = document.createElement('table');
+        table.style.width = '50%';
+        table.style.borderCollapse = 'collapse';
+        table.style.margin = '20px auto';
+        table.style.color = 'white';
+        table.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+        table.style.padding = '10px';
 
-      // Créer le tableau
-      const table = document.createElement('table');
-      table.style.width = '50%';
-      table.style.borderCollapse = 'collapse';
-      table.style.margin = '20px auto';
-      table.style.color = 'white';
-      table.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
-      table.style.padding = '10px';
+        // Créer l'en-tête du tableau
+        const headerRow = document.createElement('tr');
+        ['Rank', 'Nom', 'Score', 'Time'].forEach(headerText => {
+          const th = document.createElement('th');
+          th.textContent = headerText;
+          th.style.border = '1px solid white';
+          th.style.padding = '8px';
+          th.style.textAlign = 'center';
+          headerRow.appendChild(th);
+        });
+        table.appendChild(headerRow);
 
-      // Créer l'en-tête du tableau
-      const headerRow = document.createElement('tr');
-      ['Rank', 'Nom', 'Score', 'Time'].forEach(headerText => {
-        const th = document.createElement('th');
-        th.textContent = headerText;
-        th.style.border = '1px solid white';
-        th.style.padding = '8px';
-        th.style.textAlign = 'center';
-        headerRow.appendChild(th);
-      });
-      table.appendChild(headerRow);
-      let rank = 1
-      // Ajouter les scores au tableau
-      scores.forEach(scoreEntry => {
-        const row = document.createElement('tr');
+        // Afficher uniquement les scores de la page actuelle
+        const startIndex = currentPage * scoresPerPage;
+        const endIndex = Math.min(startIndex + scoresPerPage, scores.length);
 
-        // Colonne du rang
-        const rankCell = document.createElement('td');
-        let place = ""
-        if (rank === 1 ) {
-          place = "st"
-        } else if (rank === 2) {
-          place = "nd"
-        } else if (rank === 3) {
-          place = "rd"
-        } else {
-          place = "th"
+        let rank = startIndex + 1; // Ajuster le rang pour chaque page
+
+        for (let i = startIndex; i < endIndex; i++) {
+          const scoreEntry = scores[i];
+          const row = document.createElement('tr');
+
+          // Colonne du rang
+          const rankCell = document.createElement('td');
+          let place = ["st", "nd", "rd"][rank - 1] || "th"; // Gestion du suffixe
+          rankCell.textContent = `${rank}${place}`;
+          rankCell.style.border = '1px solid white';
+          rankCell.style.padding = '8px';
+          rankCell.style.textAlign = 'center';
+          row.appendChild(rankCell);
+
+          // Colonne du nom
+          const nameCell = document.createElement('td');
+          nameCell.textContent = scoreEntry.name;
+          nameCell.style.border = '1px solid white';
+          nameCell.style.padding = '8px';
+          nameCell.style.textAlign = 'center';
+          row.appendChild(nameCell);
+
+          // Colonne du score
+          const scoreCell = document.createElement('td');
+          scoreCell.textContent = scoreEntry.score;
+          scoreCell.style.border = '1px solid white';
+          scoreCell.style.padding = '8px';
+          scoreCell.style.textAlign = 'center';
+          row.appendChild(scoreCell);
+
+          // Colonne du temps
+          const timeCell = document.createElement('td');
+          timeCell.textContent = scoreEntry.time;
+          timeCell.style.border = '1px solid white';
+          timeCell.style.padding = '8px';
+          timeCell.style.textAlign = 'center';
+          row.appendChild(timeCell);
+
+          table.appendChild(row);
+          rank++;
         }
-        rankCell.textContent = `${rank}${place}`;
-        rankCell.style.border = '1px solid white';
-        rankCell.style.padding = '8px';
-        rankCell.style.textAlign = 'center';
-        row.appendChild(rankCell);
 
-        // Colonne du nom
-        const nameCell = document.createElement('td');
-        nameCell.textContent = scoreEntry.name;
-        nameCell.style.border = '1px solid white';
-        nameCell.style.padding = '8px';
-        nameCell.style.textAlign = 'center';
-        row.appendChild(nameCell);
+        // Conteneur du tableau et du bouton
+        const divTable = document.createElement("div");
+        divTable.style.position = "absolute";
+        divTable.style.top = "50%";
+        divTable.style.left = "50%";
+        divTable.style.transform = "translate(-50%, -50%)";
+        divTable.style.display = "flex";
+        divTable.style.flexDirection = "column";
+        divTable.style.alignItems = "center";
 
-        // Colonne du score
-        const scoreCell = document.createElement('td');
-        scoreCell.textContent = scoreEntry.score;
-        scoreCell.style.border = '1px solid white';
-        scoreCell.style.padding = '8px';
-        scoreCell.style.textAlign = 'center';
-        row.appendChild(scoreCell);
+        // Bouton Retour au Menu
+        const backButton = document.createElement('button');
+        backButton.textContent = 'Retour au Menu';
+        backButton.style.marginTop = '20px';
+        backButton.style.padding = '10px 20px';
+        backButton.style.backgroundColor = 'rgba(255, 255, 255, 0.8)';
+        backButton.style.border = 'none';
+        backButton.style.cursor = 'pointer';
+        backButton.style.fontSize = '16px';
+        backButton.style.color = 'black';
+        backButton.addEventListener('click', () => {
+          this.menu(); // Revenir au menu principal
+        });
 
-        // Colonne du temps
-        const timeCell = document.createElement('td');
-        timeCell.textContent = scoreEntry.time;
-        timeCell.style.border = '1px solid white';
-        timeCell.style.padding = '8px';
-        timeCell.style.textAlign = 'center';
-        row.appendChild(timeCell);
+        if (currentPage > 0) {
+          // Flèche précédente
+          const prevButton = document.createElement('button');
+          prevButton.textContent = '← Page Précédente';
+          prevButton.style.marginTop = '10px';
+          prevButton.style.padding = '10px 15px';
+          prevButton.style.cursor = 'pointer';
+          prevButton.disabled = currentPage === 0; // Désactiver si première page
+          prevButton.addEventListener('click', () => {
+            currentPage = Math.max(0, currentPage - 1);
+            renderScores();
+          });
+          divTable.appendChild(prevButton)
+        }
 
-        table.appendChild(row);
-        rank++
-      });
+        // Flèche suivante
+        const nextButton = document.createElement('button');
+        nextButton.textContent = 'Page Suivante →';
+        nextButton.style.marginTop = '10px';
+        nextButton.style.padding = '10px 15px';
+        nextButton.style.cursor = 'pointer';
+        nextButton.disabled = endIndex >= scores.length; // Désactiver si dernière page
+        nextButton.addEventListener('click', () => {
+          currentPage = Math.min(Math.ceil(scores.length / scoresPerPage) - 1, currentPage + 1);
+          renderScores();
+        });
 
-      // Bouton Retour au Menu
-      const backButton = document.createElement('button');
-      backButton.textContent = 'Retour au Menu';
-      backButton.style.marginTop = '20px';
-      backButton.style.padding = '10px 20px';
-      backButton.style.backgroundColor = 'rgba(255, 255, 255, 0.8)';
-      backButton.style.border = 'none';
-      backButton.style.cursor = 'pointer';
-      backButton.style.fontSize = '16px';
-      backButton.style.color = 'black';
-      backButton.addEventListener('click', () => {
-        this.menu(); // Revenir au menu principal
-      });
-      const divTable = document.createElement("div");
-      divTable.style.position = "absolute";  // Position absolue pour se baser sur la div parente
-      divTable.style.top = "50%";
-      divTable.style.left = "50%";
-      divTable.style.transform = "translate(-50%, -50%)";  // Décalage pour un centrage parfait
-      divTable.style.display = "flex";  // Optionnel pour organiser le contenu
-      divTable.style.flexDirection = "column";  // Mettre le tableau au-dessus du bouton
-      divTable.style.alignItems = "center";  // Centrer horizontalement
+        // Ajouter les éléments
+        divTable.appendChild(table);
 
-// Ajouter le tableau et le bouton au conteneur principal
-      divTable.appendChild(table);
-      divTable.appendChild(backButton);
-      divTileMap.appendChild(divTable);
+        divTable.appendChild(nextButton);
+        divTable.appendChild(backButton);
+        divTileMap.appendChild(divTable);
+      };
+
+      // Rendre la première page
+      renderScores();
+
     } catch (error) {
       console.error('Erreur lors du chargement des scores :', error);
     }
