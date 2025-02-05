@@ -62,11 +62,16 @@ export default class Game {
     divTileMap.innerHTML = ''; // Nettoyer le contenu existant
 
     try {
-      const response = await fetch("back/json_directory/scores.json");
-      const scores = await response.json();
+      const response = await fetch("http://localhost:8080/score", {
+        method: "GET"
+      });
 
-      // Trier les scores par ordre croissant de Rank
-      scores.sort((a, b) => a.rank - b.rank);
+        const scores = await response.json();
+        scores.sort((a, b) => b.score - a.score);
+        console.log("Scores triés :", scores);
+
+
+
 
       // Créer le tableau
       const table = document.createElement('table');
@@ -88,7 +93,7 @@ export default class Game {
         headerRow.appendChild(th);
       });
       table.appendChild(headerRow);
-
+      let rank = 1
       // Ajouter les scores au tableau
       scores.forEach(scoreEntry => {
         const row = document.createElement('tr');
@@ -96,16 +101,16 @@ export default class Game {
         // Colonne du rang
         const rankCell = document.createElement('td');
         let place = ""
-        if (scoreEntry.rank === 1 ) {
+        if (rank === 1 ) {
           place = "st"
-        } else if (scoreEntry.rank === 2) {
+        } else if (rank === 2) {
           place = "nd"
-        } else if (scoreEntry.rank === 3) {
+        } else if (rank === 3) {
           place = "rd"
         } else {
           place = "th"
         }
-        rankCell.textContent = `${scoreEntry.rank}${place}`;
+        rankCell.textContent = `${rank}${place}`;
         rankCell.style.border = '1px solid white';
         rankCell.style.padding = '8px';
         rankCell.style.textAlign = 'center';
@@ -136,6 +141,7 @@ export default class Game {
         row.appendChild(timeCell);
 
         table.appendChild(row);
+        rank++
       });
 
       // Bouton Retour au Menu

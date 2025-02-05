@@ -8,22 +8,42 @@ import (
 	"os"
 )
 
+// Structure des données
 type scoreToSend struct {
 	Name  string `json:"name"`
 	Score int    `json:"score"`
-	Time  int64  `json:"time"` // Temps en millisecondes
+	Time  string `json:"time"` // Temps en millisecondes
 }
 
 type scoreToGet struct {
 	Name  string `json:"name"`
 	Score int    `json:"score"`
-	Time  int64  `json:"time"`
+	Time  string `json:"time"`
 }
 
 var score []scoreToSend
 
+// Middleware pour gérer les en-têtes CORS
+func corsMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+		// Si la méthode est OPTIONS, on répond directement
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+
+		// Sinon, on passe au prochain handler
+		next.ServeHTTP(w, r)
+	})
+}
+
 func sendScore(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
+
 	err := json.NewEncoder(w).Encode(score)
 	if err != nil {
 		http.Error(w, "Unable to encode response", http.StatusInternalServerError)
@@ -49,11 +69,18 @@ func getScore(w http.ResponseWriter, r *http.Request) {
 	}
 	score = append(score, newEntry)
 
-	// Sauvegarder dans le fichier test.json
+	// Sauvegarder dans le fichier JSON
 	saveScoresToFile("./json_directory/scores.json")
 }
 
 func saveScoresToFile(filename string) {
+	// Charger les anciens scores s'ils existent
+	existingScores := loadScoresFromFile(filename)
+
+	// Ajouter les nouveaux scores à la liste existante
+	existingScores = append(existingScores, score...)
+
+	// Ouvrir le fichier en écriture (création ou remplacement)
 	file, err := os.Create(filename)
 	if err != nil {
 		fmt.Println("Error creating file:", err)
@@ -61,24 +88,49 @@ func saveScoresToFile(filename string) {
 	}
 	defer file.Close()
 
+	// Encoder et écrire les scores combinés
 	encoder := json.NewEncoder(file)
-	err = encoder.Encode(score)
+	err = encoder.Encode(existingScores)
 	if err != nil {
 		fmt.Println("Error encoding data to file:", err)
 	}
 }
 
+func loadScoresFromFile(filename string) []scoreToSend {
+	var existingScores []scoreToSend
+
+	// Ouvrir le fichier s'il existe
+	file, err := os.Open(filename)
+	if err != nil {
+		// Si le fichier n'existe pas, retourner une liste vide
+		fmt.Println("No existing scores found, starting fresh.")
+		return existingScores
+	}
+	defer file.Close()
+
+	// Décoder les scores depuis le fichier
+	decoder := json.NewDecoder(file)
+	err = decoder.Decode(&existingScores)
+	if err != nil {
+		fmt.Println("Error decoding scores from file:", err)
+	}
+
+	return existingScores
+}
 func main() {
 	// INITIALISE LE ROUTEUR
 	r := mux.NewRouter()
 
-	// ROUTES AND ENDPOINTS
+	// ROUTES ET ENDPOINTS
 	r.HandleFunc("/score", sendScore).Methods("GET")
 	r.HandleFunc("/score", getScore).Methods("POST")
 
+	// Ajouter le middleware CORS
+	http.Handle("/", corsMiddleware(r))
+
 	port := ":8080"
 	fmt.Println("Server running on port", port)
-	if err := http.ListenAndServe(port, r); err != nil {
+	if err := http.ListenAndServe(port, nil); err != nil {
 		fmt.Println("Error starting server:", err)
 	}
 }
