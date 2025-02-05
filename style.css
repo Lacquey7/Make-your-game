@@ -1,23 +1,30 @@
+@font-face {
+    font-family: 'MaPolicePerso';
+    src: url('./assets/font/retrogame.ttf') format('truetype'); /* Format moderne */
+    font-weight: normal;
+    font-style: normal;
+}
+
+
 html, body {
     height: 100%;
     margin: 0;
+    font-family: 'MaPolicePerso', sans-serif;
 }
 
 body {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #2e2e2e; /* Pour bien voir le contraste */
+    background-image: url("assets/img/background/wp1979062.webp"); /* Pour bien voir le contraste */
 }
 
 #tilemap {
     width: 832px;
     height: 704px;
     position: relative;
-    background-color: #1a1515;
     padding: 10px;
     border-radius: 10px;
-    border: 2px solid #fff;
 }
 
 .grid-container {
@@ -85,6 +92,45 @@ img.bonus {
     width: 20px;
     height: 20px;
     display: block;
+}
+
+button {
+    font-family: 'MaPolicePerso', sans-serif !important; /* Exemple police retro */
+    font-size: 18px;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 10px;
+    background-color: #f17308;
+    color: white;
+    cursor: pointer;
+    position: relative;
+    outline: none;
+    box-shadow: 0 4px #f59b06;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #d64013;
+}
+
+button:active {
+    box-shadow: none;
+    transform: translateY(4px);
+}
+
+/* Animation bounce */
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+/* Effet bounce au hover */
+button:hover {
+    animation: bounce 0.5s ease-in-out infinite;
 }
 
 /* Styles pour le conteneur du bouton pause */
