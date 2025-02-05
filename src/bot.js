@@ -63,7 +63,8 @@ export default class Bot {
         }
     }
 
-    moveAutonomously() {
+    moveAutonomously(isPaused) {
+        if (isPaused) return;
         let newX = this.x;
         let newY = this.y;
         this.isMoving = true;
