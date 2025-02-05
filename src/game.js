@@ -6,6 +6,10 @@ import { Bomb } from "./bomb.js";
 
 export default class Game {
   constructor() {
+    this.isPaused = false;
+    document.querySelector('body').__game = this;
+    this.init();
+    this.setupPauseButton();
     this.menu()
   }
 
@@ -92,8 +96,6 @@ export default class Game {
 
     this.totalBlockBreakable = this.countBlockBreakable();
     this.tileMap = new TileMap(this.map, this.Countbonus, this.bonus, this.totalBlockBreakable);
-
-    // Initialisation de la carte
     this.tileMap.draw();
 
     // Création des objets de jeu
@@ -113,12 +115,52 @@ export default class Game {
     this.startGameLoop();
   }
 
+  setupPauseButton() {
+    const uiContainer = document.createElement('div');
+    uiContainer.classList.add('pause-container');
+
+    const pauseButton = document.createElement('button');
+    pauseButton.textContent = 'Pause';
+    pauseButton.classList.add('pause-button');
+
+    pauseButton.addEventListener('click', () => {
+      this.togglePause();
+      pauseButton.textContent = this.isPaused ? 'Resume' : 'Pause';
+      pauseButton.classList.toggle('pause-button--paused', this.isPaused);
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        pauseButton.click();
+      }
+    });
+
+    uiContainer.appendChild(pauseButton);
+    document.body.appendChild(uiContainer);
+  }
+
+  togglePause() {
+    this.isPaused = !this.isPaused;
+
+    if (this.isPaused) {
+      const pauseMessage = document.createElement('div');
+      pauseMessage.id = 'pause-message';
+      pauseMessage.classList.add('pause-message');
+      pauseMessage.textContent = 'GAME PAUSED';
+      document.body.appendChild(pauseMessage);
+    } else {
+      const pauseMessage = document.getElementById('pause-message');
+      if (pauseMessage) {
+        pauseMessage.remove();
+      }
+    }
+  }
+
   setupEventListeners() {
     document.addEventListener('keydown', (e) => {
       if (this.keys.hasOwnProperty(e.code)) {
         this.keys[e.code] = true;
-        // Si la barre d'espace est pressée, déposer la bombe
-        if (e.code === "Space") {
+        if (e.code === "Space" && !this.isPaused) {
           this.dropBomb();
         }
       }
@@ -138,7 +180,8 @@ export default class Game {
   }
 
   dropBomb() {
-    // Définition des dimensions d'une cellule dans la grille
+    if (this.isPaused) return;
+
     const cellWidth = 64;
 
 
@@ -161,11 +204,10 @@ export default class Game {
 
   startGameLoop() {
     const gameLoop = () => {
-      this.player.move(this.keys);
-      this.bot.moveAutonomously();
+      this.player.move(this.keys, this.isPaused);
+      this.bot.moveAutonomously(this.isPaused);
 
-      // Vérification de collision
-      if (Collision.checkCollision(this.player, this.bot)) {
+      if (!this.isPaused && Collision.checkCollision(this.player, this.bot)) {
         console.log('Collision detected!');
       }
 
