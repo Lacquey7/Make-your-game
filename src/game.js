@@ -6,7 +6,70 @@ import { Bomb } from "./bomb.js";
 
 export default class Game {
   constructor() {
-    this.init();
+    this.menu()
+  }
+
+  menu() {
+    const divTileMap = document.querySelector('#tilemap');
+
+    // Créer le conteneur principal du menu
+    const menuContainer = document.createElement('div');
+    menuContainer.style.display = 'flex';
+    menuContainer.style.flexDirection = 'column';
+    menuContainer.style.justifyContent = 'center';
+    menuContainer.style.alignItems = 'center';
+    menuContainer.style.height = '100%';
+    menuContainer.style.backgroundImage = "url('assets/img/background/photo2pixel_download.png')"
+    menuContainer.style.backgroundSize = "100% 100%"
+    menuContainer.style.color = 'white';
+
+
+
+    // Bouton Start
+    const startButton = document.createElement('button');
+    startButton.textContent = 'START';
+
+
+    // Gérer l'événement du clic sur le bouton Start
+    startButton.addEventListener('click', () => {
+      this.startGame();
+      // Tu peux lancer le jeu ici (exemple : this.startGame())
+      menuContainer.style.display = 'none'; // Cacher le menu après le démarrage
+    });
+
+    // Zone d'affichage du score
+    const scoreDisplay = document.createElement('button');
+    scoreDisplay.style.marginTop = "20px"
+    scoreDisplay.textContent = 'SCORE';
+
+    scoreDisplay.addEventListener('click', () => {
+      this.score()
+    })
+
+
+    // Ajouter les éléments au conteneur
+
+    menuContainer.appendChild(startButton);
+    menuContainer.appendChild(scoreDisplay);
+
+    // Ajouter le menu dans l'élément tilemap
+    divTileMap.appendChild(menuContainer);
+  }
+
+  async score() {
+    const fetchScore = await fetch()
+    const data = fetchScore.json()
+  }
+
+  startGame() {
+    const divTileMap = document.querySelector('#tilemap')
+    const player = document.createElement("div")
+    player.id = "player"
+    const bot  = document.createElement("div")
+    bot.id = "bot"
+    divTileMap.appendChild(player)
+    divTileMap.appendChild(bot)
+    this.init()
   }
 
   init() {

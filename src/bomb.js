@@ -103,9 +103,9 @@ export class Bomb {
                     break;
                 }
 
-                setTimeout(() => {
+
                     this.createFlame(targetDiv);
-                }, i * 140);
+
             }
         }
     }
