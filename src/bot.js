@@ -1,3 +1,5 @@
+import Collision from './collision.js';
+
 export default class Bot {
     constructor() {
         this.element = document.getElementById('bot');
@@ -7,7 +9,7 @@ export default class Bot {
         this.mapWidth = 832;
         this.mapHeight = 704;
 
-        // Animation
+        // Animation properties
         this.frameX = 0;
         this.frameDelay = 10;
         this.frameCount = 0;
@@ -15,12 +17,11 @@ export default class Bot {
         this.isMoving = false;
         this.direction = 'down';
 
-        // Mouvement autonome
+        // Autonomous movement
         this.moveTimer = 0;
         this.moveDuration = 60;
         this.currentMove = this.getRandomDirection();
 
-        // Position initiale
         this.updatePosition();
     }
 
@@ -98,48 +99,44 @@ export default class Bot {
             this.frameX = (this.frameX + 1) % this.maxFrames;
         }
 
-        // Vérification des collisions horizontales
-        newX = this.checkCollisions(newX, this.y, this.element.offsetWidth, this.element.offsetHeight) ? this.x : newX;
+        const obstacles = document.querySelectorAll('.block-unbreakable, .border, .block-breakable');
+        const size = {
+            width: this.element.offsetWidth,
+            height: this.element.offsetHeight
+        };
 
-        // Vérification des collisions verticales
-        newY = this.checkCollisions(this.x, newY, this.element.offsetWidth, this.element.offsetHeight) ? this.y : newY;
+        // Check horizontal movement
+        const horizontalMove = {
+            x: newX,
+            y: this.y
+        };
 
-        // Appliquer les nouvelles positions si elles sont dans les limites de la carte
-        if (newX >= 0 && newX <= this.mapWidth - this.element.offsetWidth) {
+        if (!Collision.getCollisionWithObstacles(horizontalMove, size, obstacles)) {
             this.x = newX;
         }
-        if (newY >= 0 && newY <= this.mapHeight - this.element.offsetHeight) {
+
+        // Check vertical movement
+        const verticalMove = {
+            x: this.x,
+            y: newY
+        };
+
+        if (!Collision.getCollisionWithObstacles(verticalMove, size, obstacles)) {
             this.y = newY;
         }
 
+        // Apply map boundaries
+        const mapSize = { width: this.mapWidth, height: this.mapHeight };
+        const boundedPosition = Collision.checkMapBoundaries(
+            { x: this.x, y: this.y },
+            size,
+            mapSize
+        );
+
+        this.x = boundedPosition.x;
+        this.y = boundedPosition.y;
+
         this.updatePosition();
         this.updateSprite();
-    }
-
-    checkCollisions(newX, newY, width, height) {
-        const obstacles = document.querySelectorAll('.block-unbreakable, .border, .block-breakable');
-        const botRect = { x: newX, y: newY, width: width, height: height };
-
-        for (const obstacle of obstacles) {
-            const obstacleRect = {
-                x: obstacle.offsetLeft,
-                y: obstacle.offsetTop,
-                width: obstacle.offsetWidth,
-                height: obstacle.offsetHeight,
-            };
-            if (this.isColliding(botRect, obstacleRect)) {
-                return true; // Collision détectée
-            }
-        }
-        return false; // Pas de collision
-    }
-
-    isColliding(rect1, rect2) {
-        return !(
-            rect1.x + rect1.width <= rect2.x ||
-            rect1.x >= rect2.x + rect2.width ||
-            rect1.y + rect1.height <= rect2.y ||
-            rect1.y >= rect2.y + rect2.height
-        );
     }
 }
