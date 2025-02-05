@@ -221,11 +221,15 @@ export default class Game {
 
     this.totalBlockBreakable = this.countBlockBreakable();
     this.tileMap = new TileMap(this.map, this.Countbonus, this.bonus, this.totalBlockBreakable);
+
+    // Initialisation de la carte
     this.tileMap.draw();
 
+    // Création des objets de jeu
     this.player = new Player();
     this.bot = new Bot();
 
+    // Gestion des touches (on ajoute ici la touche "Space" pour déposer la bombe)
     this.keys = {
       ArrowUp: false,
       ArrowDown: false,
