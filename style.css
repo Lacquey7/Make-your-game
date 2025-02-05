@@ -87,13 +87,27 @@ body {
   height: 40px;
   display: block;
   border-radius: 2px;
+  background-color: red; /* Juste pour mieux voir l'élément */
+  animation: bounce 1s infinite;
 }
-/* img.bonus {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 20px;
-  height: 20px;
-  display: block;
-} */
+
+@keyframes bounce {
+  0% {
+    transform: translate(-50%, -50%) translateY(0);
+  }
+  20% {
+    transform: translate(-50%, -50%) translateY(-10px);
+  }
+  40% {
+    transform: translate(-50%, -50%) translateY(0);
+  }
+  60% {
+    transform: translate(-50%, -50%) translateY(-5px);
+  }
+  80% {
+    transform: translate(-50%, -50%) translateY(0);
+  }
+  100% {
+    transform: translate(-50%, -50%) translateY(-2px);
+  }
+}
