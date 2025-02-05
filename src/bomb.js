@@ -213,6 +213,7 @@ export class Bomb {
 
     removePlayerLife() {
         console.log("Vie du joueur -1");
+
         // playerLives--; ou gestion spécifique de la vie
     }
 
