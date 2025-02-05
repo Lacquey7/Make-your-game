@@ -157,10 +157,19 @@ export default class Game {
       backButton.addEventListener('click', () => {
         this.menu(); // Revenir au menu principal
       });
+      const divTable = document.createElement("div");
+      divTable.style.position = "absolute";  // Position absolue pour se baser sur la div parente
+      divTable.style.top = "50%";
+      divTable.style.left = "50%";
+      divTable.style.transform = "translate(-50%, -50%)";  // Décalage pour un centrage parfait
+      divTable.style.display = "flex";  // Optionnel pour organiser le contenu
+      divTable.style.flexDirection = "column";  // Mettre le tableau au-dessus du bouton
+      divTable.style.alignItems = "center";  // Centrer horizontalement
 
-      // Ajouter le tableau et le bouton au conteneur principal
-      divTileMap.appendChild(table);
-      divTileMap.appendChild(backButton);
+// Ajouter le tableau et le bouton au conteneur principal
+      divTable.appendChild(table);
+      divTable.appendChild(backButton);
+      divTileMap.appendChild(divTable);
     } catch (error) {
       console.error('Erreur lors du chargement des scores :', error);
     }

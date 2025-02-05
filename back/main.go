@@ -74,12 +74,6 @@ func getScore(w http.ResponseWriter, r *http.Request) {
 }
 
 func saveScoresToFile(filename string) {
-	// Charger les anciens scores s'ils existent
-	existingScores := loadScoresFromFile(filename)
-
-	// Ajouter les nouveaux scores à la liste existante
-	existingScores = append(existingScores, score...)
-
 	// Ouvrir le fichier en écriture (création ou remplacement)
 	file, err := os.Create(filename)
 	if err != nil {
@@ -88,9 +82,9 @@ func saveScoresToFile(filename string) {
 	}
 	defer file.Close()
 
-	// Encoder et écrire les scores combinés
+	// Encoder et écrire les scores
 	encoder := json.NewEncoder(file)
-	err = encoder.Encode(existingScores)
+	err = encoder.Encode(score)
 	if err != nil {
 		fmt.Println("Error encoding data to file:", err)
 	}
@@ -117,7 +111,11 @@ func loadScoresFromFile(filename string) []scoreToSend {
 
 	return existingScores
 }
+
 func main() {
+	// Charger les scores existants dans la variable globale "score"
+	score = loadScoresFromFile("./json_directory/scores.json")
+
 	// INITIALISE LE ROUTEUR
 	r := mux.NewRouter()
 
