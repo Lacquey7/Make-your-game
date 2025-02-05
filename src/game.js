@@ -8,21 +8,44 @@ export default class Game {
   constructor() {
     this.isPaused = false;
     document.querySelector('body').__game = this;
-    // Ne pas initialiser le jeu ici, juste le menu
+    this.keyDownHandler = this.handleKeyDown.bind(this);
+    this.keyUpHandler = this.handleKeyUp.bind(this);
+    this.pauseHandler = this.handlePause.bind(this);
+    this.gameLoopId = null;
     this.menu();
+  }
+
+  handleKeyDown(e) {
+    if (this.keys?.hasOwnProperty(e.code)) {
+      this.keys[e.code] = true;
+      if (e.code === "Space" && !this.isPaused) {
+        this.dropBomb();
+      }
+    }
+  }
+
+  handleKeyUp(e) {
+    if (this.keys?.hasOwnProperty(e.code)) {
+      this.keys[e.code] = false;
+    }
+  }
+
+  handlePause(e) {
+    if (e.key === 'Escape') {
+      this.togglePause();
+    }
   }
 
   menu() {
     const divTileMap = document.querySelector('#tilemap');
-    divTileMap.innerHTML = ''; // Nettoyer le contenu existant
+    divTileMap.innerHTML = '';
 
-    // Supprimer le bouton pause s'il existe
-    const pauseContainer = document.querySelector('.pause-container');
-    if (pauseContainer) {
-      pauseContainer.remove();
+    // Supprimer l'overlay de pause s'il existe
+    const pauseOverlay = document.querySelector('.pause-overlay');
+    if (pauseOverlay) {
+      pauseOverlay.remove();
     }
 
-    // Créer le conteneur principal du menu
     const menuContainer = document.createElement('div');
     menuContainer.style.display = 'flex';
     menuContainer.style.flexDirection = 'column';
@@ -33,15 +56,13 @@ export default class Game {
     menuContainer.style.backgroundSize = "100% 100%";
     menuContainer.style.color = 'white';
 
-    // Bouton Start
     const startButton = document.createElement('button');
     startButton.textContent = 'START';
     startButton.addEventListener('click', () => {
       this.startGame();
-      menuContainer.remove(); // Utiliser remove() au lieu de display none
+      menuContainer.remove();
     });
 
-    // Zone d'affichage du score
     const scoreDisplay = document.createElement('button');
     scoreDisplay.style.marginTop = "20px";
     scoreDisplay.textContent = 'SCORE';
@@ -55,8 +76,10 @@ export default class Game {
   }
 
   startGame() {
+    this.removeEventListeners();
+
     const divTileMap = document.querySelector('#tilemap');
-    divTileMap.innerHTML = ''; // Nettoyer le contenu existant
+    divTileMap.innerHTML = '';
 
     const player = document.createElement("div");
     player.id = "player";
@@ -65,8 +88,8 @@ export default class Game {
     divTileMap.appendChild(player);
     divTileMap.appendChild(bot);
 
-    this.setupPauseButton(); // Ajouter le bouton pause uniquement au démarrage du jeu
-    this.initGame(); // Renommer init() en initGame() pour plus de clarté
+    this.initGame();
+    document.addEventListener('keydown', this.pauseHandler);
   }
 
   initGame() {
@@ -106,67 +129,95 @@ export default class Game {
     this.startGameLoop();
   }
 
-  setupPauseButton() {
-    const existingContainer = document.querySelector('.pause-container');
-    if (existingContainer) {
-      existingContainer.remove();
+  removeEventListeners() {
+    document.removeEventListener('keydown', this.keyDownHandler);
+    document.removeEventListener('keyup', this.keyUpHandler);
+    document.removeEventListener('keydown', this.pauseHandler);
+    if (this.gameLoopId) {
+      cancelAnimationFrame(this.gameLoopId);
+      this.gameLoopId = null;
     }
+  }
 
-    const uiContainer = document.createElement('div');
-    uiContainer.classList.add('pause-container');
-
-    const pauseButton = document.createElement('button');
-    pauseButton.textContent = 'Pause';
-    pauseButton.classList.add('pause-button');
-
-    pauseButton.addEventListener('click', () => {
-      this.togglePause();
-      pauseButton.textContent = this.isPaused ? 'Resume' : 'Pause';
-      pauseButton.classList.toggle('pause-button--paused', this.isPaused);
-    });
-
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        pauseButton.click();
-      }
-    });
-
-    uiContainer.appendChild(pauseButton);
-    document.body.appendChild(uiContainer);
+  setupEventListeners() {
+    document.addEventListener('keydown', this.keyDownHandler);
+    document.addEventListener('keyup', this.keyUpHandler);
   }
 
   togglePause() {
     this.isPaused = !this.isPaused;
 
+    let pauseOverlay = document.querySelector('.pause-overlay');
+    if (!pauseOverlay) {
+      pauseOverlay = document.createElement('div');
+      pauseOverlay.className = 'pause-overlay';
+
+      const pauseMenu = document.createElement('div');
+      pauseMenu.className = 'pause-menu';
+
+      const title = document.createElement('h2');
+      title.className = 'pause-title';
+      title.textContent = 'PAUSE';
+
+      const resumeButton = document.createElement('button');
+      resumeButton.textContent = 'Resume';
+      resumeButton.addEventListener('click', () => this.togglePause());
+
+      const restartButton = document.createElement('button');
+      restartButton.textContent = 'Restart Game';
+      restartButton.addEventListener('click', () => {
+        this.togglePause();
+        this.restartGame();
+      });
+
+      const menuButton = document.createElement('button');
+      menuButton.textContent = 'Main Menu';
+      menuButton.addEventListener('click', () => {
+        this.togglePause();
+        this.returnToMainMenu();
+      });
+
+      pauseMenu.appendChild(title);
+      pauseMenu.appendChild(resumeButton);
+      pauseMenu.appendChild(restartButton);
+      pauseMenu.appendChild(menuButton);
+      pauseOverlay.appendChild(pauseMenu);
+      document.body.appendChild(pauseOverlay);
+    }
+
     if (this.isPaused) {
-      const pauseMessage = document.createElement('div');
-      pauseMessage.id = 'pause-message';
-      pauseMessage.classList.add('pause-message');
-      pauseMessage.textContent = 'GAME PAUSED';
-      document.body.appendChild(pauseMessage);
+      pauseOverlay.style.display = 'flex';
+      setTimeout(() => {
+        pauseOverlay.classList.add('visible');
+      }, 10);
     } else {
-      const pauseMessage = document.getElementById('pause-message');
-      if (pauseMessage) {
-        pauseMessage.remove();
-      }
+      pauseOverlay.classList.remove('visible');
+      setTimeout(() => {
+        pauseOverlay.style.display = 'none';
+      }, 300);
     }
   }
 
-  setupEventListeners() {
-    document.addEventListener('keydown', (e) => {
-      if (this.keys.hasOwnProperty(e.code)) {
-        this.keys[e.code] = true;
-        if (e.code === "Space" && !this.isPaused) {
-          this.dropBomb();
-        }
-      }
-    });
+  restartGame() {
+    this.removeEventListeners();
+    const divTileMap = document.querySelector('#tilemap');
+    divTileMap.innerHTML = '';
+    this.isPaused = false;
+    this.startGame();
+  }
 
-    document.addEventListener('keyup', (e) => {
-      if (this.keys.hasOwnProperty(e.code)) {
-        this.keys[e.code] = false;
-      }
-    });
+  returnToMainMenu() {
+    this.removeEventListeners();
+    this.isPaused = false;
+    const divTileMap = document.querySelector('#tilemap');
+    divTileMap.innerHTML = '';
+
+    const pauseOverlay = document.querySelector('.pause-overlay');
+    if (pauseOverlay) {
+      pauseOverlay.remove();
+    }
+
+    this.menu();
   }
 
   countBlockBreakable() {
@@ -179,42 +230,33 @@ export default class Game {
     if (this.isPaused) return;
 
     const cellWidth = 64;
-
-
-    // Calcul de la colonne et de la ligne en fonction de la position du joueur
-    // On suppose que this.player.x et this.player.y indiquent la position en pixels du joueur.
     const col = Math.floor(this.player.x / cellWidth);
     const row = Math.floor(this.player.y / cellWidth);
-
-    // Calcul de la position centrale de la cellule
     const bombX = col * cellWidth + cellWidth / 2;
     const bombY = row * cellWidth + cellWidth / 2;
-
-    // Par exemple, la longueur de la flamme (rayon d'explosion) est de 2 cases.
     const flameLength = this.player.flame;
 
-    // Création de la bombe en lui passant sa position et la longueur de l'explosion
     const bomb = new Bomb(bombX, bombY, flameLength);
     bomb.dropBomb();
   }
 
   startGameLoop() {
     const gameLoop = () => {
-      this.player.move(this.keys, this.isPaused);
-      this.bot.moveAutonomously(this.isPaused);
+      if (this.player && this.bot) {
+        this.player.move(this.keys, this.isPaused);
+        this.bot.moveAutonomously(this.isPaused);
 
-      if (!this.isPaused && Collision.checkCollision(this.player, this.bot)) {
-        console.log('Collision detected!');
+        if (!this.isPaused && Collision.checkCollision(this.player, this.bot)) {
+          console.log('Collision detected!');
+        }
       }
-
-      requestAnimationFrame(gameLoop);
+      this.gameLoopId = requestAnimationFrame(gameLoop);
     };
 
-    gameLoop();
+    this.gameLoopId = requestAnimationFrame(gameLoop);
   }
 }
 
-// Lancement du jeu lorsque le DOM est chargé
 document.addEventListener('DOMContentLoaded', () => {
   new Game();
 });

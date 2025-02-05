@@ -142,6 +142,15 @@ button:hover {
     z-index: 1000;
 }
 
+/* Styles pour le conteneur du bouton pause */
+.pause-container {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+}
+
 /* Styles pour le bouton pause */
 .pause-button {
     padding: 10px 20px;
@@ -188,13 +197,14 @@ button:hover {
     background-color: rgba(0, 0, 0, 0.7);
     z-index: 999;
     display: none;
+    /* Ajout de ces propriétés pour centrer le contenu */
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .pause-menu {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    /* Supprimer position: fixed pour utiliser le flex du parent */
     background-color: rgba(0, 0, 0, 0.9);
     padding: 2rem;
     border-radius: 10px;
@@ -214,4 +224,15 @@ button:hover {
     text-align: center;
     font-size: 2rem;
     margin-bottom: 1rem;
+    font-family: 'MaPolicePerso', sans-serif; /* Utiliser la même police que les boutons */
+}
+
+/* Ajout d'un effet de transition */
+.pause-overlay {
+    transition: opacity 0.3s ease;
+    opacity: 0;
+}
+
+.pause-overlay.visible {
+    opacity: 1;
 }
