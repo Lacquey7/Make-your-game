@@ -6,3 +6,7 @@ type scoreHandleJSON struct {
 	Score int    `json:"score"`
 	Time  int64  `json:"time"` // Temps en millisecondes
 }
+
+func main() {
+
+}

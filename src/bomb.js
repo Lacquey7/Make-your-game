@@ -1,11 +1,13 @@
 export class Bomb {
-    constructor(x, y, flameLength) {
+    constructor(x, y, flameLength, player, bot) {
         this.x = x;
         this.y = y;
         this.bombElement = null;
         this.flameLength = flameLength;
         this.tileSize = 64;
         this.game = document.querySelector('body').__game; // Accès à l'instance du jeu
+        this.player = player
+        this.bot = bot
     }
 
     dropBomb() {
@@ -157,6 +159,7 @@ export class Bomb {
         return false;
     }
 
+
     destroyBlock(targetDiv) {
         targetDiv.classList.remove('block-breakable');
         targetDiv.classList.add('herbe');
@@ -249,11 +252,15 @@ export class Bomb {
     }
 
     removePlayerLife() {
-        console.log("Vie du joueur -1");
+        if (this.player) {
+            this.player.decreaseLife();
+        }
     }
 
     removeBotLife() {
-        console.log("Vie du bot -1");
+        if(this.bot) {
+            this.bot.decreaseLife()
+        }
     }
 
     checkAndRemoveContainer(container) {
@@ -284,4 +291,8 @@ export class Bomb {
 
         return document.querySelector(`.grid-container > div:nth-child(${index})`);
     }
+
+
+
+
 }

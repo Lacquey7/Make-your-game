@@ -5,7 +5,8 @@ export default class Player {
     this.element = document.getElementById('player');
     this.x = 80;
     this.y = 70;
-    this.speed = 5;
+    this.life = 4;
+    this.speed = 6;
     this.flame = 3;
 
     // Animation properties
@@ -21,6 +22,11 @@ export default class Player {
     this.mapHeight = 704;
 
     this.updatePosition();
+  }
+
+  decreaseLife() {
+    this.life--;
+    console.log(`Vie du joueur : ${this.life}`);
   }
 
   updatePosition() {
