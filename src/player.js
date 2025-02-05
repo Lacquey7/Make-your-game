@@ -4,7 +4,7 @@ export default class Player {
   constructor() {
     this.element = document.getElementById('player');
     this.x = 80;
-    this.y = 65;
+    this.y = 70;
     this.speed = 5;
     this.flame = 3;
 
