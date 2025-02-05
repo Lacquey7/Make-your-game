@@ -1,5 +1,7 @@
 import Collision from './collision.js';
 
+import Bonus from './powerUp.js';
+
 export default class Player {
   constructor() {
     this.element = document.getElementById('player');
@@ -9,7 +11,7 @@ export default class Player {
     this.speed = 6;
     this.flame = 3;
 
-    // Animation properties
+    // Animation
     this.frameX = 0;
     this.frameDelay = 10;
     this.frameCount = 0;
@@ -17,10 +19,11 @@ export default class Player {
     this.isMoving = false;
     this.direction = 'down';
 
-    // Map boundaries
-    this.mapWidth = 832;
-    this.mapHeight = 704;
+    // Définir des limites pour la carte (adapter ces valeurs selon votre layout)
+    this.mapWidth = 832; // exemple
+    this.mapHeight = 704; // exemple
 
+    // Position initiale
     this.updatePosition();
   }
 
@@ -36,8 +39,10 @@ export default class Player {
 
   updateSprite() {
     if (!this.isMoving) {
+      // Position statique (image par défaut)
       this.element.style.backgroundPosition = '0px 0';
     } else {
+      // Position selon la direction
       let sourceY;
       switch (this.direction) {
         case 'down': sourceY = 0; break;
@@ -46,6 +51,7 @@ export default class Player {
         case 'up': sourceY = -50; break;
         default: sourceY = 0;
       }
+
       this.element.style.backgroundPosition = `${-this.frameX * 56}px ${sourceY}px`;
     }
   }
@@ -56,7 +62,7 @@ export default class Player {
     let newY = this.y;
     this.isMoving = false;
 
-    // Calculate movement based on keys
+    // Calcul du déplacement selon les touches pressées
     if (keys.ArrowLeft) {
       newX -= this.speed;
       this.direction = 'left';
@@ -78,7 +84,7 @@ export default class Player {
       this.isMoving = true;
     }
 
-    // Handle animation
+    // Gestion de l'animation
     if (this.isMoving) {
       this.frameCount++;
       if (this.frameCount >= this.frameDelay) {
@@ -126,6 +132,11 @@ export default class Player {
     this.x = boundedPosition.x;
     this.y = boundedPosition.y;
 
+    //   //bonus
+    const playerRect = document.getElementById('player');
+    const bonusPlayer = new Bonus(playerRect);
+
+    bonusPlayer.checkCollisions();
     this.updatePosition();
     this.updateSprite();
   }
