@@ -9,7 +9,7 @@ export default class Player {
     this.y = 70;
     this.life = 4;
     this.speed = 6;
-    this.flame = 3;
+    this.flame = 1;
 
     // Animation
     this.frameX = 0;
@@ -45,11 +45,20 @@ export default class Player {
       // Position selon la direction
       let sourceY;
       switch (this.direction) {
-        case 'down': sourceY = 0; break;
-        case 'right': sourceY = -250; break;
-        case 'left': sourceY = -100; break;
-        case 'up': sourceY = -50; break;
-        default: sourceY = 0;
+        case 'down':
+          sourceY = 0;
+          break;
+        case 'right':
+          sourceY = -250;
+          break;
+        case 'left':
+          sourceY = -100;
+          break;
+        case 'up':
+          sourceY = -50;
+          break;
+        default:
+          sourceY = 0;
       }
 
       this.element.style.backgroundPosition = `${-this.frameX * 56}px ${sourceY}px`;
@@ -98,13 +107,13 @@ export default class Player {
     const obstacles = document.querySelectorAll('.block-unbreakable, .border, .block-breakable');
     const size = {
       width: this.element.offsetWidth,
-      height: this.element.offsetHeight
+      height: this.element.offsetHeight,
     };
 
     // Check horizontal movement
     const horizontalMove = {
       x: newX,
-      y: this.y
+      y: this.y,
     };
 
     if (!Collision.getCollisionWithObstacles(horizontalMove, size, obstacles, 7)) {
@@ -114,7 +123,7 @@ export default class Player {
     // Check vertical movement
     const verticalMove = {
       x: this.x,
-      y: newY
+      y: newY,
     };
 
     if (!Collision.getCollisionWithObstacles(verticalMove, size, obstacles, 7)) {
@@ -123,18 +132,14 @@ export default class Player {
 
     // Apply map boundaries
     const mapSize = { width: this.mapWidth, height: this.mapHeight };
-    const boundedPosition = Collision.checkMapBoundaries(
-        { x: this.x, y: this.y },
-        size,
-        mapSize
-    );
+    const boundedPosition = Collision.checkMapBoundaries({ x: this.x, y: this.y }, size, mapSize);
 
     this.x = boundedPosition.x;
     this.y = boundedPosition.y;
 
     //   //bonus
     const playerRect = document.getElementById('player');
-    const bonusPlayer = new Bonus(playerRect);
+    const bonusPlayer = new Bonus(playerRect, this);
 
     bonusPlayer.checkCollisions();
     this.updatePosition();
