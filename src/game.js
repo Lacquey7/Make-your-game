@@ -218,6 +218,24 @@ export default class Game {
     }
 
     body.appendChild(heartBody);
+
+    //ajout des cles
+    // const keyBody = document.createElement('div');
+    // keyBody.className = 'key-body';
+    // keyBody.style.display = 'flex';
+
+    // for (let i = 1; i <= this.cles; i++) {
+    //   const keyDiv = document.createElement('div');
+    //   keyDiv.className = `key-${i}`;
+    //   keyDiv.style.width = '64px';
+    //   keyDiv.style.height = '64px';
+    //   keyDiv.style.backgroundImage = 'url("assets/img/background/key.png")';
+    //   keyDiv.style.backgroundSize = 'cover';
+
+    //   keyBody.appendChild(keyDiv);
+    // }
+    // body.appendChild(keyBody);
+
     document.addEventListener('keydown', this.pauseHandler);
   }
 
@@ -225,6 +243,7 @@ export default class Game {
     // Map configuration
     this.Countbonus = 6;
     this.bonus = ['Bonus1', 'Bonus2', 'Bonus3'];
+    this.cles = 3;
     this.map = [
       [1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1],
       [1, 4, 4, 5, 4, 5, 4, 5, 4, 5, 4, 4, 1],
