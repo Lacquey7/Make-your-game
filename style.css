@@ -98,19 +98,40 @@ body {
 
 .bonus {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 40px;
-  height: 40px;
-  border-radius: 2px;
-  background-color: red;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  animation: floating 2s ease-in-out infinite;
+  top: 22px;
+  left: 16px;
+  width: 32px;
+  height: 32px;
+  display: block;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  animation: bounce 1s infinite;
 }
 
+.key {
+  position: absolute;
+  top: 22px;
+  left: 16px;
+  width: 32px;
+  height: 32px;
+  display: block;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  animation: bounce 1s infinite;
+}
+.porte {
+  position: absolute;
+  top: 22px;
+  left: 16px;
+  width: 32px;
+  height: 32px;
+  display: block;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
 button {
   font-family: 'MaPolicePerso', sans-serif !important; /* Exemple police retro */
   font-size: 18px;
@@ -253,26 +274,4 @@ button:hover {
 
 .pause-overlay.visible {
   opacity: 1;
-}
-
-.heart-body {
-  display: flex;
-  gap: 10px;
-  justify-content: flex-start; /* Aligne les cœurs à gauche */
-  position: absolute;
-  top: 4%;
-  left: 25%; /* Fixe le point d'ancrage à gauche */
-  transform: translateX(0); /* Pas besoin de centrer */
-  z-index: 1000;
-}
-
-.key-body {
-  display: flex;
-  gap: 10px;
-  justify-content: flex-end;
-  position: absolute;
-  top: 4%;
-  right: 25%;
-  transform: translateX(0);
-  z-index: 1000;
 }

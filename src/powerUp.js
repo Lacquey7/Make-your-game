@@ -4,7 +4,8 @@ export default class Bonus {
     this.player = player; // Référence à l'élément du joueur
     this.playerInstance = document.querySelector('body').__game.player; // Instance du joueur
     this.hud = document.querySelector('body').__game.HUD; // Instance du HUD
-    this.bonuses = document.querySelectorAll('.bonus');
+    this.bonuses = document.querySelectorAll('.bonus, .key');
+    this.key = document.querySelectorAll('.key');
   }
 
   checkCollisions() {

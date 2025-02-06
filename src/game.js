@@ -268,6 +268,7 @@ export default class Game {
     this.Countbonus = 6;
     this.bonus = ['Bonus1', 'Bonus2', 'Bonus3'];
     this.key = this.level;
+    this.cle = 1;
     this.map = [
       [1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1],
       [1, 4, 4, 5, 4, 5, 4, 5, 4, 5, 4, 4, 1],
@@ -283,14 +284,13 @@ export default class Game {
     ];
 
     this.totalBlockBreakable = this.countBlockBreakable();
-    this.tileMap = new TileMap(this.map, this.Countbonus, this.bonus, this.totalBlockBreakable, this.key);
+    this.tileMap = new TileMap(this.map, this.Countbonus, this.bonus, this.totalBlockBreakable, this.cle);
 
     // Initialisation de la carte
     this.tileMap.draw();
 
     this.player = new Player(this.key, this.level);
     this.bot = new Bot();
-    this.heart = new Heart(this.player);
 
     this.keys = {
       ArrowUp: false,
@@ -436,7 +436,6 @@ export default class Game {
 
         if (!this.isPaused && Collision.checkCollision(this.player, this.bot)) {
           console.log('Collision detected!');
-          this.heart.removeHeart();
           this.player.decreaseLife();
         }
       }

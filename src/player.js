@@ -8,7 +8,7 @@ export default class Player {
     this.x = 80;
     this.y = 70;
     this.life = 4;
-    this.speed = 6;
+    this.speed = 3;
     this.flame = 1;
     this.flame = 3;
     this.name = '';
