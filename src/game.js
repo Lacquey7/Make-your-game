@@ -415,7 +415,7 @@ export default class Game {
     const flameLength = this.player.flame;
 
     // Création de la bombe en lui passant sa position et la longueur de l'explosion
-    const bomb = new Bomb(bombX, bombY, flameLength, this.player, this.bot);
+    const bomb = new Bomb(bombX, bombY, flameLength, this.player, this.bot, this.HUD);
     bomb.dropBomb();
   }
 
