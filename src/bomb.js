@@ -1,5 +1,4 @@
 import Bonus from './powerUp.js';
-import { Heart } from './powerUp.js';
 
 export class Bomb {
   constructor(x, y, flameLength, player, bot) {
@@ -11,7 +10,6 @@ export class Bomb {
     this.game = document.querySelector('body').__game; // Accès à l'instance du jeu
     this.player = player;
     this.bot = bot;
-    this.Heart = new Heart(this.player);
   }
 
   dropBomb() {
@@ -251,7 +249,6 @@ export class Bomb {
 
   removePlayerLife() {
     if (this.player) {
-      this.Heart.removeHeart();
       this.player.decreaseLife();
     }
   }

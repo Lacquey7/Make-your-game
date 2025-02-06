@@ -14,13 +14,14 @@ export default class TileMap {
     this.imageBonus2 = this.#image('power.png');
     this.imageBonus3 = this.#image('heart.png');
     this.imageKey = this.#image('keyOrigin.png');
+    this.imagePorte = this.#image('porte2.png');
 
     this.tilesInitialized = false;
     this.randomBlockGetBonus = this.randomBlockGetBonus();
     this.randomBlockGetKey = this.randomBlockGetKey(this.randomBlockGetBonus);
-    console.log(this.cleCurrent, this.randomBlockGetKey);
 
     this.currentBlock = 0;
+    this.currentHerbe = 0;
   }
 
   #image(filename) {
@@ -63,9 +64,24 @@ export default class TileMap {
             tileDiv.style.backgroundImage = `url(${image.src})`;
             break;
           case 4:
-            tileDiv.classList.add('herbe');
-            image = this.imageHerbe;
-            tileDiv.style.backgroundImage = `url(${image.src})`;
+            this.currentHerbe++;
+            if (this.currentHerbe === 54) {
+              tileDiv.classList.add('herbe');
+              image = this.imageHerbe;
+              tileDiv.style.backgroundImage = `url(${image.src})`;
+              image = this.imagePorte;
+              const porteDiv = document.createElement('div');
+              porteDiv.classList.add('porte');
+              tileDiv.style.position = 'relative';
+              porteDiv.style.backgroundImage = `url(${image.src})`;
+              porteDiv.style.transform = 'translateY(-54px)';
+
+              tileDiv.appendChild(porteDiv);
+            } else {
+              tileDiv.classList.add('herbe');
+              image = this.imageHerbe;
+              tileDiv.style.backgroundImage = `url(${image.src})`;
+            }
             break;
           case 5:
             tileDiv.classList.add('block-breakable');
@@ -123,21 +139,20 @@ export default class TileMap {
   randomBlockGetKey(tabBonus) {
     let tab = [];
     let r;
-    for (let i = 0; i < this.cleCurrent.length; i++) {
-      do {
-        r = Math.floor(Math.random() * this.totalBlockBreakable) + 1;
-      } while (tabBonus.includes(r) || tab.includes(r));
-      tab.push(r);
-    }
+    do {
+      r = Math.floor(Math.random() * this.totalBlockBreakable) + 1;
+    } while (tabBonus.includes(r) || tab.includes(r));
+    tab.push(r);
     return tab;
   }
 
   #addRandomKey(tileDiv) {
+    let image = this.imageKey;
     const keyImage = document.createElement('div');
-    keyImage.style.backgroundImage = `url(${this.imageKey.src})`;
-    keyImage.classList.add(`key key${this.cleCurrent}`);
-    keyImage.style.backgroundSize = 'cover';
-    keyImage.style.backgroundPosition = 'center';
+    keyImage.style.backgroundImage = `url(${image.src})`;
+    keyImage.classList.add('key', `key${this.cleCurrent}`);
+    tileDiv.style.position = 'relative';
+
     keyImage.style.display = 'none';
     tileDiv.appendChild(keyImage);
   }
@@ -176,9 +191,13 @@ export default class TileMap {
     tileDiv.classList.add('herbe');
     const bonusImage = tileDiv.querySelector('.bonus');
     const keyImage = tileDiv.querySelector('.key');
-    if (bonusImage || keyImage) {
+    console.log(bonusImage, keyImage);
+    if (bonusImage) {
       tileDiv.classList.remove('block-breakable');
       bonusImage.style.display = 'block';
+    } else if (keyImage) {
+      tileDiv.classList.remove('block-breakable');
+      keyImage.style.display = 'block';
     }
   }
 }
