@@ -3,15 +3,20 @@ import Collision from './collision.js';
 import Bonus from './powerUp.js';
 
 export default class Player {
-  constructor() {
+  constructor(key, level, startGame) {
     this.element = document.getElementById('player');
     this.x = 80;
     this.y = 70;
     this.life = 4;
     this.speed = 6;
     this.flame = 1;
+    this.flame = 3;
+    this.name = '';
+    this.getKey = 0;
+    this.totalKey = key;
+    this.level = level;
 
-    // Animation
+    // Animation properties
     this.frameX = 0;
     this.frameDelay = 10;
     this.frameCount = 0;
@@ -27,9 +32,20 @@ export default class Player {
     this.updatePosition();
   }
 
+  addKey() {
+    this.getKey++;
+    if (this.getKey === this.totalKey) {
+      this.getKey = 0;
+      this.level++;
+    }
+  }
   decreaseLife() {
     this.life--;
-    console.log(`Vie du joueur : ${this.life}`);
+    // Mettre à jour le HUD
+    const game = document.querySelector('body').__game;
+    if (game && game.HUD) {
+      game.HUD.updateLife();
+    }
   }
 
   updatePosition() {
@@ -60,7 +76,6 @@ export default class Player {
         default:
           sourceY = 0;
       }
-
       this.element.style.backgroundPosition = `${-this.frameX * 56}px ${sourceY}px`;
     }
   }
@@ -93,7 +108,7 @@ export default class Player {
       this.isMoving = true;
     }
 
-    // Gestion de l'animation
+    // Handle animation
     if (this.isMoving) {
       this.frameCount++;
       if (this.frameCount >= this.frameDelay) {
