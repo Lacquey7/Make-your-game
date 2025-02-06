@@ -265,3 +265,14 @@ button:hover {
   transform: translateX(0); /* Pas besoin de centrer */
   z-index: 1000;
 }
+
+.key-body {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  position: absolute;
+  top: 4%;
+  right: 25%;
+  transform: translateX(0);
+  z-index: 1000;
+}
