@@ -3,12 +3,12 @@ import Collision from './collision.js';
 import Bonus from './powerUp.js';
 
 export default class Player {
-  constructor(key, level, startGame) {
+  constructor(key, level) {
     this.element = document.getElementById('player');
     this.x = 80;
     this.y = 70;
     this.life = 4;
-    this.speed = 6;
+    this.speed = 2;
     this.flame = 3;
     this.name = ""
     this.getKey = 0

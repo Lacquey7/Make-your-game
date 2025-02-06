@@ -5,13 +5,16 @@ import Collision from './collision.js';
 import { Bomb } from "./bomb.js";
 import HUD from "./hud.js";
 import { startHistory } from './history.js'; // Assurez-vous d’avoir exporté correctement la logique d’histoire
+import {map} from "./map.js";
+
+let level = 1
 
 export default class Game {
-  constructor() {
+  constructor(level) {
     this.isPaused = false;
     document.querySelector('body').__game = this;
     // Ne pas initialiser le jeu ici, juste le menu
-    this.level = 1
+    this.level = level
     this.playerName = ''; // Stocke le nom du joueur
     this.keyDownHandler = this.handleKeyDown.bind(this);
     this.keyUpHandler = this.handleKeyUp.bind(this);
@@ -272,19 +275,7 @@ export default class Game {
     this.Countbonus = 6;
     this.bonus = ['Bonus1', 'Bonus2', 'Bonus3'];
     this.key = this.level
-    this.map = [
-      [1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1],
-      [1, 4, 4, 5, 4, 5, 4, 5, 4, 5, 4, 4, 1],
-      [1, 4, 3, 4, 3, 4, 3, 4, 3, 4, 3, 4, 1],
-      [1, 5, 4, 5, 4, 5, 4, 5, 4, 5, 4, 5, 1],
-      [1, 4, 3, 4, 3, 4, 3, 4, 3, 4, 3, 4, 1],
-      [1, 4, 4, 5, 4, 5, 4, 5, 4, 5, 4, 4, 1],
-      [1, 4, 3, 4, 3, 4, 3, 4, 3, 4, 3, 4, 1],
-      [1, 5, 4, 5, 4, 5, 4, 5, 4, 5, 4, 5, 1],
-      [1, 4, 3, 4, 3, 4, 3, 4, 3, 4, 3, 4, 1],
-      [1, 4, 4, 5, 4, 5, 4, 5, 4, 5, 4, 4, 1],
-      [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-    ];
+    this.map =map[this.level-1];
 
     this.totalBlockBreakable = this.countBlockBreakable();
     this.tileMap = new TileMap(this.map, this.Countbonus, this.bonus, this.totalBlockBreakable);
@@ -449,5 +440,5 @@ export default class Game {
 
 // Lancement du jeu lorsque le DOM est chargé
 document.addEventListener('DOMContentLoaded', () => {
-  new Game();
+  new Game(level);
 });
