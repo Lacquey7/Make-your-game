@@ -274,7 +274,6 @@ export default class Game {
     // Map configuration
     this.Countbonus = 6;
     this.bonus = ['Bonus1', 'Bonus2', 'Bonus3'];
-    this.key = this.level
     this.map =map[this.level-1];
 
     this.totalBlockBreakable = this.countBlockBreakable();
