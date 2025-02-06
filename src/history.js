@@ -117,7 +117,6 @@ function createFadeEffect(level, loadMapCallback, startGameCallback) {
         fadeOverlay.style.opacity = '0'; // Faire disparaître le fondu
         setTimeout(() => {
             fadeOverlay.remove(); // Retirer l’élément du DOM
-            startGameCallback(); // Appeler le callback pour démarrer le jeu
         }, 1000);
     }, 2000); // Laisser le texte visible pendant 2 secondes
 }

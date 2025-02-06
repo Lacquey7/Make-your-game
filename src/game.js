@@ -261,7 +261,6 @@ export default class Game {
     divTileMap.appendChild(bot);
 
 
-
     this.initGame();
     this.HUD = new HUD(this.player, this.bot);
     document.addEventListener('keydown', this.pauseHandler);
@@ -274,7 +273,7 @@ export default class Game {
     // Map configuration
     this.Countbonus = 6;
     this.bonus = ['Bonus1', 'Bonus2', 'Bonus3'];
-    this.map =map[this.level-1];
+    this.map =map(11,13);
 
     this.totalBlockBreakable = this.countBlockBreakable();
     this.tileMap = new TileMap(this.map, this.Countbonus, this.bonus, this.totalBlockBreakable);
