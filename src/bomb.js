@@ -216,7 +216,7 @@ export class Bomb {
                     } else {
                         setTimeout(removeFlame, 100);
                     }
-                }, 900);
+                }, 600);
             } else {
                 setTimeout(removeFlame, 100);
             }

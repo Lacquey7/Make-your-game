@@ -7,9 +7,9 @@ export default class Player {
     this.element = document.getElementById('player');
     this.x = 80;
     this.y = 70;
-    this.life = 4;
-    this.speed = 2;
-    this.flame = 3;
+    this.life = 1;
+    this.speed = 3;
+    this.flame = 1;
     this.name = ""
     this.getKey = 0
     this.totalKey = key
