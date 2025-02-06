@@ -124,11 +124,14 @@ export default class TileMap {
         image = this.imageBonus3;
         break;
     }
+
     const bonusImage = document.createElement('div');
     bonusImage.style.backgroundImage = `url(${image.src})`;
     bonusImage.classList.add('bonus', this.bonus[r]);
-    bonusImage.style.backgroundSize = 'cover';
-    bonusImage.style.backgroundPosition = 'center';
+
+    // Assurez-vous que le parent a une position relative
+    tileDiv.style.position = 'relative';
+
     bonusImage.style.display = 'none';
     tileDiv.appendChild(bonusImage);
   }
