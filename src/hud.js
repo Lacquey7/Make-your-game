@@ -2,217 +2,203 @@ export default class HUD {
     constructor(player, bot) {
         this.player = player;
         this.bot = bot;
-        this.score = 0;
-        this.timer = 0;
+        this.game = document.querySelector('body').__game;
         this.hudElement = null;
-        this.timerInterval = null;
+        this.topHudElement = null;
+        this.timerInterval = null; // Ajout de cette ligne
         this.createHUD();
-        this.startTimer();
     }
 
     createHUD() {
-        // Création du conteneur principal du HUD
-        this.hudElement = document.createElement('div');
-        this.hudElement.className = 'game-hud';
-        this.hudElement.style.width = '700px';
-        this.hudElement.style.transform = 'translateX(-50%)';
-        this.hudElement.style.position = 'absolute';
-        this.hudElement.style.top = '20px';
-        this.hudElement.style.left = '50%';
-        this.hudElement.style.right = 'auto';
-        this.hudElement.style.padding = '10px 5px';
-        this.hudElement.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
-        this.hudElement.style.color = 'white';
-        this.hudElement.style.fontFamily = 'MaPolicePerso, sans-serif';
-        this.hudElement.style.zIndex = '1000';
-        this.hudElement.style.display = 'flex';
-        this.hudElement.style.alignItems = 'center';
-        this.hudElement.style.gap = '15px';
-        this.hudElement.style.fontSize = '10px';
-        this.hudElement.style.justifyContent = 'center';
+        // Création des deux HUDs (haut et bas)
+        this.createTopHUD();
+        this.createBottomHUD();
 
-        // Création des éléments du HUD
-        this.createPlayerDisplay();
-        this.createBotDisplay();
-        this.createPowerDisplay();
-        this.createSpeedDisplay();
-        this.createScoreDisplay();
-        this.createTimerDisplay();
-
-        // Ajout du HUD au tilemap
         const tilemap = document.getElementById('tilemap');
+        tilemap.appendChild(this.topHudElement);
         tilemap.appendChild(this.hudElement);
     }
 
-    createPlayerDisplay() {
-        const playerContainer = document.createElement('div');
-        playerContainer.style.display = 'flex';
-        playerContainer.style.alignItems = 'center';
-        playerContainer.style.gap = '5px';
+    createTopHUD() {
+        this.topHudElement = document.createElement('div');
+        this.topHudElement.style.position = 'absolute';
+        this.topHudElement.style.top = '-40px';
+        this.topHudElement.style.left = '0';
+        this.topHudElement.style.right = '0';
+        this.topHudElement.style.display = 'flex';
+        this.topHudElement.style.justifyContent = 'space-between';
+        this.topHudElement.style.padding = '5px 20px';
+        this.topHudElement.style.zIndex = '1000';
 
-        const playerLabel = document.createElement('span');
-        playerLabel.textContent = 'Player:';
+        // Container gauche pour les cœurs
+        const heartsContainer = document.createElement('div');
+        heartsContainer.id = 'hearts-container';
+        heartsContainer.style.display = 'flex';
+        heartsContainer.style.gap = '5px';
+        this.updateHearts(heartsContainer);
 
-        const playerLife = document.createElement('span');
-        playerLife.id = 'player-life';
-        playerLife.textContent = this.player.life;
-
-        const playerHeart = document.createElement('span');
-        playerHeart.textContent = '❤️';
-        playerHeart.style.transform = 'translateY(-1px)'; // Petit ajustement vertical
-
-        playerContainer.appendChild(playerLabel);
-        playerContainer.appendChild(playerLife);
-        playerContainer.appendChild(playerHeart);
-        this.hudElement.appendChild(playerContainer);
-    }
-
-    createBotDisplay() {
-        const botContainer = document.createElement('div');
-        botContainer.style.display = 'flex';
-        botContainer.style.alignItems = 'center';
-        botContainer.style.gap = '5px';
-
-        const botLabel = document.createElement('span');
-        botLabel.textContent = 'Bot:';
-
-        const botLife = document.createElement('span');
-        botLife.id = 'bot-life';
-        botLife.textContent = this.bot.life;
-
-        const botHeart = document.createElement('span');
-        botHeart.textContent = '❤️';
-        botHeart.style.transform = 'translateY(-1px)'; // Petit ajustement vertical
-
-        botContainer.appendChild(botLabel);
-        botContainer.appendChild(botLife);
-        botContainer.appendChild(botHeart);
-        this.hudElement.appendChild(botContainer);
-    }
-
-    createPowerDisplay() {
-        const powerContainer = document.createElement('div');
-        powerContainer.style.display = 'flex';
-        powerContainer.style.alignItems = 'center';
-        powerContainer.style.gap = '5px';
-
-        const powerLabel = document.createElement('span');
-        powerLabel.textContent = 'Power:';
-
-        const powerValue = document.createElement('span');
-        powerValue.id = 'flame-power';
-        powerValue.textContent = this.player.flame;
-
-        const powerIcon = document.createElement('span');
-        powerIcon.textContent = '🔥';
-        powerIcon.style.transform = 'translateY(-1px)'; // Petit ajustement vertical
-
-        powerContainer.appendChild(powerLabel);
-        powerContainer.appendChild(powerValue);
-        powerContainer.appendChild(powerIcon);
-        this.hudElement.appendChild(powerContainer);
-    }
-
-    createScoreDisplay() {
-        const scoreContainer = document.createElement('div');
-        scoreContainer.style.display = 'flex';
-        scoreContainer.style.alignItems = 'center';
-        scoreContainer.style.gap = '5px';
-
-        const scoreLabel = document.createElement('span');
-        scoreLabel.textContent = 'Score:';
-
-        const scoreValue = document.createElement('span');
-        scoreValue.id = 'score';
-        scoreValue.textContent = this.score;
-
-        scoreContainer.appendChild(scoreLabel);
-        scoreContainer.appendChild(scoreValue);
-        this.hudElement.appendChild(scoreContainer);
-    }
-
-    createSpeedDisplay() {
+        // Container central pour la vitesse
         const speedContainer = document.createElement('div');
+        speedContainer.id = 'speed-container';
         speedContainer.style.display = 'flex';
-        speedContainer.style.alignItems = 'center';
         speedContainer.style.gap = '5px';
+        this.updateSpeed(speedContainer);
 
-        const speedLabel = document.createElement('span');
-        speedLabel.textContent = 'Speed:';
+        // Container droite pour la puissance
+        const powerContainer = document.createElement('div');
+        powerContainer.id = 'power-container';
+        powerContainer.style.display = 'flex';
+        powerContainer.style.gap = '5px';
+        this.updatePower(powerContainer);
 
-        const speedValue = document.createElement('span');
-        speedValue.id = 'speed-value';
-        speedValue.textContent = this.player.speed;
-
-        const speedIcon = document.createElement('span');
-        speedIcon.textContent = '⚡';
-        speedIcon.style.transform = 'translateY(-1px)';
-
-        speedContainer.appendChild(speedLabel);
-        speedContainer.appendChild(speedValue);
-        speedContainer.appendChild(speedIcon);
-        this.hudElement.appendChild(speedContainer);
+        // Ajout des containers
+        this.topHudElement.appendChild(heartsContainer);
+        this.topHudElement.appendChild(speedContainer);
+        this.topHudElement.appendChild(powerContainer);
     }
 
-    createTimerDisplay() {
+    createBottomHUD() {
+        this.hudElement = document.createElement('div');
+        this.hudElement.className = 'game-hud';
+        this.hudElement.style.position = 'absolute';
+        this.hudElement.style.bottom = '10px';
+        this.hudElement.style.left = '0';
+        this.hudElement.style.right = '0';
+        this.hudElement.style.display = 'flex';
+        this.hudElement.style.justifyContent = 'space-between';
+        this.hudElement.style.padding = '0 20px';
+        this.hudElement.style.color = 'white';
+        this.hudElement.style.fontFamily = 'MaPolicePerso, sans-serif';
+        this.hudElement.style.fontSize = '16px';
+
+        // Container pour le score (à gauche)
+        const scoreContainer = document.createElement('div');
+        scoreContainer.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+        scoreContainer.style.padding = '5px 15px';
+        scoreContainer.style.borderRadius = '20px';
+
+        const scoreElement = document.createElement('div');
+        scoreElement.id = 'score';
+        scoreElement.textContent = '0';
+        scoreContainer.appendChild(scoreElement);
+
+        // Container pour le timer (à droite)
         const timerContainer = document.createElement('div');
-        timerContainer.id = 'timer';
-        timerContainer.textContent = '00:00';
+        timerContainer.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+        timerContainer.style.padding = '5px 15px';
+        timerContainer.style.borderRadius = '20px';
+
+        const timerElement = document.createElement('div');
+        timerElement.id = 'timer';
+        timerElement.textContent = '00:00';
+        timerContainer.appendChild(timerElement);
+
+        this.hudElement.appendChild(scoreContainer);
         this.hudElement.appendChild(timerContainer);
-    }
-
-    updateLife() {
-        const playerLifeElement = document.getElementById('player-life');
-        const botLifeElement = document.getElementById('bot-life');
-        if (playerLifeElement) playerLifeElement.textContent = this.player.life;
-        if (botLifeElement) botLifeElement.textContent = this.bot.life;
-
-        if (this.player.life <= 0 || this.bot.life <= 0) {
-            this.gameOver();
-        }
-    }
-
-    updateSpeed() {
-        const speedElement = document.getElementById('speed-value');
-        if (speedElement) speedElement.textContent = this.player.speed;
-    }
-
-    updateScore(points) {
-        this.score += points;
-        const scoreElement = document.getElementById('score');
-        if (scoreElement) scoreElement.textContent = this.score;
-    }
-
-    updateFlame() {
-        const flameElement = document.getElementById('flame-power');
-        if (flameElement) flameElement.textContent = this.player.flame;
+        this.startTimer();
     }
 
     startTimer() {
         const startTime = Date.now();
         this.timerInterval = setInterval(() => {
-            const currentTime = Date.now();
-            const elapsedTime = Math.floor((currentTime - startTime) / 1000);
-            const minutes = Math.floor(elapsedTime / 60);
-            const seconds = elapsedTime % 60;
-
-            const timerElement = document.getElementById('timer');
-            if (timerElement) {
-                timerElement.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            if (!this.game?.isPaused) {
+                const currentTime = Date.now();
+                const elapsedTime = Math.floor((currentTime - startTime) / 1000);
+                const minutes = Math.floor(elapsedTime / 60);
+                const seconds = elapsedTime % 60;
+                const timerElement = document.getElementById('timer');
+                if (timerElement) {
+                    timerElement.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                }
             }
         }, 1000);
     }
 
-    stopTimer() {
-        if (this.timerInterval) {
-            clearInterval(this.timerInterval);
+    destroy() {
+        if (this.hudElement && this.hudElement.parentNode) {
+            this.hudElement.parentNode.removeChild(this.hudElement);
+        }
+        if (this.topHudElement && this.topHudElement.parentNode) {
+            this.topHudElement.parentNode.removeChild(this.topHudElement);
+        }
+        if (this.timerInterval) {  // Ajout de cette ligne
+            clearInterval(this.timerInterval);  // Ajout de cette ligne
         }
     }
 
-    gameOver() {
-        this.stopTimer();
+    createHeartIcon() {
+        const heart = document.createElement('div');
+        heart.style.width = '30px';
+        heart.style.height = '30px';
+        heart.style.backgroundImage = "url('/assets/img/map/heart.png')";
+        heart.style.backgroundSize = 'contain';
+        heart.style.backgroundRepeat = 'no-repeat';
+        return heart;
+    }
 
-        // Création de l'overlay de fin de partie
+    createPowerIcon() {
+        const power = document.createElement('div');
+        power.style.width = '30px';
+        power.style.height = '30px';
+        power.style.backgroundImage = "url('/assets/img/map/power.png')";
+        power.style.backgroundSize = 'contain';
+        power.style.backgroundRepeat = 'no-repeat';
+        return power;
+    }
+    createSpeedIcon() {
+        const speed = document.createElement('div');
+        speed.style.width = '30px';
+        speed.style.height = '30px';
+        speed.style.backgroundImage = "url('/assets/img/bonus/speed.png')";
+        speed.style.backgroundSize = 'contain';
+        speed.style.backgroundRepeat = 'no-repeat';
+        return speed;
+    }
+
+    updateHearts(container = document.getElementById('hearts-container')) {
+        if (!container) return;
+        container.innerHTML = '';
+        for (let i = 0; i < this.player.life; i++) {
+            container.appendChild(this.createHeartIcon());
+        }
+    }
+    // Ajouter la méthode updateSpeed
+    updateSpeed(container = document.getElementById('speed-container')) {
+        if (!container) return;
+        container.innerHTML = '';
+        for (let i = 0; i < this.player.speed; i++) {
+            container.appendChild(this.createSpeedIcon());
+        }
+    }
+
+    updatePower(container = document.getElementById('power-container')) {
+        if (!container) return;
+        container.innerHTML = '';
+        for (let i = 0; i < this.player.flame; i++) {
+            container.appendChild(this.createPowerIcon());
+        }
+    }
+
+    updateLife() {
+        this.updateHearts();
+        if (this.player.life <= 0 || this.bot.life <= 0) {
+            this.gameOver();
+        }
+    }
+
+    updateScore(points) {
+        const scoreElement = document.getElementById('score');
+        if (scoreElement) {
+            const currentScore = parseInt(scoreElement.textContent);
+            scoreElement.textContent = currentScore + points;
+        }
+    }
+
+    updateFlame() {
+        this.updatePower();
+    }
+
+    gameOver() {
         const gameOverOverlay = document.createElement('div');
         gameOverOverlay.className = 'game-over-overlay';
         gameOverOverlay.style.position = 'absolute';
@@ -227,33 +213,26 @@ export default class HUD {
         gameOverOverlay.style.alignItems = 'center';
         gameOverOverlay.style.zIndex = '2000';
 
-        // Message de fin de partie
         const gameOverMessage = document.createElement('h2');
         gameOverMessage.style.color = 'white';
         gameOverMessage.style.fontFamily = 'MaPolicePerso, sans-serif';
         gameOverMessage.style.marginBottom = '20px';
         gameOverMessage.textContent = this.player.life <= 0 ? 'Game Over - Bot Wins!' : 'Congratulations - You Win!';
 
-        // Score final
         const finalScore = document.createElement('div');
         finalScore.style.color = 'white';
         finalScore.style.fontFamily = 'MaPolicePerso, sans-serif';
         finalScore.style.marginBottom = '20px';
-        finalScore.textContent = `Final Score: ${this.score}`;
+        finalScore.textContent = `Final Score: ${document.getElementById('score').textContent}`;
 
-        // Boutons
         const buttonContainer = document.createElement('div');
         buttonContainer.style.display = 'flex';
         buttonContainer.style.gap = '10px';
 
-        // Bouton rejouer
         const replayButton = document.createElement('button');
         replayButton.textContent = 'Play Again';
-        replayButton.addEventListener('click', () => {
-            window.location.reload();
-        });
+        replayButton.addEventListener('click', () => window.location.reload());
 
-        // Bouton menu principal
         const menuButton = document.createElement('button');
         menuButton.textContent = 'Main Menu';
         menuButton.addEventListener('click', () => {
@@ -268,12 +247,5 @@ export default class HUD {
         gameOverOverlay.appendChild(buttonContainer);
 
         document.getElementById('tilemap').appendChild(gameOverOverlay);
-    }
-
-    destroy() {
-        this.stopTimer();
-        if (this.hudElement && this.hudElement.parentNode) {
-            this.hudElement.parentNode.removeChild(this.hudElement);
-        }
     }
 }

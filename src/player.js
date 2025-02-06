@@ -8,7 +8,7 @@ export default class Player {
     this.x = 80;
     this.y = 70;
     this.life = 2;
-    this.speed = 2;
+    this.speed = 4;
     this.flame = 1;
 
     // Animation
