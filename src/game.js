@@ -4,11 +4,15 @@ import Bot from './bot.js';
 import Collision from './collision.js';
 import { Bomb } from "./bomb.js";
 import HUD from "./hud.js";
+import { startHistory } from './history.js'; // Assurez-vous d’avoir exporté correctement la logique d’histoire
 
 export default class Game {
   constructor() {
     this.isPaused = false;
     document.querySelector('body').__game = this;
+    // Ne pas initialiser le jeu ici, juste le menu
+    this.level = 1
+    this.playerName = ''; // Stocke le nom du joueur
     this.keyDownHandler = this.handleKeyDown.bind(this);
     this.keyUpHandler = this.handleKeyUp.bind(this);
     this.pauseHandler = this.handlePause.bind(this);
@@ -39,12 +43,12 @@ export default class Game {
 
   menu() {
     const divTileMap = document.querySelector('#tilemap');
-    divTileMap.innerHTML = '';
+    divTileMap.innerHTML = ''; // Nettoyer le contenu existant
 
-    // Supprimer l'overlay de pause s'il existe
-    const pauseOverlay = document.querySelector('.pause-overlay');
-    if (pauseOverlay) {
-      pauseOverlay.remove();
+    // Supprimer le bouton pause s'il existe
+    const pauseContainer = document.querySelector('.pause-container');
+    if (pauseContainer) {
+      pauseContainer.remove();
     }
 
     // Créer le conteneur principal du menu
@@ -64,8 +68,12 @@ export default class Game {
     startButton.textContent = 'START';
     startButton.style.margin = '10px';
     startButton.addEventListener('click', () => {
-      this.startGame();
-      menuContainer.remove(); // Utiliser remove() au lieu de display none
+      // Démarrer l’histoire avec un callback vers `this.startGame`
+      startHistory(this.level, (playerName) => {
+        this.playerName = playerName; // Stocker le nom du joueur
+        this.startGame(); // Lancer la méthode de la classe Game
+      });
+      menuContainer.remove(); // Supprimer le menu
     });
 
     // Zone d'affichage du score
@@ -240,7 +248,7 @@ export default class Game {
 
 
     const divTileMap = document.querySelector('#tilemap');
-    divTileMap.innerHTML = '';
+    divTileMap.innerHTML = ''; // Nettoyer le contenu existant
 
     const player = document.createElement("div");
     player.id = "player";
@@ -254,12 +262,16 @@ export default class Game {
     this.initGame();
     this.HUD = new HUD(this.player, this.bot);
     document.addEventListener('keydown', this.pauseHandler);
+
+    this.setupPauseButton(); // Ajouter le bouton pause uniquement au démarrage du jeu
+    this.initGame(); // Renommer init() en initGame() pour plus de clarté
   }
 
   initGame() {
     // Map configuration
     this.Countbonus = 6;
     this.bonus = ['Bonus1', 'Bonus2', 'Bonus3'];
+    this.key = this.level
     this.map = [
       [1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1],
       [1, 4, 4, 5, 4, 5, 4, 5, 4, 5, 4, 4, 1],
@@ -276,15 +288,11 @@ export default class Game {
 
     this.totalBlockBreakable = this.countBlockBreakable();
     this.tileMap = new TileMap(this.map, this.Countbonus, this.bonus, this.totalBlockBreakable);
-
-    // Initialisation de la carte
     this.tileMap.draw();
 
-    // Création des objets de jeu
-    this.player = new Player();
+    this.player = new Player(this.key, this.level);
     this.bot = new Bot();
 
-    // Gestion des touches (on ajoute ici la touche "Space" pour déposer la bombe)
     this.keys = {
       ArrowUp: false,
       ArrowDown: false,
@@ -292,7 +300,6 @@ export default class Game {
       ArrowRight: false,
       Space: false,
     };
-
     this.setupEventListeners();
     this.startGameLoop();
   }
