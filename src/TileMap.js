@@ -1,8 +1,9 @@
 export default class TileMap {
-  constructor(map, Countbonus, bonus, totalBlockBreakable) {
+  constructor(map, Countbonus, bonus, totalBlockBreakable, cleCurrent) {
     this.map = map;
     this.Countbonus = Countbonus;
     this.bonus = bonus;
+    this.cleCurrent = cleCurrent;
     this.totalBlockBreakable = totalBlockBreakable;
     this.imageBordureLeftRight = this.#image('block.png');
     this.imageBordureBackFront = this.#image('bordureRelief.png');
@@ -12,9 +13,13 @@ export default class TileMap {
     this.imageBonus1 = this.#image('Bonus1.png');
     this.imageBonus2 = this.#image('Bonus2.png');
     this.imageBonus3 = this.#image('Bonus3.png');
+    this.imageKey = this.#image('keyOrigin.png');
 
     this.tilesInitialized = false;
     this.randomBlockGetBonus = this.randomBlockGetBonus();
+    this.randomBlockGetKey = this.randomBlockGetKey(this.randomBlockGetBonus);
+    console.log(this.cleCurrent, this.randomBlockGetKey);
+
     this.currentBlock = 0;
   }
 
@@ -65,12 +70,17 @@ export default class TileMap {
           case 5:
             tileDiv.classList.add('block-breakable');
             this.currentBlock++;
-
             if (this.randomBlockGetBonus.includes(this.currentBlock)) {
               tileDiv.dataset.breakable = 'true';
               image = this.imageBlockBreakable;
               tileDiv.style.backgroundImage = `url(${image.src})`;
               this.#addRandomBonus(tileDiv);
+              tileDiv.addEventListener('click', () => this.destroyBlock(tileDiv));
+            } else if (this.randomBlockGetKey.includes(this.currentBlock)) {
+              tileDiv.dataset.breakable = 'true';
+              image = this.imageBlockBreakable;
+              tileDiv.style.backgroundImage = `url(${image.src})`;
+              this.#addRandomKey(tileDiv);
               tileDiv.addEventListener('click', () => this.destroyBlock(tileDiv));
             } else {
               tileDiv.dataset.breakable = 'true';
@@ -110,6 +120,28 @@ export default class TileMap {
     return tab;
   }
 
+  randomBlockGetKey(tabBonus) {
+    let tab = [];
+    let r;
+    for (let i = 0; i < this.cleCurrent.length; i++) {
+      do {
+        r = Math.floor(Math.random() * this.totalBlockBreakable) + 1;
+      } while (tabBonus.includes(r) || tab.includes(r));
+      tab.push(r);
+    }
+    return tab;
+  }
+
+  #addRandomKey(tileDiv) {
+    const keyImage = document.createElement('div');
+    keyImage.style.backgroundImage = `url(${this.imageKey.src})`;
+    keyImage.classList.add(`key key${this.cleCurrent}`);
+    keyImage.style.backgroundSize = 'cover';
+    keyImage.style.backgroundPosition = 'center';
+    keyImage.style.display = 'none';
+    tileDiv.appendChild(keyImage);
+  }
+
   #addRandomBonus(tileDiv) {
     let image = null;
     let r = Math.floor(Math.random() * this.bonus.length);
@@ -140,9 +172,9 @@ export default class TileMap {
     tileDiv.classList.remove('block-breakable');
     tileDiv.classList.add('herbe');
     const bonusImage = tileDiv.querySelector('.bonus');
-    if (bonusImage) {
+    const keyImage = tileDiv.querySelector('.key');
+    if (bonusImage || keyImage) {
       tileDiv.classList.remove('block-breakable');
-      //tileDiv.classList.add('bonus');
       bonusImage.style.display = 'block';
     }
   }

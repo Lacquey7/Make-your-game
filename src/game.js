@@ -220,21 +220,21 @@ export default class Game {
     body.appendChild(heartBody);
 
     //ajout des cles
-    // const keyBody = document.createElement('div');
-    // keyBody.className = 'key-body';
-    // keyBody.style.display = 'flex';
+    const keyBody = document.createElement('div');
+    keyBody.className = 'key-body';
+    keyBody.style.display = 'flex';
 
-    // for (let i = 1; i <= this.cles; i++) {
-    //   const keyDiv = document.createElement('div');
-    //   keyDiv.className = `key-${i}`;
-    //   keyDiv.style.width = '64px';
-    //   keyDiv.style.height = '64px';
-    //   keyDiv.style.backgroundImage = 'url("assets/img/background/key.png")';
-    //   keyDiv.style.backgroundSize = 'cover';
+    for (let i = 1; i <= this.cles; i++) {
+      const keyDiv = document.createElement('div');
+      keyDiv.className = `key-${i}`;
+      keyDiv.style.width = '64px';
+      keyDiv.style.height = '64px';
+      keyDiv.style.backgroundImage = 'url("assets/img/map/keyOrigin.png")';
+      keyDiv.style.backgroundSize = 'cover';
 
-    //   keyBody.appendChild(keyDiv);
-    // }
-    // body.appendChild(keyBody);
+      keyBody.appendChild(keyDiv);
+    }
+    body.appendChild(keyBody);
 
     document.addEventListener('keydown', this.pauseHandler);
   }
@@ -259,7 +259,7 @@ export default class Game {
     ];
 
     this.totalBlockBreakable = this.countBlockBreakable();
-    this.tileMap = new TileMap(this.map, this.Countbonus, this.bonus, this.totalBlockBreakable);
+    this.tileMap = new TileMap(this.map, this.Countbonus, this.bonus, this.totalBlockBreakable, this.cles);
 
     // Initialisation de la carte
     this.tileMap.draw();
