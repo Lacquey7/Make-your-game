@@ -258,18 +258,10 @@ button:hover {
 .heart-body {
   display: flex;
   gap: 10px;
-  justify-content: center;
+  justify-content: flex-start; /* Aligne les cœurs à gauche */
   position: absolute;
   top: 4%;
-  left: 35%;
-  transform: translateX(-50%);
+  left: 25%; /* Fixe le point d'ancrage à gauche */
+  transform: translateX(0); /* Pas besoin de centrer */
   z-index: 1000;
 }
-
-/* .heart {
-  width: 64px;
-  height: 64px;
-  background-color: rgba(255, 255, 255, 0.2);
-  border: 2px solid white;
-  border-radius: 8px;
-} */
