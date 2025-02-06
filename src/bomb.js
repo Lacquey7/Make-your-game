@@ -1,5 +1,5 @@
 export class Bomb {
-    constructor(x, y, flameLength, player, bot) {
+    constructor(x, y, flameLength, player, bot, HUD) {
         this.x = x;
         this.y = y;
         this.bombElement = null;
@@ -8,6 +8,7 @@ export class Bomb {
         this.game = document.querySelector('body').__game; // Accès à l'instance du jeu
         this.player = player
         this.bot = bot
+        this.HUD = HUD
     }
 
     dropBomb() {
@@ -150,6 +151,7 @@ export class Bomb {
             }
             if (targetDiv.classList.contains("block-breakable")) {
                 this.destroyBlock(targetDiv);
+                this.HUD.updateScore(30)
                 return true;
             }
             if (targetDiv.classList.contains("border")) {
