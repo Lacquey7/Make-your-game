@@ -61,7 +61,7 @@ export class Heart {
     this.playerElement = playerElement;
   }
 
-  setHeartStyles(heartDiv) {
+  initHeart(heartDiv) {
     Object.assign(heartDiv.style, {
       width: '64px',
       height: '64px',
@@ -71,7 +71,7 @@ export class Heart {
   }
 
   animateHeart(heartDiv, images) {
-    this.setHeartStyles(heartDiv);
+    this.initHeart(heartDiv);
     let index = 0;
     const interval = setInterval(() => {
       heartDiv.style.backgroundImage = `url(${images[index]})`;

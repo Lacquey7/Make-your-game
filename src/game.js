@@ -3,6 +3,7 @@ import Player from './player.js';
 import Bot from './bot.js';
 import Collision from './collision.js';
 import { Bomb } from './bomb.js';
+import { Heart } from './powerUp.js';
 
 export default class Game {
   constructor() {
@@ -211,13 +212,8 @@ export default class Game {
       heartDiv.style.width = '64px';
       heartDiv.style.height = '64px';
       heartDiv.style.backgroundImage = 'url("assets/img/background/heart1.png")';
-      // heartDiv.style.backgroundImage = 'url("heart-1.png.png")';
-      // heartDiv.style.backgroundPosition = '45px  0'; // Décalage pour chaque cœur
       heartDiv.style.backgroundSize = 'cover';
-      // heartDiv.style.backgroundRepeat = 'no-repeat';
 
-      // heartDiv.style.backgroundColor = 'red';
-      //heartDiv.style.display = 'block';
       heartBody.appendChild(heartDiv);
     }
 
@@ -252,6 +248,7 @@ export default class Game {
     // Création des objets de jeu
     this.player = new Player();
     this.bot = new Bot();
+    this.heart = new Heart(this.player);
 
     // Gestion des touches (on ajoute ici la touche "Space" pour déposer la bombe)
     this.keys = {
@@ -393,6 +390,8 @@ export default class Game {
 
         if (!this.isPaused && Collision.checkCollision(this.player, this.bot)) {
           console.log('Collision detected!');
+          this.heart.removeHeart();
+          this.player.decreaseLife();
         }
       }
       this.gameLoopId = requestAnimationFrame(gameLoop);
