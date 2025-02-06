@@ -28,7 +28,12 @@ export default class Bot {
 
     decreaseLife() {
         this.life--;
-        console.log(`Vie du bot : ${this.life}`);
+        // Mettre à jour le HUD et ajouter des points au score
+        const game = document.querySelector('body').__game;
+        if (game && game.HUD) {
+            game.HUD.updateLife();
+            game.HUD.updateScore(50); // Points pour avoir touché le bot
+        }
     }
 
     getRandomDirection() {

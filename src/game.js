@@ -3,12 +3,16 @@ import Player from './player.js';
 import Bot from './bot.js';
 import Collision from './collision.js';
 import { Bomb } from './bomb.js';
-import { Heart } from './powerUp.js';
+import HUD from './hud.js';
+import { startHistory } from './history.js'; // Assurez-vous d’avoir exporté correctement la logique d’histoire
 
 export default class Game {
   constructor() {
     this.isPaused = false;
     document.querySelector('body').__game = this;
+    // Ne pas initialiser le jeu ici, juste le menu
+    this.level = 1;
+    this.playerName = ''; // Stocke le nom du joueur
     this.keyDownHandler = this.handleKeyDown.bind(this);
     this.keyUpHandler = this.handleKeyUp.bind(this);
     this.pauseHandler = this.handlePause.bind(this);
@@ -39,12 +43,12 @@ export default class Game {
 
   menu() {
     const divTileMap = document.querySelector('#tilemap');
-    divTileMap.innerHTML = '';
+    divTileMap.innerHTML = ''; // Nettoyer le contenu existant
 
-    // Supprimer l'overlay de pause s'il existe
-    const pauseOverlay = document.querySelector('.pause-overlay');
-    if (pauseOverlay) {
-      pauseOverlay.remove();
+    // Supprimer le bouton pause s'il existe
+    const pauseContainer = document.querySelector('.pause-container');
+    if (pauseContainer) {
+      pauseContainer.remove();
     }
 
     // Créer le conteneur principal du menu
@@ -64,8 +68,12 @@ export default class Game {
     startButton.textContent = 'START';
     startButton.style.margin = '10px';
     startButton.addEventListener('click', () => {
-      this.startGame();
-      menuContainer.remove(); // Utiliser remove() au lieu de display none
+      // Démarrer l’histoire avec un callback vers `this.startGame`
+      startHistory(this.level, (playerName) => {
+        this.playerName = playerName; // Stocker le nom du joueur
+        this.startGame(); // Lancer la méthode de la classe Game
+      });
+      menuContainer.remove(); // Supprimer le menu
     });
 
     // Zone d'affichage du score
@@ -87,99 +95,148 @@ export default class Game {
     divTileMap.innerHTML = ''; // Nettoyer le contenu existant
 
     try {
-      const response = await fetch('back/json_directory/scores.json');
+      const response = await fetch('http://localhost:8080/score', {
+        method: 'GET',
+      });
+
       const scores = await response.json();
+      scores.sort((a, b) => b.score - a.score);
 
-      // Trier les scores par ordre croissant de Rank
-      scores.sort((a, b) => a.rank - b.rank);
+      let currentPage = 0; // Page actuelle
+      const scoresPerPage = 6; // Nombre de scores par page
 
-      // Créer le tableau
-      const table = document.createElement('table');
-      table.style.width = '50%';
-      table.style.borderCollapse = 'collapse';
-      table.style.margin = '20px auto';
-      table.style.color = 'white';
-      table.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
-      table.style.padding = '10px';
+      const renderScores = () => {
+        divTileMap.innerHTML = ''; // Réinitialiser la divTileMap à chaque changement de page
 
-      // Créer l'en-tête du tableau
-      const headerRow = document.createElement('tr');
-      ['Rank', 'Nom', 'Score', 'Time'].forEach((headerText) => {
-        const th = document.createElement('th');
-        th.textContent = headerText;
-        th.style.border = '1px solid white';
-        th.style.padding = '8px';
-        th.style.textAlign = 'center';
-        headerRow.appendChild(th);
-      });
-      table.appendChild(headerRow);
+        // Créer le tableau
+        const table = document.createElement('table');
+        table.style.width = '50%';
+        table.style.borderCollapse = 'collapse';
+        table.style.margin = '20px auto';
+        table.style.color = 'white';
+        table.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+        table.style.padding = '10px';
 
-      // Ajouter les scores au tableau
-      scores.forEach((scoreEntry) => {
-        const row = document.createElement('tr');
+        // Créer l'en-tête du tableau
+        const headerRow = document.createElement('tr');
+        ['Rank', 'Nom', 'Score', 'Time'].forEach((headerText) => {
+          const th = document.createElement('th');
+          th.textContent = headerText;
+          th.style.border = '1px solid white';
+          th.style.padding = '8px';
+          th.style.textAlign = 'center';
+          headerRow.appendChild(th);
+        });
+        table.appendChild(headerRow);
 
-        // Colonne du rang
-        const rankCell = document.createElement('td');
-        let place = '';
-        if (scoreEntry.rank === 1) {
-          place = 'st';
-        } else if (scoreEntry.rank === 2) {
-          place = 'nd';
-        } else if (scoreEntry.rank === 3) {
-          place = 'rd';
-        } else {
-          place = 'th';
+        // Afficher uniquement les scores de la page actuelle
+        const startIndex = currentPage * scoresPerPage;
+        const endIndex = Math.min(startIndex + scoresPerPage, scores.length);
+
+        let rank = startIndex + 1; // Ajuster le rang pour chaque page
+
+        for (let i = startIndex; i < endIndex; i++) {
+          const scoreEntry = scores[i];
+          const row = document.createElement('tr');
+
+          // Colonne du rang
+          const rankCell = document.createElement('td');
+          let place = ['st', 'nd', 'rd'][rank - 1] || 'th'; // Gestion du suffixe
+          rankCell.textContent = `${rank}${place}`;
+          rankCell.style.border = '1px solid white';
+          rankCell.style.padding = '8px';
+          rankCell.style.textAlign = 'center';
+          row.appendChild(rankCell);
+
+          // Colonne du nom
+          const nameCell = document.createElement('td');
+          nameCell.textContent = scoreEntry.name;
+          nameCell.style.border = '1px solid white';
+          nameCell.style.padding = '8px';
+          nameCell.style.textAlign = 'center';
+          row.appendChild(nameCell);
+
+          // Colonne du score
+          const scoreCell = document.createElement('td');
+          scoreCell.textContent = scoreEntry.score;
+          scoreCell.style.border = '1px solid white';
+          scoreCell.style.padding = '8px';
+          scoreCell.style.textAlign = 'center';
+          row.appendChild(scoreCell);
+
+          // Colonne du temps
+          const timeCell = document.createElement('td');
+          timeCell.textContent = scoreEntry.time;
+          timeCell.style.border = '1px solid white';
+          timeCell.style.padding = '8px';
+          timeCell.style.textAlign = 'center';
+          row.appendChild(timeCell);
+
+          table.appendChild(row);
+          rank++;
         }
-        rankCell.textContent = `${scoreEntry.rank}${place}`;
-        rankCell.style.border = '1px solid white';
-        rankCell.style.padding = '8px';
-        rankCell.style.textAlign = 'center';
-        row.appendChild(rankCell);
 
-        // Colonne du nom
-        const nameCell = document.createElement('td');
-        nameCell.textContent = scoreEntry.name;
-        nameCell.style.border = '1px solid white';
-        nameCell.style.padding = '8px';
-        nameCell.style.textAlign = 'center';
-        row.appendChild(nameCell);
+        // Conteneur du tableau et du bouton
+        const divTable = document.createElement('div');
+        divTable.style.position = 'absolute';
+        divTable.style.top = '50%';
+        divTable.style.left = '50%';
+        divTable.style.transform = 'translate(-50%, -50%)';
+        divTable.style.display = 'flex';
+        divTable.style.flexDirection = 'column';
+        divTable.style.alignItems = 'center';
 
-        // Colonne du score
-        const scoreCell = document.createElement('td');
-        scoreCell.textContent = scoreEntry.score;
-        scoreCell.style.border = '1px solid white';
-        scoreCell.style.padding = '8px';
-        scoreCell.style.textAlign = 'center';
-        row.appendChild(scoreCell);
+        // Bouton Retour au Menu
+        const backButton = document.createElement('button');
+        backButton.textContent = 'Retour au Menu';
+        backButton.style.marginTop = '20px';
+        backButton.style.padding = '10px 20px';
+        backButton.style.backgroundColor = 'rgba(255, 255, 255, 0.8)';
+        backButton.style.border = 'none';
+        backButton.style.cursor = 'pointer';
+        backButton.style.fontSize = '16px';
+        backButton.style.color = 'black';
+        backButton.addEventListener('click', () => {
+          this.menu(); // Revenir au menu principal
+        });
 
-        // Colonne du temps
-        const timeCell = document.createElement('td');
-        timeCell.textContent = scoreEntry.time;
-        timeCell.style.border = '1px solid white';
-        timeCell.style.padding = '8px';
-        timeCell.style.textAlign = 'center';
-        row.appendChild(timeCell);
+        if (currentPage > 0) {
+          // Flèche précédente
+          const prevButton = document.createElement('button');
+          prevButton.textContent = '← Page Précédente';
+          prevButton.style.marginTop = '10px';
+          prevButton.style.padding = '10px 15px';
+          prevButton.style.cursor = 'pointer';
+          prevButton.disabled = currentPage === 0; // Désactiver si première page
+          prevButton.addEventListener('click', () => {
+            currentPage = Math.max(0, currentPage - 1);
+            renderScores();
+          });
+          divTable.appendChild(prevButton);
+        }
 
-        table.appendChild(row);
-      });
+        // Flèche suivante
+        const nextButton = document.createElement('button');
+        nextButton.textContent = 'Page Suivante →';
+        nextButton.style.marginTop = '10px';
+        nextButton.style.padding = '10px 15px';
+        nextButton.style.cursor = 'pointer';
+        nextButton.disabled = endIndex >= scores.length; // Désactiver si dernière page
+        nextButton.addEventListener('click', () => {
+          currentPage = Math.min(Math.ceil(scores.length / scoresPerPage) - 1, currentPage + 1);
+          renderScores();
+        });
 
-      // Bouton Retour au Menu
-      const backButton = document.createElement('button');
-      backButton.textContent = 'Retour au Menu';
-      backButton.style.marginTop = '20px';
-      backButton.style.padding = '10px 20px';
-      backButton.style.backgroundColor = 'rgba(255, 255, 255, 0.8)';
-      backButton.style.border = 'none';
-      backButton.style.cursor = 'pointer';
-      backButton.style.fontSize = '16px';
-      backButton.style.color = 'black';
-      backButton.addEventListener('click', () => {
-        this.menu(); // Revenir au menu principal
-      });
+        // Ajouter les éléments
+        divTable.appendChild(table);
 
-      // Ajouter le tableau et le bouton au conteneur principal
-      divTileMap.appendChild(table);
-      divTileMap.appendChild(backButton);
+        divTable.appendChild(nextButton);
+        divTable.appendChild(backButton);
+        divTileMap.appendChild(divTable);
+      };
+
+      // Rendre la première page
+      renderScores();
     } catch (error) {
       console.error('Erreur lors du chargement des scores :', error);
     }
@@ -189,7 +246,7 @@ export default class Game {
     this.removeEventListeners();
 
     const divTileMap = document.querySelector('#tilemap');
-    divTileMap.innerHTML = '';
+    divTileMap.innerHTML = ''; // Nettoyer le contenu existant
 
     const player = document.createElement('div');
     player.id = 'player';
@@ -199,51 +256,18 @@ export default class Game {
     divTileMap.appendChild(bot);
 
     this.initGame();
-
-    // Création des coeurs pour afficher les vies du joueur
-    const heartBody = document.createElement('div');
-    const body = document.querySelector('body');
-    heartBody.className = 'heart-body';
-    heartBody.style.display = 'flex';
-
-    for (let i = 1; i <= this.player.life; i++) {
-      const heartDiv = document.createElement('div');
-      heartDiv.className = `heart-${i}`;
-      heartDiv.style.width = '64px';
-      heartDiv.style.height = '64px';
-      heartDiv.style.backgroundImage = 'url("assets/img/background/heart1.png")';
-      heartDiv.style.backgroundSize = 'cover';
-
-      heartBody.appendChild(heartDiv);
-    }
-
-    body.appendChild(heartBody);
-
-    //ajout des cles
-    const keyBody = document.createElement('div');
-    keyBody.className = 'key-body';
-    keyBody.style.display = 'flex';
-
-    for (let i = 1; i <= this.cles; i++) {
-      const keyDiv = document.createElement('div');
-      keyDiv.className = `key-${i}`;
-      keyDiv.style.width = '64px';
-      keyDiv.style.height = '64px';
-      keyDiv.style.backgroundImage = 'url("assets/img/map/keyOrigin.png")';
-      keyDiv.style.backgroundSize = 'cover';
-
-      keyBody.appendChild(keyDiv);
-    }
-    body.appendChild(keyBody);
-
+    this.HUD = new HUD(this.player, this.bot);
     document.addEventListener('keydown', this.pauseHandler);
+
+    this.setupPauseButton(); // Ajouter le bouton pause uniquement au démarrage du jeu
+    this.initGame(); // Renommer init() en initGame() pour plus de clarté
   }
 
   initGame() {
     // Map configuration
     this.Countbonus = 6;
     this.bonus = ['Bonus1', 'Bonus2', 'Bonus3'];
-    this.cles = 3;
+    this.key = this.level;
     this.map = [
       [1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1],
       [1, 4, 4, 5, 4, 5, 4, 5, 4, 5, 4, 4, 1],
@@ -259,17 +283,15 @@ export default class Game {
     ];
 
     this.totalBlockBreakable = this.countBlockBreakable();
-    this.tileMap = new TileMap(this.map, this.Countbonus, this.bonus, this.totalBlockBreakable, this.cles);
+    this.tileMap = new TileMap(this.map, this.Countbonus, this.bonus, this.totalBlockBreakable, this.key);
 
     // Initialisation de la carte
     this.tileMap.draw();
 
-    // Création des objets de jeu
-    this.player = new Player();
+    this.player = new Player(this.key, this.level);
     this.bot = new Bot();
     this.heart = new Heart(this.player);
 
-    // Gestion des touches (on ajoute ici la touche "Space" pour déposer la bombe)
     this.keys = {
       ArrowUp: false,
       ArrowDown: false,
@@ -277,7 +299,6 @@ export default class Game {
       ArrowRight: false,
       Space: false,
     };
-
     this.setupEventListeners();
     this.startGameLoop();
   }
@@ -352,6 +373,9 @@ export default class Game {
   }
 
   restartGame() {
+    if (this.HUD) {
+      this.HUD.destroy();
+    }
     this.removeEventListeners();
     const divTileMap = document.querySelector('#tilemap');
     divTileMap.innerHTML = '';
@@ -360,6 +384,9 @@ export default class Game {
   }
 
   returnToMainMenu() {
+    if (this.HUD) {
+      this.HUD.destroy();
+    }
     this.removeEventListeners();
     this.isPaused = false;
     const divTileMap = document.querySelector('#tilemap');
