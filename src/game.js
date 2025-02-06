@@ -3,12 +3,18 @@ import Player from './player.js';
 import Bot from './bot.js';
 import Collision from './collision.js';
 import { Bomb } from "./bomb.js";
+import { startHistory } from './history.js'; // Assurez-vous d’avoir exporté correctement la logique d’histoire
+
+
+
 
 export default class Game {
   constructor() {
     this.isPaused = false;
     document.querySelector('body').__game = this;
     // Ne pas initialiser le jeu ici, juste le menu
+    this.level = 1
+    this.playerName = ''; // Stocke le nom du joueur
     this.menu();
   }
 
@@ -32,15 +38,19 @@ export default class Game {
     menuContainer.style.backgroundImage = "url('assets/img/background/photo2pixel_download.png')";
     menuContainer.style.backgroundSize = "100% 100%";
     menuContainer.style.color = 'white';
-    menuContainer.style.borderRadius = "12px"
+    menuContainer.style.borderRadius = "12px";
 
     // Bouton Start
     const startButton = document.createElement('button');
     startButton.textContent = 'START';
     startButton.style.margin = '10px';
     startButton.addEventListener('click', () => {
-      this.startGame();
-      menuContainer.remove(); // Utiliser remove() au lieu de display none
+      // Démarrer l’histoire avec un callback vers `this.startGame`
+      startHistory(this.level, (playerName) => {
+        this.playerName = playerName; // Stocker le nom du joueur
+        this.startGame(); // Lancer la méthode de la classe Game
+      });
+      menuContainer.remove(); // Supprimer le menu
     });
 
     // Zone d'affichage du score
@@ -56,6 +66,7 @@ export default class Game {
     menuContainer.appendChild(scoreDisplay);
     divTileMap.appendChild(menuContainer);
   }
+
 
   async score() {
     const divTileMap = document.querySelector('#tilemap');
@@ -220,6 +231,7 @@ export default class Game {
     bot.id = "bot";
     divTileMap.appendChild(player);
     divTileMap.appendChild(bot);
+
 
     this.setupPauseButton(); // Ajouter le bouton pause uniquement au démarrage du jeu
     this.initGame(); // Renommer init() en initGame() pour plus de clarté
