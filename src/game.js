@@ -2,7 +2,7 @@ import TileMap from './TileMap.js';
 import Player from './player.js';
 import Bot from './bot.js';
 import Collision from './collision.js';
-import { Bomb } from "./bomb.js";
+import { Bomb } from './bomb.js';
 
 export default class Game {
   constructor() {
@@ -18,7 +18,7 @@ export default class Game {
   handleKeyDown(e) {
     if (this.keys?.hasOwnProperty(e.code)) {
       this.keys[e.code] = true;
-      if (e.code === "Space" && !this.isPaused) {
+      if (e.code === 'Space' && !this.isPaused) {
         this.dropBomb();
       }
     }
@@ -54,9 +54,9 @@ export default class Game {
     menuContainer.style.alignItems = 'center';
     menuContainer.style.height = '100%';
     menuContainer.style.backgroundImage = "url('assets/img/background/photo2pixel_download.png')";
-    menuContainer.style.backgroundSize = "100% 100%";
+    menuContainer.style.backgroundSize = '100% 100%';
     menuContainer.style.color = 'white';
-    menuContainer.style.borderRadius = "12px"
+    menuContainer.style.borderRadius = '12px';
 
     // Bouton Start
     const startButton = document.createElement('button');
@@ -86,7 +86,7 @@ export default class Game {
     divTileMap.innerHTML = ''; // Nettoyer le contenu existant
 
     try {
-      const response = await fetch("back/json_directory/scores.json");
+      const response = await fetch('back/json_directory/scores.json');
       const scores = await response.json();
 
       // Trier les scores par ordre croissant de Rank
@@ -103,7 +103,7 @@ export default class Game {
 
       // Créer l'en-tête du tableau
       const headerRow = document.createElement('tr');
-      ['Rank', 'Nom', 'Score', 'Time'].forEach(headerText => {
+      ['Rank', 'Nom', 'Score', 'Time'].forEach((headerText) => {
         const th = document.createElement('th');
         th.textContent = headerText;
         th.style.border = '1px solid white';
@@ -114,20 +114,20 @@ export default class Game {
       table.appendChild(headerRow);
 
       // Ajouter les scores au tableau
-      scores.forEach(scoreEntry => {
+      scores.forEach((scoreEntry) => {
         const row = document.createElement('tr');
 
         // Colonne du rang
         const rankCell = document.createElement('td');
-        let place = ""
-        if (scoreEntry.rank === 1 ) {
-          place = "st"
+        let place = '';
+        if (scoreEntry.rank === 1) {
+          place = 'st';
         } else if (scoreEntry.rank === 2) {
-          place = "nd"
+          place = 'nd';
         } else if (scoreEntry.rank === 3) {
-          place = "rd"
+          place = 'rd';
         } else {
-          place = "th"
+          place = 'th';
         }
         rankCell.textContent = `${scoreEntry.rank}${place}`;
         rankCell.style.border = '1px solid white';
@@ -190,14 +190,38 @@ export default class Game {
     const divTileMap = document.querySelector('#tilemap');
     divTileMap.innerHTML = '';
 
-    const player = document.createElement("div");
-    player.id = "player";
-    const bot = document.createElement("div");
-    bot.id = "bot";
+    const player = document.createElement('div');
+    player.id = 'player';
+    const bot = document.createElement('div');
+    bot.id = 'bot';
     divTileMap.appendChild(player);
     divTileMap.appendChild(bot);
 
     this.initGame();
+
+    // Création des coeurs pour afficher les vies du joueur
+    const heartBody = document.createElement('div');
+    const body = document.querySelector('body');
+    heartBody.className = 'heart-body';
+    heartBody.style.display = 'flex';
+
+    for (let i = 1; i <= this.player.life; i++) {
+      const heartDiv = document.createElement('div');
+      heartDiv.className = `heart-${i}`;
+      heartDiv.style.width = '64px';
+      heartDiv.style.height = '64px';
+      heartDiv.style.backgroundImage = 'url("assets/img/background/heart1.png")';
+      // heartDiv.style.backgroundImage = 'url("heart-1.png.png")';
+      // heartDiv.style.backgroundPosition = '45px  0'; // Décalage pour chaque cœur
+      heartDiv.style.backgroundSize = 'cover';
+      // heartDiv.style.backgroundRepeat = 'no-repeat';
+
+      // heartDiv.style.backgroundColor = 'red';
+      //heartDiv.style.display = 'block';
+      heartBody.appendChild(heartDiv);
+    }
+
+    body.appendChild(heartBody);
     document.addEventListener('keydown', this.pauseHandler);
   }
 
@@ -343,7 +367,6 @@ export default class Game {
     if (this.isPaused) return;
 
     const cellWidth = 64;
-
 
     // Calcul de la colonne et de la ligne en fonction de la position du joueur
     // On suppose que this.player.x et this.player.y indiquent la position en pixels du joueur.
