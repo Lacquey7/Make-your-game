@@ -2,11 +2,15 @@ let playerName = null;
 
 export function startHistory(level, startGameCallback) {
     if (level === 1) {
-        phase1(startGameCallback);
+        phase1(level, startGameCallback);
+    } else if (level === 2) {
+        phase2(level, startGameCallback)
+    } else {
+        phase3(level, startGameCallback)
     }
 }
 
-function phase1(startGameCallback) {
+function phase1(level, startGameCallback) {
     const divTile = document.querySelector("#tilemap");
     divTile.innerHTML = ''; // Nettoyer l’écran précédent
 
@@ -31,12 +35,12 @@ function phase1(startGameCallback) {
             index++;
         } else {
             clearInterval(typeEffect);
-            createInput(divTile, startGameCallback); // Crée l’input après l’histoire
+            createInput(divTile, level, startGameCallback); // Crée l’input après l’histoire
         }
     }, interval);
 }
 
-function createInput(divTile, startGameCallback) {
+function createInput(divTile, level, startGameCallback) {
     const inputContainer = document.createElement('div');
     inputContainer.style.marginTop = "20px";
 
@@ -62,7 +66,9 @@ function createInput(divTile, startGameCallback) {
         playerName = inputField.value.trim();
         if (playerName) {
             divTile.innerHTML = ''; // Nettoyer la zone pour démarrer le jeu
-            startGameCallback(playerName); // Passer le nom du joueur à `startGame`
+            createFadeEffect(level, () => {
+                startGameCallback(playerName); // Appeler `startGame` après l’animation
+            });
         } else {
             alert("Veuillez entrer un nom valide.");
         }
@@ -71,4 +77,55 @@ function createInput(divTile, startGameCallback) {
     inputContainer.appendChild(inputField);
     inputContainer.appendChild(submitButton);
     divTile.appendChild(inputContainer);
+}
+
+function createFadeEffect(level, loadMapCallback, startGameCallback) {
+    const fadeOverlay = document.createElement('div');
+    fadeOverlay.style.position = 'absolute';
+    fadeOverlay.style.top = '0';
+    fadeOverlay.style.left = '0';
+    fadeOverlay.style.width = '100%';
+    fadeOverlay.style.height = '100%';
+    fadeOverlay.style.backgroundColor = 'black';
+    fadeOverlay.style.color = 'white';
+    fadeOverlay.style.display = 'flex';
+    fadeOverlay.style.justifyContent = 'center';
+    fadeOverlay.style.alignItems = 'center';
+    fadeOverlay.style.fontSize = '40px';
+    fadeOverlay.style.fontWeight = 'bold';
+    fadeOverlay.style.opacity = '0';
+    fadeOverlay.style.transition = 'opacity 1s ease-in-out';
+    fadeOverlay.style.zIndex = '9999'; // Mettre l'overlay au-dessus de tout
+
+    fadeOverlay.textContent = `Niveau ${level}`;
+
+    document.body.appendChild(fadeOverlay);
+
+    // Charger la map en arrière-plan
+    setTimeout(()=> {
+        loadMapCallback();
+    }, 1000)
+
+
+    // Démarrer le fondu noir
+    setTimeout(() => {
+        fadeOverlay.style.opacity = '1';
+    }, 100); // Laisser le DOM s'initialiser avant de déclencher la transition
+
+    // Attendre que l’animation de fondu soit terminée avant de démarrer le jeu
+    setTimeout(() => {
+        fadeOverlay.style.opacity = '0'; // Faire disparaître le fondu
+        setTimeout(() => {
+            fadeOverlay.remove(); // Retirer l’élément du DOM
+            startGameCallback(); // Appeler le callback pour démarrer le jeu
+        }, 1000);
+    }, 2000); // Laisser le texte visible pendant 2 secondes
+}
+
+function phase2(level, startGameCallback) {
+
+}
+
+function phase3(level, starGameCallback) {
+
 }

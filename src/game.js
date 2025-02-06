@@ -5,9 +5,6 @@ import Collision from './collision.js';
 import { Bomb } from "./bomb.js";
 import { startHistory } from './history.js'; // Assurez-vous d’avoir exporté correctement la logique d’histoire
 
-
-
-
 export default class Game {
   constructor() {
     this.isPaused = false;
@@ -66,7 +63,6 @@ export default class Game {
     menuContainer.appendChild(scoreDisplay);
     divTileMap.appendChild(menuContainer);
   }
-
 
   async score() {
     const divTileMap = document.querySelector('#tilemap');
@@ -222,6 +218,7 @@ export default class Game {
   }
 
   startGame() {
+
     const divTileMap = document.querySelector('#tilemap');
     divTileMap.innerHTML = ''; // Nettoyer le contenu existant
 
@@ -241,6 +238,7 @@ export default class Game {
     // Map configuration
     this.Countbonus = 6;
     this.bonus = ['Bonus1', 'Bonus2', 'Bonus3'];
+    this.key = this.level
     this.map = [
       [1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1],
       [1, 4, 4, 5, 4, 5, 4, 5, 4, 5, 4, 4, 1],
@@ -254,12 +252,11 @@ export default class Game {
       [1, 4, 4, 5, 4, 5, 4, 5, 4, 5, 4, 4, 1],
       [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
     ];
-
     this.totalBlockBreakable = this.countBlockBreakable();
     this.tileMap = new TileMap(this.map, this.Countbonus, this.bonus, this.totalBlockBreakable);
     this.tileMap.draw();
 
-    this.player = new Player();
+    this.player = new Player(this.key, this.level);
     this.bot = new Bot();
 
     this.keys = {

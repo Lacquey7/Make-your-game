@@ -1,7 +1,7 @@
 import Collision from './collision.js';
 
 export default class Player {
-  constructor() {
+  constructor(key, level, startGame) {
     this.element = document.getElementById('player');
     this.x = 80;
     this.y = 70;
@@ -9,6 +9,9 @@ export default class Player {
     this.speed = 6;
     this.flame = 3;
     this.name = ""
+    this.getKey = 0
+    this.totalKey = key
+    this.level = level
 
     // Animation properties
     this.frameX = 0;
@@ -25,6 +28,13 @@ export default class Player {
     this.updatePosition();
   }
 
+  addKey() {
+    this.getKey++
+    if(this.getKey === this.totalKey) {
+      this.getKey = 0
+      this.level++
+    }
+  }
   decreaseLife() {
     this.life--;
     console.log(`Vie du joueur : ${this.life}`);
