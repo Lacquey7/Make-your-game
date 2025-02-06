@@ -93,7 +93,6 @@ body {
   height: 40px;
   display: block;
   border-radius: 2px;
-  background-color: red; /* Juste pour mieux voir l'élément */
   animation: bounce 1s infinite;
 }
 

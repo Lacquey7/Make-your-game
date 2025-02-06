@@ -9,9 +9,9 @@ export default class TileMap {
     this.imageBlockUnbreakable = this.#image('bordureRelief.png');
     this.imageHerbe = this.#image('herbe2.png');
     this.imageBlockBreakable = this.#image('block2.png');
-    this.imageBonus1 = this.#image('Bonus1.png');
-    this.imageBonus2 = this.#image('Bonus2.png');
-    this.imageBonus3 = this.#image('Bonus3.png');
+    this.imageBonus1 = this.#image('speed.png');
+    this.imageBonus2 = this.#image('power.png');
+    this.imageBonus3 = this.#image('heart.png');
 
     this.tilesInitialized = false;
     this.randomBlockGetBonus = this.randomBlockGetBonus();
