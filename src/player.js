@@ -137,7 +137,7 @@ export default class Player {
     this.x = boundedPosition.x;
     this.y = boundedPosition.y;
 
-    //   //bonus
+    //bonus et key
     const playerRect = document.getElementById('player');
     const bonusPlayer = new Bonus(playerRect, this);
 
