@@ -3,6 +3,7 @@ import Player from './player.js';
 import Bot from './bot.js';
 import Collision from './collision.js';
 import { Bomb } from "./bomb.js";
+import HUD from "./hud.js";
 
 export default class Game {
   constructor() {
@@ -237,6 +238,7 @@ export default class Game {
   startGame() {
     this.removeEventListeners();
 
+
     const divTileMap = document.querySelector('#tilemap');
     divTileMap.innerHTML = '';
 
@@ -247,7 +249,10 @@ export default class Game {
     divTileMap.appendChild(player);
     divTileMap.appendChild(bot);
 
+
+
     this.initGame();
+    this.HUD = new HUD(this.player, this.bot);
     document.addEventListener('keydown', this.pauseHandler);
   }
 
@@ -362,6 +367,9 @@ export default class Game {
   }
 
   restartGame() {
+    if (this.HUD) {
+      this.HUD.destroy();
+    }
     this.removeEventListeners();
     const divTileMap = document.querySelector('#tilemap');
     divTileMap.innerHTML = '';
@@ -370,6 +378,9 @@ export default class Game {
   }
 
   returnToMainMenu() {
+    if (this.HUD) {
+      this.HUD.destroy();
+    }
     this.removeEventListeners();
     this.isPaused = false;
     const divTileMap = document.querySelector('#tilemap');

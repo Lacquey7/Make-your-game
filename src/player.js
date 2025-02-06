@@ -7,9 +7,9 @@ export default class Player {
     this.element = document.getElementById('player');
     this.x = 80;
     this.y = 70;
-    this.life = 4;
-    this.speed = 6;
-    this.flame = 3;
+    this.life = 2;
+    this.speed = 2;
+    this.flame = 1;
 
     // Animation
     this.frameX = 0;
@@ -29,7 +29,11 @@ export default class Player {
 
   decreaseLife() {
     this.life--;
-    console.log(`Vie du joueur : ${this.life}`);
+    // Mettre à jour le HUD
+    const game = document.querySelector('body').__game;
+    if (game && game.HUD) {
+      game.HUD.updateLife();
+    }
   }
 
   updatePosition() {

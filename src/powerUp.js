@@ -1,7 +1,9 @@
 export default class Bonus {
   constructor(player) {
     this.player = player; // Référence à l'élément du joueur
-    this.bonuses = document.querySelectorAll('.bonus'); // Récupère tous les éléments bonus
+    this.playerInstance = document.querySelector('body').__game.player; // Instance du joueur
+    this.hud = document.querySelector('body').__game.HUD; // Instance du HUD
+    this.bonuses = document.querySelectorAll('.bonus');
   }
 
   checkCollisions() {
@@ -18,24 +20,43 @@ export default class Bonus {
       };
 
       if (this.isCollidingBonus(playerCollisionRect, bonRect)) {
-        console.log('bonus detecté:', bon.classList[1]);
-        this.activateBonus(bon.classList[1]);
-        bon.remove(); // Retire le bonus du jeu
+        const bonusType = bon.classList[1];
+        console.log('bonus detecté:', bonusType);
+        this.activateBonus(bonusType);
+
+        // Mettre à jour le score
+        this.hud.updateScore(100);
+
+        bon.remove();
       }
     }
   }
 
   isCollidingBonus(playerRect, bonusRect) {
-    return !(playerRect.x + playerRect.width < bonusRect.x || playerRect.x > bonusRect.x + bonusRect.width || playerRect.y + playerRect.height < bonusRect.y || playerRect.y > bonusRect.y + bonusRect.height);
+    return !(
+        playerRect.x + playerRect.width < bonusRect.x ||
+        playerRect.x > bonusRect.x + bonusRect.width ||
+        playerRect.y + playerRect.height < bonusRect.y ||
+        playerRect.y > bonusRect.y + bonusRect.height
+    );
   }
 
   activateBonus(bonusType) {
-    if (bonusType === 'Bonus1') {
-      console.log('bonus-heart actif');
-    } else if (bonusType === 'Bonus2') {
-      console.log('bonus-flame actif');
-    } else if (bonusType === 'Bonus3') {
-      console.log('bonus-speed actif');
+    switch(bonusType) {
+      case 'Bonus1': // Bonus vie
+        this.playerInstance.speed = Math.min(this.playerInstance.speed + 1, 8);
+        this.hud.updateSpeed();
+        break;
+
+      case 'Bonus2': // Bonus flamme
+        this.playerInstance.flame = Math.min(this.playerInstance.flame + 1, 6);
+        this.hud.updateFlame();
+        break;
+
+      case 'Bonus3': // Bonus vitesse
+        this.playerInstance.life = Math.min(this.playerInstance.life + 1, 4);
+        this.hud.updateLife();
+        break;
     }
   }
 }
