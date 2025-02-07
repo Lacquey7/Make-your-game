@@ -320,3 +320,28 @@ button:hover {
   gap: 10px;
   margin-top: 20px;
 }
+
+
+.key {
+  position: absolute;
+  top: 22px;
+  left: 16px;
+  width: 32px;
+  height: 32px;
+  display: block;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  animation: bounce 1s infinite;
+}
+.porte {
+  position: absolute;
+  top: 22px;
+  left: 16px;
+  width: 32px;
+  height: 32px;
+  display: block;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
