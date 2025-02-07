@@ -2,34 +2,36 @@ import TileMap from './TileMap.js';
 import Player from './player.js';
 import Bot from './bot.js';
 import Collision from './collision.js';
-import { Bomb } from "./bomb.js";
-import HUD from "./hud.js";
+import { Bomb } from './bomb.js';
+import HUD from './hud.js';
 import { startHistory } from './history.js'; // Assurez-vous d’avoir exporté correctement la logique d’histoire
-import {map} from "./map.js";
+import { map } from './map.js';
 
-export let level = 1
-export let timerGlobal = ""
-export let scoreGlobal = 0
-export let userNameGlobal = ""
+export let timerGlobal = '';
+export let scoreGlobal = 0;
+export let userNameGlobal = '';
+
+let level = 1;
 
 export default class Game {
-  constructor(level) {
+  constructor() {
     this.isPaused = false;
     document.querySelector('body').__game = this;
     // Ne pas initialiser le jeu ici, juste le menu
-    this.level = level
+    this.level = getLevel();
     this.playerName = ''; // Stocke le nom du joueur
     this.keyDownHandler = this.handleKeyDown.bind(this);
     this.keyUpHandler = this.handleKeyUp.bind(this);
     this.pauseHandler = this.handlePause.bind(this);
     this.gameLoopId = null;
+
     this.menu();
   }
 
   handleKeyDown(e) {
     if (this.keys?.hasOwnProperty(e.code)) {
       this.keys[e.code] = true;
-      if (e.code === "Space" && !this.isPaused) {
+      if (e.code === 'Space' && !this.isPaused) {
         this.dropBomb();
       }
     }
@@ -48,6 +50,7 @@ export default class Game {
   }
 
   menu() {
+    console.log('Menu principal');
     const divTileMap = document.querySelector('#tilemap');
     divTileMap.innerHTML = ''; // Nettoyer le contenu existant
 
@@ -65,9 +68,9 @@ export default class Game {
     menuContainer.style.alignItems = 'center';
     menuContainer.style.height = '100%';
     menuContainer.style.backgroundImage = "url('assets/img/background/photo2pixel_download.png')";
-    menuContainer.style.backgroundSize = "100% 100%";
+    menuContainer.style.backgroundSize = '100% 100%';
     menuContainer.style.color = 'white';
-    menuContainer.style.borderRadius = "12px"
+    menuContainer.style.borderRadius = '12px';
 
     // Bouton Start
     const startButton = document.createElement('button');
@@ -75,7 +78,7 @@ export default class Game {
     startButton.style.margin = '10px';
     startButton.addEventListener('click', () => {
       // Démarrer l’histoire avec un callback vers `this.startGame`
-      startHistory(this.level, (playerName) => {
+      startHistory(getLevel(), (playerName) => {
         this.playerName = playerName; // Stocker le nom du joueur
         this.startGame(); // Lancer la méthode de la classe Game
       });
@@ -97,12 +100,14 @@ export default class Game {
   }
 
   async score() {
+    console.log('score');
+
     const divTileMap = document.querySelector('#tilemap');
     divTileMap.innerHTML = ''; // Nettoyer le contenu existant
 
     try {
-      const response = await fetch("http://localhost:8080/score", {
-        method: "GET"
+      const response = await fetch('http://localhost:8080/score', {
+        method: 'GET',
       });
 
       const scores = await response.json();
@@ -125,7 +130,7 @@ export default class Game {
 
         // Créer l'en-tête du tableau
         const headerRow = document.createElement('tr');
-        ['Rank', 'Nom', 'Score', 'Time'].forEach(headerText => {
+        ['Rank', 'Nom', 'Score', 'Time'].forEach((headerText) => {
           const th = document.createElement('th');
           th.textContent = headerText;
           th.style.border = '1px solid white';
@@ -147,7 +152,7 @@ export default class Game {
 
           // Colonne du rang
           const rankCell = document.createElement('td');
-          let place = ["st", "nd", "rd"][rank - 1] || "th"; // Gestion du suffixe
+          let place = ['st', 'nd', 'rd'][rank - 1] || 'th'; // Gestion du suffixe
           rankCell.textContent = `${rank}${place}`;
           rankCell.style.border = '1px solid white';
           rankCell.style.padding = '8px';
@@ -183,14 +188,14 @@ export default class Game {
         }
 
         // Conteneur du tableau et du bouton
-        const divTable = document.createElement("div");
-        divTable.style.position = "absolute";
-        divTable.style.top = "50%";
-        divTable.style.left = "50%";
-        divTable.style.transform = "translate(-50%, -50%)";
-        divTable.style.display = "flex";
-        divTable.style.flexDirection = "column";
-        divTable.style.alignItems = "center";
+        const divTable = document.createElement('div');
+        divTable.style.position = 'absolute';
+        divTable.style.top = '50%';
+        divTable.style.left = '50%';
+        divTable.style.transform = 'translate(-50%, -50%)';
+        divTable.style.display = 'flex';
+        divTable.style.flexDirection = 'column';
+        divTable.style.alignItems = 'center';
 
         // Bouton Retour au Menu
         const backButton = document.createElement('button');
@@ -218,7 +223,7 @@ export default class Game {
             currentPage = Math.max(0, currentPage - 1);
             renderScores();
           });
-          divTable.appendChild(prevButton)
+          divTable.appendChild(prevButton);
         }
 
         // Flèche suivante
@@ -243,42 +248,57 @@ export default class Game {
 
       // Rendre la première page
       renderScores();
-
     } catch (error) {
       console.error('Erreur lors du chargement des scores :', error);
     }
   }
 
   startGame() {
+    console.log('Démarrage du jeu');
     this.removeEventListeners();
-
 
     const divTileMap = document.querySelector('#tilemap');
     divTileMap.innerHTML = ''; // Nettoyer le contenu existant
 
-    const player = document.createElement("div");
-    player.id = "player";
-    const bot = document.createElement("div");
-    bot.id = "bot";
+    const player = document.createElement('div');
+    player.id = 'player';
+    const bot = document.createElement('div');
+    bot.id = 'bot';
     divTileMap.appendChild(player);
     divTileMap.appendChild(bot);
-
 
     this.initGame();
     this.HUD = new HUD(this.player, this.bot);
     document.addEventListener('keydown', this.pauseHandler);
-
   }
 
+  nextLevel() {
+    console.log('Niveau suivant');
+    incrementLevel();
+    this.level = getLevel();
+    if (this.level > 3) {
+    }
+    console.log('Next level:', this.level);
+    startHistory(this.level, (playerName) => {
+      this.playerName = playerName; // Stocker le nom du joueur
+      this.startGame(); // Lancer la méthode de la classe Game
+    });
+  }
 
   initGame() {
+    console.log('Initialisation du jeu');
     // Map configuration
     this.Countbonus = 6;
     this.bonus = ['Bonus1', 'Bonus2', 'Bonus3'];
-    this.map =map(11,13);
+    this.key = this.level;
+    this.map = map(11, 13);
+    this.cle = 1;
 
     this.totalBlockBreakable = this.countBlockBreakable();
-    this.tileMap = new TileMap(this.map, this.Countbonus, this.bonus, this.totalBlockBreakable);
+    this.totalBlockHerbe = this.countBlockHerbe();
+    this.tileMap = new TileMap(this.map, this.Countbonus, this.bonus, this.totalBlockBreakable, this.cle, this.totalBlockHerbe);
+
+    // Initialisation de la carte
     this.tileMap.draw();
 
     this.player = new Player(this.key, this.level);
@@ -311,6 +331,7 @@ export default class Game {
   }
 
   togglePause() {
+    console.log('Pause');
     this.isPaused = !this.isPaused;
 
     let pauseOverlay = document.querySelector('.pause-overlay');
@@ -365,6 +386,7 @@ export default class Game {
   }
 
   restartGame() {
+    console.log('Restart Game');
     if (this.HUD) {
       this.HUD.destroy();
     }
@@ -376,6 +398,8 @@ export default class Game {
   }
 
   returnToMainMenu() {
+    console.log('Main Menu');
+    resetLevel();
     if (this.HUD) {
       this.HUD.destroy();
     }
@@ -397,12 +421,17 @@ export default class Game {
       return count + row.filter((cell) => cell === 5).length;
     }, 0);
   }
+  countBlockHerbe() {
+    return this.map.reduce((count, row) => {
+      return count + row.filter((cell) => cell === 4).length;
+    }, 0);
+  }
 
   dropBomb() {
+    console.log('Drop Bomb');
     if (this.isPaused) return;
 
     const cellWidth = 64;
-
 
     // Calcul de la colonne et de la ligne en fonction de la position du joueur
     // On suppose que this.player.x et this.player.y indiquent la position en pixels du joueur.
@@ -422,6 +451,7 @@ export default class Game {
   }
 
   startGameLoop() {
+    console.log('Game Loop');
     const gameLoop = () => {
       if (this.player && this.bot) {
         this.player.move(this.keys, this.isPaused);
@@ -429,6 +459,7 @@ export default class Game {
 
         if (!this.isPaused && Collision.checkCollision(this.player, this.bot)) {
           console.log('Collision detected!');
+          this.player.decreaseLife();
         }
       }
       this.gameLoopId = requestAnimationFrame(gameLoop);
@@ -440,5 +471,16 @@ export default class Game {
 
 // Lancement du jeu lorsque le DOM est chargé
 document.addEventListener('DOMContentLoaded', () => {
-  new Game(level);
+  new Game();
 });
+export function getLevel() {
+  return level;
+}
+
+export function incrementLevel() {
+  level++;
+}
+
+export function resetLevel() {
+  level = 1;
+}
