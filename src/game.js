@@ -14,7 +14,7 @@ export let userNameGlobal = '';
 let level = 1;
 
 export default class Game {
-  constructor(level) {
+  constructor() {
     this.isPaused = false;
     document.querySelector('body').__game = this;
     // Ne pas initialiser le jeu ici, juste le menu
@@ -292,7 +292,6 @@ export default class Game {
     this.bonus = ['Bonus1', 'Bonus2', 'Bonus3'];
     this.key = this.level;
     this.map = map(11, 13);
-    this.key = this.level;
     this.cle = 1;
 
     this.totalBlockBreakable = this.countBlockBreakable();
