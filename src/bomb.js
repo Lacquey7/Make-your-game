@@ -111,8 +111,10 @@ export class Bomb {
             { dx: 0, dy: -1, isActive: true }
         ];
 
+        // Créer la flamme initiale sur la position de la bombe
         this.createFlame(this.getDivAtPosition(this.x, this.y));
 
+        // Parcourir toutes les directions et générer les flammes instantanément
         for (let direction of directions) {
             for (let i = 1; i <= this.flameLength; i++) {
                 if (!direction.isActive) break;
@@ -126,20 +128,14 @@ export class Bomb {
                     break;
                 }
 
+                // Vérifier les obstacles et arrêter la propagation si nécessaire
                 if (this.checkFlame(targetDiv)) {
                     direction.isActive = false;
                     break;
                 }
 
-                const createFlameWithPauseCheck = () => {
-                    if (!this.game.isPaused) {
-                        this.createFlame(targetDiv);
-                    } else {
-                        setTimeout(createFlameWithPauseCheck, 100);
-                    }
-                };
-
-                setTimeout(createFlameWithPauseCheck, i * 240);
+                // Créer la flamme instantanément
+                this.createFlame(targetDiv);
             }
         }
     }
