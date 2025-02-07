@@ -7,10 +7,10 @@ import HUD from "./hud.js";
 import { startHistory } from './history.js'; // Assurez-vous d’avoir exporté correctement la logique d’histoire
 import {map} from "./map.js";
 
-let level = 1
-let timer = 0
-let score = 0
-let userName = ""
+export let level = 2
+export let timerGlobal = ""
+export let scoreGlobal = 0
+export let userNameGlobal = ""
 
 export default class Game {
   constructor(level) {
@@ -268,9 +268,8 @@ export default class Game {
     this.HUD = new HUD(this.player, this.bot);
     document.addEventListener('keydown', this.pauseHandler);
 
-    this.setupPauseButton(); // Ajouter le bouton pause uniquement au démarrage du jeu
-    this.initGame(); // Renommer init() en initGame() pour plus de clarté
   }
+
 
   initGame() {
     // Map configuration

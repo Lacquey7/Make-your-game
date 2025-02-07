@@ -1,3 +1,5 @@
+import {timerGlobal} from "./game.js";
+
 export default class HUD {
     constructor(player, bot) {
         this.player = player;
@@ -149,7 +151,7 @@ export default class HUD {
         const speed = document.createElement('div');
         speed.style.width = '30px';
         speed.style.height = '30px';
-        speed.style.backgroundImage = "url('/assets/img/bonus/speed.png')";
+        speed.style.backgroundImage = "url('/assets/img/map/speed.png')";
         speed.style.backgroundSize = 'contain';
         speed.style.backgroundRepeat = 'no-repeat';
         return speed;
