@@ -1,3 +1,5 @@
+import {level} from "./game.js";
+
 export class Bomb {
     constructor(x, y, flameLength, player, bot, HUD) {
         this.x = x;
@@ -165,7 +167,7 @@ export class Bomb {
     destroyBlock(targetDiv) {
         targetDiv.classList.remove('block-breakable');
         targetDiv.classList.add('herbe');
-        targetDiv.style.backgroundImage = "url('/assets/img/map/herbe2.png')";
+        targetDiv.style.backgroundImage = `url('/assets/img/map/herbe${1+level}.png')`;
 
         const bonusImage = targetDiv.querySelector('.bonus');
         if (bonusImage) {
