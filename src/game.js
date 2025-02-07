@@ -74,7 +74,7 @@ export default class Game {
     startButton.style.margin = '10px';
     startButton.addEventListener('click', () => {
       // Démarrer l’histoire avec un callback vers `this.startGame`
-      startHistory(this.level, (playerName) => {
+      startHistory(getLevel(), (playerName) => {
         this.playerName = playerName; // Stocker le nom du joueur
         this.startGame(); // Lancer la méthode de la classe Game
       });
@@ -387,6 +387,7 @@ export default class Game {
   }
 
   returnToMainMenu() {
+    resetLevel();
     if (this.HUD) {
       this.HUD.destroy();
     }
