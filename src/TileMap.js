@@ -1,3 +1,5 @@
+import {level} from "./game.js";
+
 export default class TileMap {
   constructor(map, Countbonus, bonus, totalBlockBreakable) {
     this.map = map;
@@ -7,7 +9,7 @@ export default class TileMap {
     this.imageBordureLeftRight = this.#image('block.png');
     this.imageBordureBackFront = this.#image('bordureRelief.png');
     this.imageBlockUnbreakable = this.#image('bordureRelief.png');
-    this.imageHerbe = this.#image('herbe2.png');
+    this.imageHerbe = this.#image(`herbe${1+level}.png`);
     this.imageBlockBreakable = this.#image('block2.png');
     this.imageBonus1 = this.#image('speed.png');
     this.imageBonus2 = this.#image('power.png');

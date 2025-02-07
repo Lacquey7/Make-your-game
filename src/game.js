@@ -4,19 +4,21 @@ import Bot from './bot.js';
 import Collision from './collision.js';
 import { Bomb } from "./bomb.js";
 import HUD from "./hud.js";
-import { startHistory } from './history.js';
+import { startHistory } from './history.js'; // Assurez-vous d’avoir exporté correctement la logique d’histoire
 import {map} from "./map.js";
 
-let level = 2;
-export let globalScore = 0;  // Variable globale pour le score
-let userName = "";
+export let level = 2
+export let timerGlobal = ""
+export let scoreGlobal = 0
+export let userNameGlobal = ""
 
 export default class Game {
   constructor(level) {
     this.isPaused = false;
     document.querySelector('body').__game = this;
-    this.level = level;
-    this.playerName = '';
+    // Ne pas initialiser le jeu ici, juste le menu
+    this.level = level
+    this.playerName = ''; // Stocke le nom du joueur
     this.keyDownHandler = this.handleKeyDown.bind(this);
     this.keyUpHandler = this.handleKeyUp.bind(this);
     this.pauseHandler = this.handlePause.bind(this);
@@ -266,9 +268,8 @@ export default class Game {
     this.HUD = new HUD(this.player, this.bot);
     document.addEventListener('keydown', this.pauseHandler);
 
-    this.setupPauseButton(); // Ajouter le bouton pause uniquement au démarrage du jeu
-    this.initGame(); // Renommer init() en initGame() pour plus de clarté
   }
+
 
   initGame() {
     // Map configuration

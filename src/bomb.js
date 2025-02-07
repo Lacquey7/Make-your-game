@@ -1,5 +1,7 @@
+import {level} from "./game.js";
+
 export class Bomb {
-    constructor(x, y, flameLength, player, bot, HUD) {
+    constructor(x, y, flameLength, player, bot, hud) {
         this.x = x;
         this.y = y;
         this.bombElement = null;
@@ -8,7 +10,7 @@ export class Bomb {
         this.game = document.querySelector('body').__game; // Accès à l'instance du jeu
         this.player = player
         this.bot = bot
-        this.HUD = HUD
+        this.hud = hud
     }
 
     dropBomb() {
@@ -151,7 +153,7 @@ export class Bomb {
             }
             if (targetDiv.classList.contains("block-breakable")) {
                 this.destroyBlock(targetDiv);
-                this.HUD.updateScore(30)
+                this.hud.updateScore(30)
                 return true;
             }
             if (targetDiv.classList.contains("border")) {
@@ -165,7 +167,7 @@ export class Bomb {
     destroyBlock(targetDiv) {
         targetDiv.classList.remove('block-breakable');
         targetDiv.classList.add('herbe');
-        targetDiv.style.backgroundImage = "url('/assets/img/map/herbe2.png')";
+        targetDiv.style.backgroundImage = `url('/assets/img/map/herbe${1+level}.png')`;
 
         const bonusImage = targetDiv.querySelector('.bonus');
         if (bonusImage) {
@@ -218,7 +220,7 @@ export class Bomb {
                     } else {
                         setTimeout(removeFlame, 100);
                     }
-                }, 400);
+                }, 900);
             } else {
                 setTimeout(removeFlame, 100);
             }
@@ -275,7 +277,6 @@ export class Bomb {
     deleteBomb() {
         if (this.bombElement && this.bombElement.parentNode) {
             const explosionContainer = this.bombElement.parentNode;
-            this.checkCollisionWithPlayerOrBot(explosionContainer);
             this.bombElement.remove();
             this.checkAndRemoveContainer(explosionContainer);
         }

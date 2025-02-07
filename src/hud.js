@@ -1,3 +1,5 @@
+import {timerGlobal} from "./game.js";
+
 export default class HUD {
     constructor(player, bot) {
         this.player = player;
