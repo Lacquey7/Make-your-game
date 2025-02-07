@@ -117,6 +117,61 @@ function createFadeEffect(level, loadMapCallback, startGameCallback) {
   }, 2000); // Laisser le texte visible pendant 2 secondes
 }
 
-function phase2(level, startGameCallback) {}
+function phase2(level, startGameCallback) {
+  const divTile = document.querySelector('#tilemap');
+  divTile.innerHTML = ''; // Nettoyer l’écran précédent
+  const divEnemies = document.createElement('div');
+  divEnemies.style.backgroundColor = 'black';
+  divEnemies.style.color = 'white';
+  divEnemies.style.padding = '10px';
+  divTile.appendChild(divEnemies);
+  const storyPhase2 = 'Les ennemis approchent... Des sbires de Dark Blaster apparaissent !\n' + 'Ils bloquent votre chemin et vous devez les vaincre et trouver la clef avant d’avancer.\n\n' + 'Préparez-vous à affronter des vagues d’ennemis dangereux.';
+  let index = 0;
+  const interval = 10; // Vitesse d'affichage des lettres
+  const typeEffect = setInterval(() => {
+    if (index < storyPhase2.length) {
+      divEnemies.textContent += storyPhase2[index];
+      index++;
+    } else {
+      clearInterval(typeEffect);
+      createContinueButton(divTile, level, startGameCallback);
+    }
+  }, interval);
+}
 
-function phase3(level, starGameCallback) {}
+function phase3(level, startGameCallback) {
+  const divTile = document.querySelector('#tilemap');
+  divTile.innerHTML = ''; // Nettoyer l’écran précédent
+  const divBoss = document.createElement('div');
+  divBoss.style.backgroundColor = 'black';
+  divBoss.style.color = 'white';
+  divBoss.style.padding = '10px';
+  divTile.appendChild(divBoss);
+  const bossIntro = 'Le moment tant attendu est arrivé...\n' + 'Le Boss Final, Dark Blaster, se tient devant vous.\n' + 'Ses pouvoirs sont amplifiés par les diamants qu’il a volés.\n\n' + 'C’est votre dernière chance de sauver Crystal Town.';
+  let index = 0;
+  const interval = 10; // Vitesse d'affichage des lettres
+  const typeEffect = setInterval(() => {
+    if (index < bossIntro.length) {
+      divBoss.textContent += bossIntro[index];
+      index++;
+    } else {
+      clearInterval(typeEffect);
+      createContinueButton(divTile, level, startGameCallback);
+    }
+  }, interval);
+}
+
+function createContinueButton(divTile, level, startGameCallback) {
+  const continueButton = document.createElement('button');
+  continueButton.textContent = 'Continuer';
+  continueButton.style.marginTop = '20px';
+  continueButton.style.padding = '10px';
+  continueButton.style.fontSize = '16px';
+  continueButton.style.cursor = 'pointer';
+  continueButton.addEventListener('click', () => {
+    divTile.innerHTML = ''; // Nettoyer la zone
+    createFadeEffect(level, () => startGameCallback(playerName));
+  });
+
+  divTile.appendChild(continueButton);
+}
