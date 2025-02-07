@@ -2,10 +2,22 @@ import Game from './game.js';
 
 export default class Bonus {
   constructor(player, playerElement, obstacles) {
+    const game = document.querySelector('body').__game;
+    if (!game) {
+      throw new Error('Game instance not found');
+    }
+
     this.playerElement = playerElement; // Référence à l'élément du joueur
+    if (!this.playerElement) {
+      throw new Error('Player element not found');
+    }
+
     this.player = player; // Référence à l'élément du joueur
-    this.playerInstance = document.querySelector('body').__game.player; // Instance du joueur
-    this.hud = document.querySelector('body').__game.HUD; // Instance du HUD
+    if (!this.player) {
+      throw new Error('Player instance not found');
+    }
+    this.playerInstance = game.player; // Instance du joueur
+    this.hud = game.HUD; // Instance du HUD
     this.items = document.querySelectorAll('.bonus, .key, .porte');
     this.key = document.querySelectorAll('.key');
     this.obstacles = obstacles;
@@ -34,7 +46,7 @@ export default class Bonus {
         } else if (porte === 'porte') {
           if (this.playerInstance.getKey === 1) {
             this.animatePorte();
-            new Game().nextLevel();
+            document.querySelector('body').__game.nextLevel();
           } else {
             console.log('verrouiller');
           }
