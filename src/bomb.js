@@ -168,7 +168,7 @@ export class Bomb {
     targetDiv.classList.add('herbe');
     targetDiv.style.backgroundImage = `url('/assets/img/map/herbe${1 + getLevel()}.png')`;
 
-    const bonusImage = targetDiv.querySelector('.bonus');
+    const bonusImage = targetDiv.querySelector('.bonus, .key');
     if (bonusImage) {
       bonusImage.style.display = 'block';
     }
