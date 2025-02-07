@@ -203,6 +203,15 @@ export default class HUD {
     }
 
     async gameOver() {
+        // Arrêter immédiatement le jeu
+        this.game.removeEventListeners();  // Retire tous les event listeners
+        this.game.isPaused = true;  // Met le jeu en pause
+        if (this.game.gameLoopId) {
+            cancelAnimationFrame(this.game.gameLoopId);  // Arrête la boucle de jeu
+            this.game.gameLoopId = null;
+        }
+
+        // Créer l'overlay de fin de jeu
         const gameOverOverlay = document.createElement('div');
         gameOverOverlay.className = 'game-over-overlay';
 

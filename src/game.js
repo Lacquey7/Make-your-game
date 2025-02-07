@@ -7,7 +7,7 @@ import HUD from "./hud.js";
 import { startHistory } from './history.js'; // Assurez-vous d’avoir exporté correctement la logique d’histoire
 import {map} from "./map.js";
 
-export let level = 2
+export let level = 3
 export let timerGlobal = ""
 export let scoreGlobal = 0
 export let userNameGlobal = ""
