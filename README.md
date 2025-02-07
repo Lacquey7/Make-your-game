@@ -14,7 +14,7 @@ Welcome to **Bomberman**! The goal is simple: explore the arena, break the crate
 ## 🕹️ **Gameplay**
 1. The player is placed in an arena filled with destructible crates and indestructible walls.
 2. Use **bombs** to destroy the crates and reveal what’s inside.
-3. Some crates may contain bonuses, or the key you’re looking for.
+3. Some crates may contain bonuses or the key you’re looking for.
 4. Once you’ve obtained the key, head to the **exit door** to win.
 
 ---
@@ -33,7 +33,7 @@ Welcome to **Bomberman**! The goal is simple: explore the arena, break the crate
 
 ## 🛠️ **Technologies Used**
 - **Main Language**: JavaScript
-- **Game Engine**: HTML5 
+- **Game Engine**: HTML5
 - **Styling**: CSS for user interface
 
 ---
@@ -64,6 +64,7 @@ Welcome to **Bomberman**! The goal is simple: explore the arena, break the crate
     │   ├── font/           # Game fonts
     │   └── img/            # Game-related images (player, crates, bombs, etc.) 
     └── README.md           # Project documentation (this file)
+```
 
 ## 📧 **Contributors**
 - Mohamed-Amine Tliche
