@@ -1,7 +1,7 @@
 # **Bomberman - README**
 
 ## 📖 **Project Description**
-Welcome to **Bomberman**! The goal is simple: explore the arena, break the crates, and find the hidden key to unlock the exit door. But beware—some crates may surprise you. Can you be quick and strategic enough to escape before it's too late?
+Welcome to **Bomberman**! The goal is simple: explore the arena, break the crates, and find the hidden key to unlock the exit door. Can you be quick and strategic enough to escape ?
 
 ---
 
@@ -44,11 +44,10 @@ Welcome to **Bomberman**! The goal is simple: explore the arena, break the crate
 /make-your-game
     ├── index.html          # Main game page (the entry point of the game)
     ├── style.css           # CSS for game styling and layout
-    ├── main.go             # Backend entry point (if using Go for server logic)
     ├── back/               # Backend-related scripts and logic
     │   └── main.go
-    ├── json_directory/     # Directory containing game data in JSON format
-    │   └── (JSON data files)
+    │    └── json_directory/     # Directory containing game data in JSON format
+    │       └── (JSON data files)
     ├── src/                # All game scripts and logic
     │   ├── bomb.js         # Logic for placing and detonating bombs
     │   ├── bot.js          # Bot/AI behavior (if applicable)
