@@ -78,7 +78,7 @@ export default class Bonus {
 
       case 'Bonus3': // Bonus vitesse
         this.playerInstance.life = Math.min(this.playerInstance.life + 1, 4);
-        this.hud.updateLife();
+        this.hud.updateHearts();
         break;
       case 'key':
         this.playerInstance.getKey++;

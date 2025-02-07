@@ -7,15 +7,18 @@ import HUD from './hud.js';
 import { startHistory } from './history.js'; // Assurez-vous d’avoir exporté correctement la logique d’histoire
 import { map } from './map.js';
 
+export let timerGlobal = '';
+export let scoreGlobal = 0;
+export let userNameGlobal = '';
+
 let level = 1;
 
 export default class Game {
-  constructor() {
+  constructor(level) {
     this.isPaused = false;
     document.querySelector('body').__game = this;
     // Ne pas initialiser le jeu ici, juste le menu
     this.level = getLevel();
-
     this.playerName = ''; // Stocke le nom du joueur
     this.keyDownHandler = this.handleKeyDown.bind(this);
     this.keyUpHandler = this.handleKeyUp.bind(this);
@@ -47,6 +50,7 @@ export default class Game {
   }
 
   menu() {
+    console.log('Menu principal');
     const divTileMap = document.querySelector('#tilemap');
     divTileMap.innerHTML = ''; // Nettoyer le contenu existant
 
@@ -96,6 +100,8 @@ export default class Game {
   }
 
   async score() {
+    console.log('score');
+
     const divTileMap = document.querySelector('#tilemap');
     divTileMap.innerHTML = ''; // Nettoyer le contenu existant
 
@@ -248,6 +254,7 @@ export default class Game {
   }
 
   startGame() {
+    console.log('Démarrage du jeu');
     this.removeEventListeners();
 
     const divTileMap = document.querySelector('#tilemap');
@@ -266,6 +273,7 @@ export default class Game {
   }
 
   nextLevel() {
+    console.log('Niveau suivant');
     incrementLevel();
     this.level = getLevel();
     if (this.level > 3) {
@@ -278,12 +286,14 @@ export default class Game {
   }
 
   initGame() {
+    console.log('Initialisation du jeu');
     // Map configuration
     this.Countbonus = 6;
     this.bonus = ['Bonus1', 'Bonus2', 'Bonus3'];
     this.key = this.level;
+    this.map = map(11, 13);
+    this.key = this.level;
     this.cle = 1;
-    this.map = map[this.level - 1];
 
     this.totalBlockBreakable = this.countBlockBreakable();
     this.totalBlockHerbe = this.countBlockHerbe();
@@ -322,6 +332,7 @@ export default class Game {
   }
 
   togglePause() {
+    console.log('Pause');
     this.isPaused = !this.isPaused;
 
     let pauseOverlay = document.querySelector('.pause-overlay');
@@ -376,6 +387,7 @@ export default class Game {
   }
 
   restartGame() {
+    console.log('Restart Game');
     if (this.HUD) {
       this.HUD.destroy();
     }
@@ -387,6 +399,7 @@ export default class Game {
   }
 
   returnToMainMenu() {
+    console.log('Main Menu');
     resetLevel();
     if (this.HUD) {
       this.HUD.destroy();
@@ -416,6 +429,7 @@ export default class Game {
   }
 
   dropBomb() {
+    console.log('Drop Bomb');
     if (this.isPaused) return;
 
     const cellWidth = 64;
@@ -433,15 +447,16 @@ export default class Game {
     const flameLength = this.player.flame;
 
     // Création de la bombe en lui passant sa position et la longueur de l'explosion
-    const bomb = new Bomb(bombX, bombY, flameLength, this.player, this.bot);
+    const bomb = new Bomb(bombX, bombY, flameLength, this.player, this.bot, this.HUD);
     bomb.dropBomb();
   }
 
   startGameLoop() {
+    console.log('Game Loop');
     const gameLoop = () => {
       if (this.player && this.bot) {
         this.player.move(this.keys, this.isPaused);
-        //this.bot.moveAutonomously(this.isPaused);
+        this.bot.moveAutonomously(this.isPaused);
 
         if (!this.isPaused && Collision.checkCollision(this.player, this.bot)) {
           console.log('Collision detected!');
@@ -457,9 +472,8 @@ export default class Game {
 
 // Lancement du jeu lorsque le DOM est chargé
 document.addEventListener('DOMContentLoaded', () => {
-  new Game(level);
+  new Game();
 });
-
 export function getLevel() {
   return level;
 }
