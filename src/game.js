@@ -8,6 +8,9 @@ import { startHistory } from './history.js'; // Assurez-vous d’avoir exporté 
 import {map} from "./map.js";
 
 let level = 1
+let timer = 0
+let score = 0
+let userName = ""
 
 export default class Game {
   constructor(level) {
