@@ -1,3 +1,5 @@
+import {level} from "./game.js";
+
 export class Bomb {
     constructor(x, y, flameLength, player, bot) {
         this.x = x;
@@ -163,7 +165,7 @@ export class Bomb {
     destroyBlock(targetDiv) {
         targetDiv.classList.remove('block-breakable');
         targetDiv.classList.add('herbe');
-        targetDiv.style.backgroundImage = "url('/assets/img/map/herbe2.png')";
+        targetDiv.style.backgroundImage = `url('/assets/img/map/herbe${1+level}.png')`;
 
         const bonusImage = targetDiv.querySelector('.bonus');
         if (bonusImage) {
@@ -273,7 +275,6 @@ export class Bomb {
     deleteBomb() {
         if (this.bombElement && this.bombElement.parentNode) {
             const explosionContainer = this.bombElement.parentNode;
-            this.checkCollisionWithPlayerOrBot(explosionContainer);
             this.bombElement.remove();
             this.checkAndRemoveContainer(explosionContainer);
         }
