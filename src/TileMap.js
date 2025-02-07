@@ -83,7 +83,7 @@ export default class TileMap {
                 porteDiv.classList.add('porte');
                 tileDiv.style.position = 'relative';
                 porteDiv.style.backgroundImage = `url(${image.src})`;
-                porteDiv.style.transform = 'translateY(-50px)';
+                //porteDiv.style.transform = 'translateY(-50px)';
 
                 tileDiv.appendChild(porteDiv);
               } else {
