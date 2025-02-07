@@ -4,21 +4,19 @@ import Bot from './bot.js';
 import Collision from './collision.js';
 import { Bomb } from "./bomb.js";
 import HUD from "./hud.js";
-import { startHistory } from './history.js'; // Assurez-vous d’avoir exporté correctement la logique d’histoire
+import { startHistory } from './history.js';
 import {map} from "./map.js";
 
-let level = 1
-let timer = 0
-let score = 0
-let userName = ""
+let level = 2;
+export let globalScore = 0;  // Variable globale pour le score
+let userName = "";
 
 export default class Game {
   constructor(level) {
     this.isPaused = false;
     document.querySelector('body').__game = this;
-    // Ne pas initialiser le jeu ici, juste le menu
-    this.level = level
-    this.playerName = ''; // Stocke le nom du joueur
+    this.level = level;
+    this.playerName = '';
     this.keyDownHandler = this.handleKeyDown.bind(this);
     this.keyUpHandler = this.handleKeyUp.bind(this);
     this.pauseHandler = this.handlePause.bind(this);
