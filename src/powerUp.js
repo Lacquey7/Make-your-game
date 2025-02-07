@@ -44,7 +44,7 @@ export default class Bonus {
   activateBonus(bonusType) {
     switch(bonusType) {
       case 'Bonus1': // Bonus vie
-        this.playerInstance.speed = Math.min(this.playerInstance.speed + 1, 8);
+        this.playerInstance.speed = Math.min(this.playerInstance.speed + 0.5, 8);
         this.hud.updateSpeed();
         break;
 
