@@ -263,9 +263,6 @@ export default class Game {
     this.initGame();
     this.HUD = new HUD(this.player, this.bot);
     document.addEventListener('keydown', this.pauseHandler);
-
-    this.setupPauseButton(); // Ajouter le bouton pause uniquement au démarrage du jeu
-    this.initGame(); // Renommer init() en initGame() pour plus de clarté
   }
 
   nextLevel() {
@@ -279,6 +276,7 @@ export default class Game {
       this.startGame(); // Lancer la méthode de la classe Game
     });
   }
+
   initGame() {
     // Map configuration
     this.Countbonus = 6;
