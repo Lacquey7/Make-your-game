@@ -50,10 +50,10 @@ Welcome to **Bomberman**! The goal is simple: explore the arena, break the crate
     │       └── (JSON data files)
     ├── src/                # All game scripts and logic
     │   ├── bomb.js         # Logic for placing and detonating bombs
-    │   ├── bot.js          # Bot/AI behavior (if applicable)
+    │   ├── bot.js          # Bot/AI behavior 
     │   ├── collision.js    # Collision detection system
     │   ├── game.js         # Main game control and flow
-    │   ├── history.js      # Game state history (if implemented)
+    │   ├── history.js      # Game state history 
     │   ├── hud.js          # Heads-up display (HUD) management
     │   ├── map.js          # Map generation and management
     │   ├── player.js       # Player movement and actions
@@ -62,7 +62,7 @@ Welcome to **Bomberman**! The goal is simple: explore the arena, break the crate
     ├── assets/             # Contains images, sounds, and other game assets
     │   ├── font/           # Game fonts
     │   └── img/            # Game-related images (player, crates, bombs, etc.) 
-    └── README.md           # Project documentation (this file)
+    └── README.md           # Project documentation
 ```
 
 ## 📧 **Contributors**
