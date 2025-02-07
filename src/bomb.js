@@ -1,4 +1,4 @@
-import {level} from "./game.js";
+import { level } from "./game.js";
 
 export class Bomb {
     constructor(x, y, flameLength, player, bot, HUD) {
@@ -8,9 +8,9 @@ export class Bomb {
         this.flameLength = flameLength;
         this.tileSize = 64;
         this.game = document.querySelector('body').__game; // Accès à l'instance du jeu
-        this.player = player
-        this.bot = bot
-        this.HUD = HUD
+        this.player = player;
+        this.bot = bot;
+        this.HUD = HUD;
     }
 
     dropBomb() {
@@ -82,7 +82,6 @@ export class Bomb {
                                 this.deleteBomb();
                                 this.flame();
                             } else {
-                                // Si le jeu est en pause, on attend la reprise
                                 const checkPause = setInterval(() => {
                                     if (!this.game.isPaused) {
                                         this.deleteBomb();
@@ -132,16 +131,15 @@ export class Bomb {
                     break;
                 }
 
-                // Ajout d'une vérification de pause pour la propagation des flammes
                 const createFlameWithPauseCheck = () => {
                     if (!this.game.isPaused) {
                         this.createFlame(targetDiv);
                     } else {
-                        createFlameWithPauseCheck
+                        setTimeout(createFlameWithPauseCheck, 100);
                     }
                 };
 
-                setTimeout(createFlameWithPauseCheck, i );
+                setTimeout(createFlameWithPauseCheck, i * 240);
             }
         }
     }
@@ -153,7 +151,7 @@ export class Bomb {
             }
             if (targetDiv.classList.contains("block-breakable")) {
                 this.destroyBlock(targetDiv);
-                this.HUD.updateScore(30)
+                this.HUD.updateScore(30);
                 return true;
             }
             if (targetDiv.classList.contains("border")) {
@@ -163,11 +161,10 @@ export class Bomb {
         return false;
     }
 
-
     destroyBlock(targetDiv) {
         targetDiv.classList.remove('block-breakable');
         targetDiv.classList.add('herbe');
-        targetDiv.style.backgroundImage = `url('/assets/img/map/herbe${1+level}.png')`;
+        targetDiv.style.backgroundImage = `url('/assets/img/map/herbe${1 + level}.png')`;
 
         const bonusImage = targetDiv.querySelector('.bonus');
         if (bonusImage) {
@@ -229,20 +226,23 @@ export class Bomb {
         setTimeout(removeFlame, this.flameLength * 240);
     }
 
-    // Reste des méthodes inchangées...
     checkCollisionWithPlayerOrBot(element) {
         const flameRect = element.getBoundingClientRect();
         const player = document.querySelector('#player');
         const bot = document.querySelector('#bot');
 
-        if (player && this.isColliding(flameRect, player.getBoundingClientRect())) {
+        if (player && this.isColliding(flameRect, player.getBoundingClientRect()) && !player.hasBeenDamaged) {
             console.log("Collision détectée avec le joueur !");
             this.removePlayerLife();
+            player.hasBeenDamaged = true;
+            setTimeout(() => player.hasBeenDamaged = false, 500);
         }
 
-        if (bot && this.isColliding(flameRect, bot.getBoundingClientRect())) {
+        if (bot && this.isColliding(flameRect, bot.getBoundingClientRect()) && !bot.hasBeenDamaged) {
             console.log("Collision détectée avec le bot !");
             this.removeBotLife();
+            bot.hasBeenDamaged = true;
+            setTimeout(() => bot.hasBeenDamaged = false, 500);
         }
     }
 
@@ -262,8 +262,8 @@ export class Bomb {
     }
 
     removeBotLife() {
-        if(this.bot) {
-            this.bot.decreaseLife()
+        if (this.bot) {
+            this.bot.decreaseLife();
         }
     }
 
@@ -277,7 +277,6 @@ export class Bomb {
     deleteBomb() {
         if (this.bombElement && this.bombElement.parentNode) {
             const explosionContainer = this.bombElement.parentNode;
-            this.checkCollisionWithPlayerOrBot(explosionContainer);
             this.bombElement.remove();
             this.checkAndRemoveContainer(explosionContainer);
         }
@@ -295,8 +294,4 @@ export class Bomb {
 
         return document.querySelector(`.grid-container > div:nth-child(${index})`);
     }
-
-
-
-
 }
