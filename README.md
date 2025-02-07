@@ -66,8 +66,7 @@ Welcome to **Bomberman**! The goal is simple: explore the arena, break the crate
 ```
 
 ## 📧 **Contributors**
-- Mohamed-Amine Tliche
-- Romain Savary
-- Samuel Quibel
-
+- [Mohamed-Amine Tliche](https://github.com/Lacquey7)
+- [Romain Savary](https://github.com/MrFruchard)
+- [Samuel Quibel](https://github.com/KCsam11)  
 Thank you for playing and good luck! 🎉
