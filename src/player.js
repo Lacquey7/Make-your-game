@@ -3,14 +3,13 @@ import Collision from './collision.js';
 import Bonus from './powerUp.js';
 
 export default class Player {
-  constructor(key, level, startGame) {
+  constructor(key, level) {
     this.element = document.getElementById('player');
     this.x = 80;
     this.y = 70;
-    this.life = 4;
+    this.life = 1;
     this.speed = 3;
     this.flame = 1;
-    this.flame = 3;
     this.name = '';
     this.getKey = 0;
     this.totalKey = key;
@@ -28,7 +27,6 @@ export default class Player {
     this.mapWidth = 832; // exemple
     this.mapHeight = 704; // exemple
 
-    this.obstacles = document.querySelectorAll('.block-unbreakable, .border, .block-breakable');
     // Position initiale
     this.updatePosition();
   }
@@ -121,7 +119,6 @@ export default class Player {
     }
 
     this.obstacles = document.querySelectorAll('.block-unbreakable, .border, .block-breakable, .porte');
-    // const obstacles = document.querySelectorAll('.block-unbreakable, .border, .block-breakable');
     const size = {
       width: this.element.offsetWidth,
       height: this.element.offsetHeight,

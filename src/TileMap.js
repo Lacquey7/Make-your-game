@@ -10,7 +10,7 @@ export default class TileMap {
     this.imageBordureLeftRight = this.#image('block.png');
     this.imageBordureBackFront = this.#image('bordureRelief.png');
     this.imageBlockUnbreakable = this.#image('bordureRelief.png');
-    this.imageHerbe = this.#image('herbe2.png');
+    this.imageHerbe = this.#image(`herbe${1 + getLevel()}.png`);
     this.imageBlockBreakable = this.#image('block2.png');
     this.imageBonus1 = this.#image('speed.png');
     this.imageBonus2 = this.#image('power.png');
@@ -183,28 +183,14 @@ export default class TileMap {
   }
 
   #addRandomBonus(tileDiv) {
-    let image = null;
     let r = Math.floor(Math.random() * this.bonus.length);
-    switch (r) {
-      case 0:
-        image = this.imageBonus1;
-        break;
-      case 1:
-        image = this.imageBonus2;
-        break;
-      case 2:
-        image = this.imageBonus3;
-        break;
-    }
-
     const bonusImage = document.createElement('div');
-    bonusImage.style.backgroundImage = `url(${image.src})`;
+
     bonusImage.classList.add('bonus', this.bonus[r]);
+    bonusImage.style.display = 'none'; // Le bonus sera caché initialement
 
     // Assurez-vous que le parent a une position relative
     tileDiv.style.position = 'relative';
-
-    bonusImage.style.display = 'none';
     tileDiv.appendChild(bonusImage);
   }
 
