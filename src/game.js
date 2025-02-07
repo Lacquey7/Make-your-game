@@ -5,18 +5,23 @@ import Collision from './collision.js';
 import { Bomb } from './bomb.js';
 import HUD from './hud.js';
 import { startHistory } from './history.js'; // Assurez-vous d’avoir exporté correctement la logique d’histoire
+import { map } from './map.js';
+
+let level = 1;
 
 export default class Game {
   constructor() {
     this.isPaused = false;
     document.querySelector('body').__game = this;
     // Ne pas initialiser le jeu ici, juste le menu
-    this.level = 1;
+    this.level = getLevel();
+
     this.playerName = ''; // Stocke le nom du joueur
     this.keyDownHandler = this.handleKeyDown.bind(this);
     this.keyUpHandler = this.handleKeyUp.bind(this);
     this.pauseHandler = this.handlePause.bind(this);
     this.gameLoopId = null;
+
     this.menu();
   }
 
@@ -263,28 +268,28 @@ export default class Game {
     this.initGame(); // Renommer init() en initGame() pour plus de clarté
   }
 
+  nextLevel() {
+    incrementLevel();
+    this.level = getLevel();
+    if (this.level > 3) {
+    }
+    console.log('Next level:', this.level);
+    startHistory(this.level, (playerName) => {
+      this.playerName = playerName; // Stocker le nom du joueur
+      this.startGame(); // Lancer la méthode de la classe Game
+    });
+  }
   initGame() {
     // Map configuration
     this.Countbonus = 6;
     this.bonus = ['Bonus1', 'Bonus2', 'Bonus3'];
     this.key = this.level;
     this.cle = 1;
-    this.map = [
-      [1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1],
-      [1, 4, 4, 5, 4, 5, 4, 5, 4, 5, 4, 4, 1],
-      [1, 4, 3, 4, 3, 4, 3, 4, 3, 4, 3, 4, 1],
-      [1, 5, 4, 5, 4, 5, 4, 5, 4, 5, 4, 5, 1],
-      [1, 4, 3, 4, 3, 4, 3, 4, 3, 4, 3, 4, 1],
-      [1, 4, 4, 5, 4, 5, 4, 5, 4, 5, 4, 4, 1],
-      [1, 4, 3, 4, 3, 4, 3, 4, 3, 4, 3, 4, 1],
-      [1, 5, 4, 5, 4, 5, 4, 5, 4, 5, 4, 5, 1],
-      [1, 4, 3, 4, 3, 4, 3, 4, 3, 4, 3, 4, 1],
-      [1, 4, 4, 5, 4, 5, 4, 5, 4, 5, 4, 4, 1],
-      [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-    ];
+    this.map = map[this.level - 1];
 
     this.totalBlockBreakable = this.countBlockBreakable();
-    this.tileMap = new TileMap(this.map, this.Countbonus, this.bonus, this.totalBlockBreakable, this.cle);
+    this.totalBlockHerbe = this.countBlockHerbe();
+    this.tileMap = new TileMap(this.map, this.Countbonus, this.bonus, this.totalBlockBreakable, this.cle, this.totalBlockHerbe);
 
     // Initialisation de la carte
     this.tileMap.draw();
@@ -405,6 +410,11 @@ export default class Game {
       return count + row.filter((cell) => cell === 5).length;
     }, 0);
   }
+  countBlockHerbe() {
+    return this.map.reduce((count, row) => {
+      return count + row.filter((cell) => cell === 4).length;
+    }, 0);
+  }
 
   dropBomb() {
     if (this.isPaused) return;
@@ -432,7 +442,7 @@ export default class Game {
     const gameLoop = () => {
       if (this.player && this.bot) {
         this.player.move(this.keys, this.isPaused);
-        this.bot.moveAutonomously(this.isPaused);
+        //this.bot.moveAutonomously(this.isPaused);
 
         if (!this.isPaused && Collision.checkCollision(this.player, this.bot)) {
           console.log('Collision detected!');
@@ -448,5 +458,17 @@ export default class Game {
 
 // Lancement du jeu lorsque le DOM est chargé
 document.addEventListener('DOMContentLoaded', () => {
-  new Game();
+  new Game(level);
 });
+
+export function getLevel() {
+  return level;
+}
+
+export function incrementLevel() {
+  level++;
+}
+
+export function resetLevel() {
+  level = 1;
+}

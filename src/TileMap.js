@@ -1,5 +1,7 @@
+import { getLevel } from './game.js';
+
 export default class TileMap {
-  constructor(map, Countbonus, bonus, totalBlockBreakable, cleCurrent) {
+  constructor(map, Countbonus, bonus, totalBlockBreakable, cleCurrent, totalBlockHerbe) {
     this.map = map;
     this.Countbonus = Countbonus;
     this.bonus = bonus;
@@ -14,12 +16,14 @@ export default class TileMap {
     this.imageBonus2 = this.#image('power.png');
     this.imageBonus3 = this.#image('heart.png');
     this.imageKey = this.#image('keyOrigin.png');
-    this.imagePorte = this.#image('porte2.png');
+    this.imagePorte = this.#image('porte1.png');
 
     this.tilesInitialized = false;
     this.randomBlockGetBonus = this.randomBlockGetBonus();
     this.randomBlockGetKey = this.randomBlockGetKey(this.randomBlockGetBonus);
 
+    this.totalBlockHerbe = totalBlockHerbe;
+    this.level = getLevel();
     this.currentBlock = 0;
     this.currentHerbe = 0;
   }
@@ -65,44 +69,65 @@ export default class TileMap {
             break;
           case 4:
             this.currentHerbe++;
-            if (this.currentHerbe === 54) {
+            if (this.level == 3) {
               tileDiv.classList.add('herbe');
               image = this.imageHerbe;
               tileDiv.style.backgroundImage = `url(${image.src})`;
-              image = this.imagePorte;
-              const porteDiv = document.createElement('div');
-              porteDiv.classList.add('porte');
-              tileDiv.style.position = 'relative';
-              porteDiv.style.backgroundImage = `url(${image.src})`;
-              porteDiv.style.transform = 'translateY(-54px)';
-
-              tileDiv.appendChild(porteDiv);
             } else {
-              tileDiv.classList.add('herbe');
-              image = this.imageHerbe;
-              tileDiv.style.backgroundImage = `url(${image.src})`;
+              if (this.currentHerbe === this.totalBlockHerbe - 1) {
+                tileDiv.classList.add('herbe');
+                image = this.imageHerbe;
+                tileDiv.style.backgroundImage = `url(${image.src})`;
+                image = this.imagePorte;
+                const porteDiv = document.createElement('div');
+                porteDiv.classList.add('porte');
+                tileDiv.style.position = 'relative';
+                porteDiv.style.backgroundImage = `url(${image.src})`;
+                porteDiv.style.transform = 'translateY(-50px)';
+
+                tileDiv.appendChild(porteDiv);
+              } else {
+                tileDiv.classList.add('herbe');
+                image = this.imageHerbe;
+                tileDiv.style.backgroundImage = `url(${image.src})`;
+              }
             }
             break;
           case 5:
             tileDiv.classList.add('block-breakable');
             this.currentBlock++;
-            if (this.randomBlockGetBonus.includes(this.currentBlock)) {
-              tileDiv.dataset.breakable = 'true';
-              image = this.imageBlockBreakable;
-              tileDiv.style.backgroundImage = `url(${image.src})`;
-              this.#addRandomBonus(tileDiv);
-              tileDiv.addEventListener('click', () => this.destroyBlock(tileDiv));
-            } else if (this.randomBlockGetKey.includes(this.currentBlock)) {
-              tileDiv.dataset.breakable = 'true';
-              image = this.imageBlockBreakable;
-              tileDiv.style.backgroundImage = `url(${image.src})`;
-              this.#addRandomKey(tileDiv);
-              tileDiv.addEventListener('click', () => this.destroyBlock(tileDiv));
+            if (this.level === 3) {
+              if (this.randomBlockGetBonus.includes(this.currentBlock)) {
+                tileDiv.dataset.breakable = 'true';
+                image = this.imageBlockBreakable;
+                tileDiv.style.backgroundImage = `url(${image.src})`;
+                this.#addRandomBonus(tileDiv);
+                tileDiv.addEventListener('click', () => this.destroyBlock(tileDiv));
+              } else {
+                tileDiv.dataset.breakable = 'true';
+                image = this.imageBlockBreakable;
+                tileDiv.style.backgroundImage = `url(${image.src})`;
+                tileDiv.addEventListener('click', () => this.destroyBlock(tileDiv));
+              }
             } else {
-              tileDiv.dataset.breakable = 'true';
-              image = this.imageBlockBreakable;
-              tileDiv.style.backgroundImage = `url(${image.src})`;
-              tileDiv.addEventListener('click', () => this.destroyBlock(tileDiv));
+              if (this.randomBlockGetBonus.includes(this.currentBlock)) {
+                tileDiv.dataset.breakable = 'true';
+                image = this.imageBlockBreakable;
+                tileDiv.style.backgroundImage = `url(${image.src})`;
+                this.#addRandomBonus(tileDiv);
+                tileDiv.addEventListener('click', () => this.destroyBlock(tileDiv));
+              } else if (this.randomBlockGetKey.includes(this.currentBlock)) {
+                tileDiv.dataset.breakable = 'true';
+                image = this.imageBlockBreakable;
+                tileDiv.style.backgroundImage = `url(${image.src})`;
+                this.#addRandomKey(tileDiv);
+                tileDiv.addEventListener('click', () => this.destroyBlock(tileDiv));
+              } else {
+                tileDiv.dataset.breakable = 'true';
+                image = this.imageBlockBreakable;
+                tileDiv.style.backgroundImage = `url(${image.src})`;
+                tileDiv.addEventListener('click', () => this.destroyBlock(tileDiv));
+              }
             }
             break;
         }
@@ -150,7 +175,7 @@ export default class TileMap {
     let image = this.imageKey;
     const keyImage = document.createElement('div');
     keyImage.style.backgroundImage = `url(${image.src})`;
-    keyImage.classList.add('key', `key${this.cleCurrent}`);
+    keyImage.classList.add('key');
     tileDiv.style.position = 'relative';
 
     keyImage.style.display = 'none';
@@ -191,7 +216,6 @@ export default class TileMap {
     tileDiv.classList.add('herbe');
     const bonusImage = tileDiv.querySelector('.bonus');
     const keyImage = tileDiv.querySelector('.key');
-    console.log(bonusImage, keyImage);
     if (bonusImage) {
       tileDiv.classList.remove('block-breakable');
       bonusImage.style.display = 'block';

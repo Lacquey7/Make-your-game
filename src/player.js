@@ -28,6 +28,7 @@ export default class Player {
     this.mapWidth = 832; // exemple
     this.mapHeight = 704; // exemple
 
+    this.obstacles = document.querySelectorAll('.block-unbreakable, .border, .block-breakable');
     // Position initiale
     this.updatePosition();
   }
@@ -119,7 +120,8 @@ export default class Player {
       this.frameX = 0;
     }
 
-    const obstacles = document.querySelectorAll('.block-unbreakable, .border, .block-breakable');
+    this.obstacles = document.querySelectorAll('.block-unbreakable, .border, .block-breakable, .porte');
+    // const obstacles = document.querySelectorAll('.block-unbreakable, .border, .block-breakable');
     const size = {
       width: this.element.offsetWidth,
       height: this.element.offsetHeight,
@@ -131,7 +133,7 @@ export default class Player {
       y: this.y,
     };
 
-    if (!Collision.getCollisionWithObstacles(horizontalMove, size, obstacles, 7)) {
+    if (!Collision.getCollisionWithObstacles(horizontalMove, size, this.obstacles, 7)) {
       this.x = newX;
     }
 
@@ -141,7 +143,7 @@ export default class Player {
       y: newY,
     };
 
-    if (!Collision.getCollisionWithObstacles(verticalMove, size, obstacles, 7)) {
+    if (!Collision.getCollisionWithObstacles(verticalMove, size, this.obstacles, 7)) {
       this.y = newY;
     }
 
@@ -154,7 +156,7 @@ export default class Player {
 
     //bonus et key
     const playerRect = document.getElementById('player');
-    const bonusPlayer = new Bonus(playerRect, this);
+    const bonusPlayer = new Bonus(playerRect, this, this.obstacles);
 
     bonusPlayer.checkCollisions();
     this.updatePosition();
