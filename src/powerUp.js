@@ -51,7 +51,7 @@ export default class Bonus {
             this.hud.updateScore(100);
           } else if (porte === 'porte') {
             if (this.playerInstance.getKey === 1) {
-              print('portail ouvert');
+              console.log('portail ouvert');
               // setTimeout(() => {
               //   document.querySelector('body').__game.nextLevel();
               // }, 150);
