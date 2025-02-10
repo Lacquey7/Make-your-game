@@ -48,7 +48,7 @@ export default class Bonus {
             this.animatePorte();
             document.querySelector('body').__game.nextLevel();
           } else {
-            console.log('verrouiller');
+            console.log('Vous ne passerez pas !');
           }
         } else {
           this.activateBonus(bonusType);
