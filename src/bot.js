@@ -1,4 +1,5 @@
 import Collision from './collision.js';
+import {getLevel} from "./game.js";
 
 export default class Bot {
     constructor() {
@@ -6,7 +7,7 @@ export default class Bot {
         this.x = 720;
         this.y = 540;
         this.speed = 2;
-        this.life = 2
+        this.life = getLevel()
         this.mapWidth = 832;
         this.mapHeight = 704;
 
@@ -31,8 +32,15 @@ export default class Bot {
         // Mettre à jour le HUD et ajouter des points au score
         const game = document.querySelector('body').__game;
         if (game && game.HUD) {
-            game.HUD.updateLife();
+            this.deleteBot()
             game.HUD.updateScore(50); // Points pour avoir touché le bot
+        }
+    }
+
+   deleteBot() {
+        const divBot = document.querySelector("#bot");
+        if (divBot) {
+            divBot.remove(); // Supprime la div si elle existe
         }
     }
 

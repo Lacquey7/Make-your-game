@@ -200,7 +200,7 @@ export default class HUD {
 
   updateLife() {
     this.updateHearts();
-    if (this.player.life <= 0 || this.bot.life <= 0) {
+    if (this.player.life <= 0) {
       this.gameOver();
     }
   }
