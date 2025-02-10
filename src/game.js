@@ -14,7 +14,7 @@ export let timerGlobal = {
 };
 export let scoreGlobal = 0;
 
-let level = 3;
+let level = 1;
 
 export default class Game {
   constructor() {
@@ -290,7 +290,7 @@ export default class Game {
     incrementLevel();
     this.level = getLevel();
     if (this.level > 3) {
-      this.endGame();
+      this.HUD.gameOver();
       return;
     }
 
