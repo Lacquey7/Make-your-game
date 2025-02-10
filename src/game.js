@@ -14,7 +14,7 @@ export let timerGlobal = {
 };
 export let scoreGlobal = 0;
 
-let level = 1;
+let level = 3;
 
 export default class Game {
   constructor() {
