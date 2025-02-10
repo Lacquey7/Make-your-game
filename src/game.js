@@ -7,9 +7,12 @@ import HUD from './hud.js';
 import { startHistory } from './history.js'; // Assurez-vous d’avoir exporté correctement la logique d’histoire
 import { map } from './map.js';
 
-export let timerGlobal = '';
+export let timerGlobal = {
+  startTime: null,
+  elapsedTime: 0,
+  isPaused: false
+};
 export let scoreGlobal = 0;
-export let userNameGlobal = '';
 
 let level = 1;
 
@@ -255,6 +258,7 @@ export default class Game {
 
   startGame() {
     console.log('Démarrage du jeu');
+
     this.removeEventListeners();
 
     const divTileMap = document.querySelector('#tilemap');
@@ -274,19 +278,32 @@ export default class Game {
 
   nextLevel() {
     console.log('Niveau suivant');
+    // Sauvegarder le score actuel avant de passer au niveau suivant
+    const currentScore = parseInt(document.getElementById('score').textContent);
+    scoreGlobal = currentScore;
+
+    // Sauvegarder le temps écoulé
+    if (this.HUD) {
+      this.HUD.pauseTimer();
+    }
+
     incrementLevel();
     this.level = getLevel();
     if (this.level > 3) {
+      // Gérer la fin du jeu
+      return;
     }
+
     console.log('Next level:', this.level);
     startHistory(this.level, (playerName) => {
-      this.playerName = playerName; // Stocker le nom du joueur
-      this.startGame(); // Lancer la méthode de la classe Game
+      this.playerName = playerName;
+      this.startGame();
     });
   }
 
   initGame() {
     console.log('Initialisation du jeu');
+
     // Map configuration
     this.Countbonus = 6;
     this.bonus = ['Bonus1', 'Bonus2', 'Bonus3'];
@@ -387,6 +404,13 @@ export default class Game {
 
   restartGame() {
     console.log('Restart Game');
+    level = 1;
+    scoreGlobal = 0;
+    timerGlobal = {
+      startTime: new Date(),
+      elapsedTime: 0,
+      isPaused: false
+    }
     if (this.HUD) {
       this.HUD.destroy();
     }
