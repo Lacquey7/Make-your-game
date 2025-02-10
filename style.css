@@ -335,12 +335,22 @@ button:hover {
 }
 .porte {
   position: absolute;
-  top: 22px;
-  left: 16px;
-  width: 32px;
-  height: 32px;
+  top: -10px;
+  left: -5px;
+  width: 70px;
+  height: 70px;
   display: block;
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
+  background-size: 600px auto;
+  transform: scale(0.8);
+  z-index: 10;
 }
+
+/* #porte {
+  width: 42px;
+  height: 50px;
+  position: absolute;
+  background-image: url('./assets/img/player/888.png');
+  transform: scale(1);
+  background-size: 600px auto;
+  z-index: 10;
+} */

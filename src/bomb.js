@@ -112,8 +112,10 @@ export class Bomb {
       { dx: 0, dy: -1, isActive: true },
     ];
 
+    // Flamme centrale
     this.createFlame(this.getDivAtPosition(this.x, this.y));
 
+    // Pour chaque direction
     for (let direction of directions) {
       for (let i = 1; i <= this.flameLength; i++) {
         if (!direction.isActive) break;
@@ -127,41 +129,35 @@ export class Bomb {
           break;
         }
 
-        if (this.checkFlame(targetDiv)) {
+        // Arrêter à un mur indestructible ou une bordure
+        if (targetDiv.classList.contains('block-unbreakable') || targetDiv.classList.contains('border')) {
           direction.isActive = false;
           break;
         }
 
-        // Ajout d'une vérification de pause pour la propagation des flammes
-        const createFlameWithPauseCheck = () => {
-          if (!this.game.isPaused) {
-            this.createFlame(targetDiv);
-          } else {
-            createFlameWithPauseCheck;
-          }
-        };
-
-        setTimeout(createFlameWithPauseCheck, i);
+        // Si c'est un bloc destructible
+        if (targetDiv.classList.contains('block-breakable')) {
+          setTimeout(() => {
+            if (!this.game.isPaused) {
+              this.destroyBlock(targetDiv);
+              this.hud.updateScore(30);
+              this.createFlame(targetDiv);
+            }
+          }, i * 50);
+          direction.isActive = false;  // Arrêter la propagation après le bloc destructible
+          break;  // Sortir de la boucle pour cette direction
+        } else {
+          // Si c'est un espace vide, créer juste la flamme
+          setTimeout(() => {
+            if (!this.game.isPaused) {
+              this.createFlame(targetDiv);
+            }
+          }, i * 50);
+        }
       }
     }
   }
 
-  checkFlame(targetDiv) {
-    if (targetDiv) {
-      if (targetDiv.classList.contains('block-unbreakable')) {
-        return true;
-      }
-      if (targetDiv.classList.contains('block-breakable')) {
-        this.destroyBlock(targetDiv);
-        this.hud.updateScore(30);
-        return true;
-      }
-      if (targetDiv.classList.contains('border')) {
-        return true;
-      }
-    }
-    return false;
-  }
 
   destroyBlock(targetDiv) {
     targetDiv.classList.remove('block-breakable');
@@ -219,7 +215,7 @@ export class Bomb {
           } else {
             setTimeout(removeFlame, 100);
           }
-        }, 900);
+        }, 500);
       } else {
         setTimeout(removeFlame, 100);
       }
