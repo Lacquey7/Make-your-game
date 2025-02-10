@@ -16,7 +16,7 @@ export default class TileMap {
     this.imageBonus2 = this.#image('power.png');
     this.imageBonus3 = this.#image('heart.png');
     this.imageKey = this.#image('keyOrigin.png');
-    this.imagePorte = this.#image('porte1.png');
+    this.imagePorte = this.#image('p.jpg');
 
     this.tilesInitialized = false;
     this.randomBlockGetBonus = this.randomBlockGetBonus();
