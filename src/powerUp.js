@@ -40,22 +40,31 @@ export default class Bonus {
         const bonusType = item.classList[1];
         const key = item.className;
         const porte = item.className;
-        if (key === 'key') {
-          this.activateBonus(key);
-          item.remove();
-        } else if (porte === 'porte') {
-          if (this.playerInstance.getKey === 1) {
-            this.animatePorte();
-            document.querySelector('body').__game.nextLevel();
+
+        // Supprimer l'item immédiatement
+        const itemToRemove = item;
+
+        requestAnimationFrame(() => {
+          if (key === 'key') {
+            this.activateBonus(key);
+            itemToRemove.remove();
+            this.hud.updateScore(100);
+          } else if (porte === 'porte') {
+            if (this.playerInstance.getKey === 1) {
+              this.animatePorte();
+              // Utiliser setTimeout pour le changement de niveau
+              setTimeout(() => {
+                document.querySelector('body').__game.nextLevel();
+              }, 150);
+            }
           } else {
-            console.log('Vous ne passerez pas !');
+            this.activateBonus(bonusType);
+            itemToRemove.remove();
+            this.hud.updateScore(100);
           }
-        } else {
-          this.activateBonus(bonusType);
-          item.remove();
-        }
-        // Mettre à jour le score
-        this.hud.updateScore(100);
+        });
+
+        break; // Sortir de la boucle après avoir traité une collision
       }
     }
   }
