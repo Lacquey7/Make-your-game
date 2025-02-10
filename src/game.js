@@ -10,7 +10,7 @@ import { map } from './map.js';
 export let timerGlobal = {
   startTime: null,
   elapsedTime: 0,
-  isPaused: false
+  isPaused: false,
 };
 export let scoreGlobal = 0;
 
@@ -290,7 +290,7 @@ export default class Game {
     incrementLevel();
     this.level = getLevel();
     if (this.level > 3) {
-      // Gérer la fin du jeu
+      this.HUD.gameOver();
       return;
     }
 
@@ -409,8 +409,8 @@ export default class Game {
     timerGlobal = {
       startTime: new Date(),
       elapsedTime: 0,
-      isPaused: false
-    }
+      isPaused: false,
+    };
     if (this.HUD) {
       this.HUD.destroy();
     }
@@ -472,6 +472,26 @@ export default class Game {
     // Création de la bombe en lui passant sa position et la longueur de l'explosion
     const bomb = new Bomb(bombX, bombY, flameLength, this.player, this.bot, this.HUD);
     bomb.dropBomb();
+  }
+
+  endGame() {
+    console.log('Fin du jeu');
+    this.removeEventListeners();
+    this.isPaused = true;
+    this.HUD.pauseTimer();
+
+    // Sauvegarder le score actuel
+    const currentScore = parseInt(document.getElementById('score').textContent);
+    scoreGlobal = currentScore;
+
+    // Sauvegarder le temps écoulé
+    timerGlobal.elapsedTime = this.HUD.getElapsedTime();
+
+    // Envoyer le score au serveur
+    this.sendScore(this.playerName, currentScore, timerGlobal.elapsedTime);
+
+    // Retourner au menu principal
+    this.returnToMainMenu();
   }
 
   startGameLoop() {

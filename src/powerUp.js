@@ -51,11 +51,11 @@ export default class Bonus {
             this.hud.updateScore(100);
           } else if (porte === 'porte') {
             if (this.playerInstance.getKey === 1) {
-              this.animatePorte();
-              // Utiliser setTimeout pour le changement de niveau
-              setTimeout(() => {
-                document.querySelector('body').__game.nextLevel();
-              }, 150);
+              console.log('portail ouvert');
+              // setTimeout(() => {
+              //   document.querySelector('body').__game.nextLevel();
+              // }, 150);
+              document.querySelector('body').__game.nextLevel();
             }
           } else {
             this.activateBonus(bonusType);
@@ -95,31 +95,32 @@ export default class Bonus {
         break;
     }
   }
-
-  setPorteStyles(porteDiv) {
-    Object.assign(porteDiv.style, {
-      width: '32px',
-      height: '32px',
-      backgroundSize: 'cover',
-      backgroundRepeat: 'no-repeat',
-    });
-  }
-
-  animatePorte() {
-    const porte = document.querySelector('.porte');
-    const images = ['assets/img/map/porte1.png', 'assets/img/map/porte2.png', 'assets/img/map/porte3.png', 'assets/img/map/porte4.png'];
-    this.animateP(porte, images);
-  }
-
-  animateP(porte, images) {
-    this.setPorteStyles(porte);
-    let index = 0;
-    const interval = setInterval(() => {
-      porte.style.backgroundImage = `url(${images[index]})`;
-      index++;
-      if (index >= images.length) {
-        clearInterval(interval);
-      }
-    }, 150);
-  }
 }
+
+//   setPorteStyles(porteDiv) {
+//     Object.assign(porteDiv.style, {
+//       width: '32px',
+//       height: '32px',
+//       backgroundSize: 'cover',
+//       backgroundRepeat: 'no-repeat',
+//     });
+//   }
+
+//   animatePorte() {
+//     const porte = document.querySelector('.porte');
+//     const images = ['assets/img/map/porte1.png', 'assets/img/map/porte2.png', 'assets/img/map/porte3.png', 'assets/img/map/porte4.png'];
+//     this.animateP(porte, images);
+//   }
+
+//   animateP(porte, images) {
+//     this.setPorteStyles(porte);
+//     let index = 0;
+//     const interval = setInterval(() => {
+//       porte.style.backgroundImage = `url(${images[index]})`;
+//       index++;
+//       if (index >= images.length) {
+//         clearInterval(interval);
+//       }
+//     }, 150);
+//   }
+// }

@@ -16,7 +16,7 @@ export default class TileMap {
     this.imageBonus2 = this.#image('power.png');
     this.imageBonus3 = this.#image('heart.png');
     this.imageKey = this.#image('keyOrigin.png');
-    this.imagePorte = this.#image('porte1.png');
+    this.imagePorte = this.#image('portail.png');
 
     this.tilesInitialized = false;
     this.randomBlockGetBonus = this.randomBlockGetBonus();
@@ -69,66 +69,47 @@ export default class TileMap {
             break;
           case 4:
             this.currentHerbe++;
-            if (this.level == 3) {
+            if (this.currentHerbe === this.totalBlockHerbe - 1) {
               tileDiv.classList.add('herbe');
               image = this.imageHerbe;
               tileDiv.style.backgroundImage = `url(${image.src})`;
+              image = this.imagePorte;
+              const porteDiv = document.createElement('div');
+              porteDiv.classList.add('porte');
+              tileDiv.style.position = 'relative';
+              porteDiv.style.backgroundImage = `url(${image.src})`;
+              // porteDiv.style.backgroundPosition = '0px 0px';
+              tileDiv.appendChild(porteDiv);
             } else {
-              if (this.currentHerbe === this.totalBlockHerbe - 1) {
-                tileDiv.classList.add('herbe');
-                image = this.imageHerbe;
-                tileDiv.style.backgroundImage = `url(${image.src})`;
-                image = this.imagePorte;
-                const porteDiv = document.createElement('div');
-                porteDiv.classList.add('porte');
-                tileDiv.style.position = 'relative';
-                porteDiv.style.backgroundImage = `url(${image.src})`;
-                //porteDiv.style.transform = 'translateY(-50px)';
-
-                tileDiv.appendChild(porteDiv);
-              } else {
-                tileDiv.classList.add('herbe');
-                image = this.imageHerbe;
-                tileDiv.style.backgroundImage = `url(${image.src})`;
-              }
+              tileDiv.classList.add('herbe');
+              image = this.imageHerbe;
+              tileDiv.style.backgroundImage = `url(${image.src})`;
             }
+
             break;
           case 5:
             tileDiv.classList.add('block-breakable');
             this.currentBlock++;
-            if (this.level === 3) {
-              if (this.randomBlockGetBonus.includes(this.currentBlock)) {
-                tileDiv.dataset.breakable = 'true';
-                image = this.imageBlockBreakable;
-                tileDiv.style.backgroundImage = `url(${image.src})`;
-                this.#addRandomBonus(tileDiv);
-                tileDiv.addEventListener('click', () => this.destroyBlock(tileDiv));
-              } else {
-                tileDiv.dataset.breakable = 'true';
-                image = this.imageBlockBreakable;
-                tileDiv.style.backgroundImage = `url(${image.src})`;
-                tileDiv.addEventListener('click', () => this.destroyBlock(tileDiv));
-              }
+
+            if (this.randomBlockGetBonus.includes(this.currentBlock)) {
+              tileDiv.dataset.breakable = 'true';
+              image = this.imageBlockBreakable;
+              tileDiv.style.backgroundImage = `url(${image.src})`;
+              this.#addRandomBonus(tileDiv);
+              tileDiv.addEventListener('click', () => this.destroyBlock(tileDiv));
+            } else if (this.randomBlockGetKey.includes(this.currentBlock)) {
+              tileDiv.dataset.breakable = 'true';
+              image = this.imageBlockBreakable;
+              tileDiv.style.backgroundImage = `url(${image.src})`;
+              this.#addRandomKey(tileDiv);
+              tileDiv.addEventListener('click', () => this.destroyBlock(tileDiv));
             } else {
-              if (this.randomBlockGetBonus.includes(this.currentBlock)) {
-                tileDiv.dataset.breakable = 'true';
-                image = this.imageBlockBreakable;
-                tileDiv.style.backgroundImage = `url(${image.src})`;
-                this.#addRandomBonus(tileDiv);
-                tileDiv.addEventListener('click', () => this.destroyBlock(tileDiv));
-              } else if (this.randomBlockGetKey.includes(this.currentBlock)) {
-                tileDiv.dataset.breakable = 'true';
-                image = this.imageBlockBreakable;
-                tileDiv.style.backgroundImage = `url(${image.src})`;
-                this.#addRandomKey(tileDiv);
-                tileDiv.addEventListener('click', () => this.destroyBlock(tileDiv));
-              } else {
-                tileDiv.dataset.breakable = 'true';
-                image = this.imageBlockBreakable;
-                tileDiv.style.backgroundImage = `url(${image.src})`;
-                tileDiv.addEventListener('click', () => this.destroyBlock(tileDiv));
-              }
+              tileDiv.dataset.breakable = 'true';
+              image = this.imageBlockBreakable;
+              tileDiv.style.backgroundImage = `url(${image.src})`;
+              tileDiv.addEventListener('click', () => this.destroyBlock(tileDiv));
             }
+
             break;
         }
         gridContainer.appendChild(tileDiv);
