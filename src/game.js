@@ -14,7 +14,7 @@ export let timerGlobal = {
 };
 export let scoreGlobal = 0;
 
-let level = 3;
+let level = 1;
 
 export default class Game {
   constructor() {
@@ -108,152 +108,165 @@ export default class Game {
     const divTileMap = document.querySelector('#tilemap');
     divTileMap.innerHTML = ''; // Nettoyer le contenu existant
 
+    let scores = [];
+
     try {
       const response = await fetch('http://localhost:8080/score', {
         method: 'GET',
       });
-
-      const scores = await response.json();
-      scores.sort((a, b) => b.score - a.score);
-
-      let currentPage = 0; // Page actuelle
-      const scoresPerPage = 6; // Nombre de scores par page
-
-      const renderScores = () => {
-        divTileMap.innerHTML = ''; // Réinitialiser la divTileMap à chaque changement de page
-
-        // Créer le tableau
-        const table = document.createElement('table');
-        table.style.width = '50%';
-        table.style.borderCollapse = 'collapse';
-        table.style.margin = '20px auto';
-        table.style.color = 'white';
-        table.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
-        table.style.padding = '10px';
-
-        // Créer l'en-tête du tableau
-        const headerRow = document.createElement('tr');
-        ['Rank', 'Nom', 'Score', 'Time'].forEach((headerText) => {
-          const th = document.createElement('th');
-          th.textContent = headerText;
-          th.style.border = '1px solid white';
-          th.style.padding = '8px';
-          th.style.textAlign = 'center';
-          headerRow.appendChild(th);
-        });
-        table.appendChild(headerRow);
-
-        // Afficher uniquement les scores de la page actuelle
-        const startIndex = currentPage * scoresPerPage;
-        const endIndex = Math.min(startIndex + scoresPerPage, scores.length);
-
-        let rank = startIndex + 1; // Ajuster le rang pour chaque page
-
-        for (let i = startIndex; i < endIndex; i++) {
-          const scoreEntry = scores[i];
-          const row = document.createElement('tr');
-
-          // Colonne du rang
-          const rankCell = document.createElement('td');
-          let place = ['st', 'nd', 'rd'][rank - 1] || 'th'; // Gestion du suffixe
-          rankCell.textContent = `${rank}${place}`;
-          rankCell.style.border = '1px solid white';
-          rankCell.style.padding = '8px';
-          rankCell.style.textAlign = 'center';
-          row.appendChild(rankCell);
-
-          // Colonne du nom
-          const nameCell = document.createElement('td');
-          nameCell.textContent = scoreEntry.name;
-          nameCell.style.border = '1px solid white';
-          nameCell.style.padding = '8px';
-          nameCell.style.textAlign = 'center';
-          row.appendChild(nameCell);
-
-          // Colonne du score
-          const scoreCell = document.createElement('td');
-          scoreCell.textContent = scoreEntry.score;
-          scoreCell.style.border = '1px solid white';
-          scoreCell.style.padding = '8px';
-          scoreCell.style.textAlign = 'center';
-          row.appendChild(scoreCell);
-
-          // Colonne du temps
-          const timeCell = document.createElement('td');
-          timeCell.textContent = scoreEntry.time;
-          timeCell.style.border = '1px solid white';
-          timeCell.style.padding = '8px';
-          timeCell.style.textAlign = 'center';
-          row.appendChild(timeCell);
-
-          table.appendChild(row);
-          rank++;
-        }
-
-        // Conteneur du tableau et du bouton
-        const divTable = document.createElement('div');
-        divTable.style.position = 'absolute';
-        divTable.style.top = '50%';
-        divTable.style.left = '50%';
-        divTable.style.transform = 'translate(-50%, -50%)';
-        divTable.style.display = 'flex';
-        divTable.style.flexDirection = 'column';
-        divTable.style.alignItems = 'center';
-
-        // Bouton Retour au Menu
-        const backButton = document.createElement('button');
-        backButton.textContent = 'Retour au Menu';
-        backButton.style.marginTop = '20px';
-        backButton.style.padding = '10px 20px';
-        backButton.style.backgroundColor = 'rgba(255, 255, 255, 0.8)';
-        backButton.style.border = 'none';
-        backButton.style.cursor = 'pointer';
-        backButton.style.fontSize = '16px';
-        backButton.style.color = 'black';
-        backButton.addEventListener('click', () => {
-          this.menu(); // Revenir au menu principal
-        });
-
-        if (currentPage > 0) {
-          // Flèche précédente
-          const prevButton = document.createElement('button');
-          prevButton.textContent = '← Page Précédente';
-          prevButton.style.marginTop = '10px';
-          prevButton.style.padding = '10px 15px';
-          prevButton.style.cursor = 'pointer';
-          prevButton.disabled = currentPage === 0; // Désactiver si première page
-          prevButton.addEventListener('click', () => {
-            currentPage = Math.max(0, currentPage - 1);
-            renderScores();
-          });
-          divTable.appendChild(prevButton);
-        }
-
-        // Flèche suivante
-        const nextButton = document.createElement('button');
-        nextButton.textContent = 'Page Suivante →';
-        nextButton.style.marginTop = '10px';
-        nextButton.style.padding = '10px 15px';
-        nextButton.style.cursor = 'pointer';
-        nextButton.disabled = endIndex >= scores.length; // Désactiver si dernière page
-        nextButton.addEventListener('click', () => {
-          currentPage = Math.min(Math.ceil(scores.length / scoresPerPage) - 1, currentPage + 1);
-          renderScores();
-        });
-
-        // Ajouter les éléments
-        divTable.appendChild(table);
-
-        divTable.appendChild(nextButton);
-        divTable.appendChild(backButton);
-        divTileMap.appendChild(divTable);
-      };
-
-      // Rendre la première page
-      renderScores();
+      scores = await response.json();
     } catch (error) {
       console.error('Erreur lors du chargement des scores :', error);
+      // Si une erreur survient, on utilise des données factices
+      scores = [
+        { name: 'Alice',   score: 150, time: '1:30' },
+        { name: 'Bob',     score: 120, time: '1:45' },
+        { name: 'Charlie', score: 110, time: '2:00' },
+        { name: 'Dave',    score: 100, time: '2:15' },
+        { name: 'Eve',     score: 90,  time: '2:30' },
+        { name: 'Frank',   score: 80,  time: '2:45' },
+        { name: 'Grace',   score: 70,  time: '3:00' },
+      ];
     }
+
+    // Trier les scores par ordre décroissant
+    scores.sort((a, b) => b.score - a.score);
+
+    let currentPage = 0; // Page actuelle
+    const scoresPerPage = 6; // Nombre de scores par page
+
+    const renderScores = () => {
+      divTileMap.innerHTML = ''; // Réinitialiser la divTileMap à chaque changement de page
+
+      // Création du tableau
+      const table = document.createElement('table');
+      table.style.width = '50%';
+      table.style.borderCollapse = 'collapse';
+      table.style.margin = '20px auto';
+      table.style.color = 'white';
+      table.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+      table.style.padding = '10px';
+
+      // Création de l'en-tête du tableau
+      const headerRow = document.createElement('tr');
+      ['Rank', 'Nom', 'Score', 'Time'].forEach((headerText) => {
+        const th = document.createElement('th');
+        th.textContent = headerText;
+        th.style.border = '1px solid white';
+        th.style.padding = '8px';
+        th.style.textAlign = 'center';
+        headerRow.appendChild(th);
+      });
+      table.appendChild(headerRow);
+
+      // Calcul des indices pour la pagination
+      const startIndex = currentPage * scoresPerPage;
+      const endIndex = Math.min(startIndex + scoresPerPage, scores.length);
+
+      let rank = startIndex + 1; // Ajustement du rang pour chaque page
+
+      for (let i = startIndex; i < endIndex; i++) {
+        const scoreEntry = scores[i];
+        const row = document.createElement('tr');
+
+        // Colonne du rang
+        const rankCell = document.createElement('td');
+        // Gestion du suffixe (1st, 2nd, 3rd, etc.)
+        let place = ['st', 'nd', 'rd'][rank - 1] || 'th';
+        rankCell.textContent = `${rank}${place}`;
+        rankCell.style.border = '1px solid white';
+        rankCell.style.padding = '8px';
+        rankCell.style.textAlign = 'center';
+        row.appendChild(rankCell);
+
+        // Colonne du nom
+        const nameCell = document.createElement('td');
+        nameCell.textContent = scoreEntry.name;
+        nameCell.style.border = '1px solid white';
+        nameCell.style.padding = '8px';
+        nameCell.style.textAlign = 'center';
+        row.appendChild(nameCell);
+
+        // Colonne du score
+        const scoreCell = document.createElement('td');
+        scoreCell.textContent = scoreEntry.score;
+        scoreCell.style.border = '1px solid white';
+        scoreCell.style.padding = '8px';
+        scoreCell.style.textAlign = 'center';
+        row.appendChild(scoreCell);
+
+        // Colonne du temps
+        const timeCell = document.createElement('td');
+        timeCell.textContent = scoreEntry.time;
+        timeCell.style.border = '1px solid white';
+        timeCell.style.padding = '8px';
+        timeCell.style.textAlign = 'center';
+        row.appendChild(timeCell);
+
+        table.appendChild(row);
+        rank++;
+      }
+
+      // Conteneur pour le tableau et les boutons
+      const divTable = document.createElement('div');
+      divTable.style.position = 'absolute';
+      divTable.style.top = '50%';
+      divTable.style.left = '50%';
+      divTable.style.transform = 'translate(-50%, -50%)';
+      divTable.style.display = 'flex';
+      divTable.style.flexDirection = 'column';
+      divTable.style.alignItems = 'center';
+
+      // Bouton "Retour au Menu"
+      const backButton = document.createElement('button');
+      backButton.textContent = 'Retour au Menu';
+      backButton.style.marginTop = '20px';
+      backButton.style.padding = '10px 20px';
+      backButton.style.backgroundColor = 'rgba(255, 255, 255, 0.8)';
+      backButton.style.border = 'none';
+      backButton.style.cursor = 'pointer';
+      backButton.style.fontSize = '16px';
+      backButton.style.color = 'black';
+      backButton.addEventListener('click', () => {
+        this.menu(); // Revenir au menu principal
+      });
+
+      // Bouton "Page Précédente" (affiché seulement si ce n'est pas la première page)
+      if (currentPage > 0) {
+        const prevButton = document.createElement('button');
+        prevButton.textContent = '← Page Précédente';
+        prevButton.style.marginTop = '10px';
+        prevButton.style.padding = '10px 15px';
+        prevButton.style.cursor = 'pointer';
+        prevButton.disabled = currentPage === 0;
+        prevButton.addEventListener('click', () => {
+          currentPage = Math.max(0, currentPage - 1);
+          renderScores();
+        });
+        divTable.appendChild(prevButton);
+      }
+
+      // Bouton "Page Suivante"
+      const nextButton = document.createElement('button');
+      nextButton.textContent = 'Page Suivante →';
+      nextButton.style.marginTop = '10px';
+      nextButton.style.padding = '10px 15px';
+      nextButton.style.cursor = 'pointer';
+      nextButton.disabled = endIndex >= scores.length;
+      nextButton.addEventListener('click', () => {
+        currentPage = Math.min(Math.ceil(scores.length / scoresPerPage) - 1, currentPage + 1);
+        renderScores();
+      });
+
+      // Ajout des éléments dans le conteneur
+      divTable.appendChild(table);
+      divTable.appendChild(nextButton);
+      divTable.appendChild(backButton);
+      divTileMap.appendChild(divTable);
+    };
+
+    // Affichage de la première page
+    renderScores();
   }
 
   startGame() {
@@ -435,6 +448,12 @@ export default class Game {
     const pauseOverlay = document.querySelector('.pause-overlay');
     if (pauseOverlay) {
       pauseOverlay.remove();
+    }
+    scoreGlobal = 0
+    timerGlobal = {
+      startTime: new Date(),
+      elapsedTime: 0,
+      isPaused: false,
     }
 
     this.menu();
