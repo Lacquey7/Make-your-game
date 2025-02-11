@@ -96,18 +96,18 @@ export default class TileMap {
               image = this.imageBlockBreakable;
               tileDiv.style.backgroundImage = `url(${image.src})`;
               this.#addRandomBonus(tileDiv);
-              tileDiv.addEventListener('click', () => this.destroyBlock(tileDiv));
+              //tileDiv.addEventListener('click', () => this.destroyBlock(tileDiv));
             } else if (this.randomBlockGetKey.includes(this.currentBlock)) {
               tileDiv.dataset.breakable = 'true';
               image = this.imageBlockBreakable;
               tileDiv.style.backgroundImage = `url(${image.src})`;
               this.#addRandomKey(tileDiv);
-              tileDiv.addEventListener('click', () => this.destroyBlock(tileDiv));
+              //tileDiv.addEventListener('click', () => this.destroyBlock(tileDiv));
             } else {
               tileDiv.dataset.breakable = 'true';
               image = this.imageBlockBreakable;
               tileDiv.style.backgroundImage = `url(${image.src})`;
-              tileDiv.addEventListener('click', () => this.destroyBlock(tileDiv));
+              //tileDiv.addEventListener('click', () => this.destroyBlock(tileDiv));
             }
 
             break;
