@@ -8,12 +8,12 @@ export default class Player {
     this.x = 80;
     this.y = 70;
     this.life = 1;
-    this.speed = 3;
+    this.speed = 2;
     this.flame = 1;
-    this.name = ""
-    this.getKey = 0
-    this.totalKey = key
-    this.level = level
+    this.name = '';
+    this.getKey = 0;
+    this.totalKey = key;
+    this.level = level;
 
     // Animation properties
     this.frameX = 0;
@@ -32,10 +32,10 @@ export default class Player {
   }
 
   addKey() {
-    this.getKey++
-    if(this.getKey === this.totalKey) {
-      this.getKey = 0
-      this.level++
+    this.getKey++;
+    if (this.getKey === this.totalKey) {
+      this.getKey = 0;
+      this.level++;
     }
   }
   decreaseLife() {
@@ -60,11 +60,20 @@ export default class Player {
       // Position selon la direction
       let sourceY;
       switch (this.direction) {
-        case 'down': sourceY = 0; break;
-        case 'right': sourceY = -250; break;
-        case 'left': sourceY = -100; break;
-        case 'up': sourceY = -50; break;
-        default: sourceY = 0;
+        case 'down':
+          sourceY = 0;
+          break;
+        case 'right':
+          sourceY = -250;
+          break;
+        case 'left':
+          sourceY = -100;
+          break;
+        case 'up':
+          sourceY = -50;
+          break;
+        default:
+          sourceY = 0;
       }
       this.element.style.backgroundPosition = `${-this.frameX * 56}px ${sourceY}px`;
     }
@@ -109,46 +118,42 @@ export default class Player {
       this.frameX = 0;
     }
 
-    const obstacles = document.querySelectorAll('.block-unbreakable, .border, .block-breakable');
+    this.obstacles = document.querySelectorAll('.block-unbreakable, .border, .block-breakable, .porte');
     const size = {
       width: this.element.offsetWidth,
-      height: this.element.offsetHeight
+      height: this.element.offsetHeight,
     };
 
     // Check horizontal movement
     const horizontalMove = {
       x: newX,
-      y: this.y
+      y: this.y,
     };
 
-    if (!Collision.getCollisionWithObstacles(horizontalMove, size, obstacles, 7)) {
+    if (!Collision.getCollisionWithObstacles(horizontalMove, size, this.obstacles, 7)) {
       this.x = newX;
     }
 
     // Check vertical movement
     const verticalMove = {
       x: this.x,
-      y: newY
+      y: newY,
     };
 
-    if (!Collision.getCollisionWithObstacles(verticalMove, size, obstacles, 7)) {
+    if (!Collision.getCollisionWithObstacles(verticalMove, size, this.obstacles, 7)) {
       this.y = newY;
     }
 
     // Apply map boundaries
     const mapSize = { width: this.mapWidth, height: this.mapHeight };
-    const boundedPosition = Collision.checkMapBoundaries(
-        { x: this.x, y: this.y },
-        size,
-        mapSize
-    );
+    const boundedPosition = Collision.checkMapBoundaries({ x: this.x, y: this.y }, size, mapSize);
 
     this.x = boundedPosition.x;
     this.y = boundedPosition.y;
 
-    //   //bonus
+    //bonus et key
     const playerRect = document.getElementById('player');
-    const bonusPlayer = new Bonus(playerRect);
+    const bonusPlayer = new Bonus(playerRect, this, this.obstacles);
 
     bonusPlayer.checkCollisions();
     this.updatePosition();
