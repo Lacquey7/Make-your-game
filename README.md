@@ -2,7 +2,7 @@
 
 ## 📖 **Project Description**
 Welcome to **Bomberman**! The goal is simple: explore the arena, break the crates, and find the hidden key to unlock the exit door. Can you be quick and strategic enough to escape ?
-https://make-your-game-ashen.vercel.app/
+https://make-your-game-plum.vercel.app/
 ---
 
 ## 🎮 **Game Objective**
