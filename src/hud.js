@@ -1,5 +1,5 @@
 // hud.js
-import { scoreGlobal, timerGlobal } from './game.js';
+import { scoreGlobal, timerGlobal, updateScoreGlobal } from './game.js';
 
 export default class HUD {
   constructor(player, bot, restartGame) {
@@ -209,10 +209,10 @@ export default class HUD {
   updateScore(points) {
     const scoreElement = document.getElementById('score');
     if (scoreElement) {
-      const currentScore = parseInt(scoreElement.textContent);
-      const newScore = currentScore + points;
+      let currentScore = parseInt(scoreElement.textContent);
+      let newScore = currentScore + points;
       scoreElement.textContent = newScore.toString();
-      scoreGlobal = newScore;
+      updateScoreGlobal(newScore)
     }
   }
 

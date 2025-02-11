@@ -12,7 +12,12 @@ export let timerGlobal = {
   elapsedTime: 0,
   isPaused: false,
 };
+
 export let scoreGlobal = 0;
+
+export function updateScoreGlobal(newScore) {
+  scoreGlobal = newScore;
+}
 
 let level = 1;
 
