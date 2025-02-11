@@ -2,7 +2,7 @@
 import { scoreGlobal, timerGlobal } from './game.js';
 
 export default class HUD {
-  constructor(player, bot) {
+  constructor(player, bot, restartGame) {
     this.player = player;
     this.bot = bot;
     this.game = document.querySelector('body').__game;
@@ -250,6 +250,7 @@ export default class HUD {
     const currentTime = document.getElementById('timer').textContent;
 
     try {
+      // Envoi des scores au serveur
       await fetch('http://localhost:8080/score', {
         method: 'POST',
         headers: {
@@ -262,10 +263,12 @@ export default class HUD {
         }),
       });
 
+      // Récupération des scores depuis le serveur
       const response = await fetch('http://localhost:8080/score');
-      const scores = await response.json();
+      let scores = await response.json();
       scores.sort((a, b) => b.score - a.score);
 
+      // Création et affichage du tableau des scores
       const table = document.createElement('table');
       table.className = 'scores-table';
 
@@ -297,9 +300,11 @@ export default class HUD {
         scoreCell.textContent = scores[i].score;
         timeCell.textContent = scores[i].time;
 
-        if (scores[i].name === this.game.playerName &&
+        if (
+            scores[i].name === this.game.playerName &&
             scores[i].score === currentScore &&
-            scores[i].time === currentTime) {
+            scores[i].time === currentTime
+        ) {
           row.className = 'current-score-row';
         }
       }
@@ -313,10 +318,11 @@ export default class HUD {
 
         const currentRow = tbody.insertRow();
         currentRow.className = 'current-score-row';
-        [`${currentRank}${['st', 'nd', 'rd'][currentRank - 1] || 'th'}`,
+        [
+          `${currentRank}${['st', 'nd', 'rd'][currentRank - 1] || 'th'}`,
           this.game.playerName,
           currentScore,
-          currentTime
+          currentTime,
         ].forEach((text) => {
           const cell = currentRow.insertCell();
           cell.textContent = text;
@@ -340,6 +346,93 @@ export default class HUD {
       document.getElementById('tilemap').appendChild(gameOverOverlay);
     } catch (error) {
       console.error('Erreur lors de la gestion des scores:', error);
+
+      // Utilisation de données factices en cas d'erreur
+      let scores = [
+        {name: 'Alice', score: 150, time: '1:30'},
+        {name: 'Bob', score: 120, time: '1:45'},
+        {name: 'Charlie', score: 110, time: '2:00'},
+        {name: 'Dave', score: 100, time: '2:15'},
+        {name: 'Eve', score: 90, time: '2:30'},
+      ];
+      scores.sort((a, b) => b.score - a.score);
+
+      const table = document.createElement('table');
+      table.className = 'scores-table';
+
+      const header = table.createTHead();
+      const headerRow = header.insertRow();
+      ['Rank', 'Name', 'Score', 'Time'].forEach((text) => {
+        const th = document.createElement('th');
+        th.textContent = text;
+        headerRow.appendChild(th);
+      });
+
+      const tbody = table.createTBody();
+      // Tenter de retrouver le rang du joueur dans les scores factices
+      let currentRank = scores.findIndex((score) =>
+          score.name === this.game.playerName &&
+          score.score === currentScore
+      ) + 1;
+      if (currentRank === 0) currentRank = scores.length + 1;
+
+      for (let i = 0; i < 5 && i < scores.length; i++) {
+        const row = tbody.insertRow();
+        const rankCell = row.insertCell();
+        const nameCell = row.insertCell();
+        const scoreCell = row.insertCell();
+        const timeCell = row.insertCell();
+
+        let place = ['st', 'nd', 'rd'][i] || 'th';
+        rankCell.textContent = `${i + 1}${place}`;
+        nameCell.textContent = scores[i].name;
+        scoreCell.textContent = scores[i].score;
+        timeCell.textContent = scores[i].time;
+
+        if (
+            scores[i].name === this.game.playerName &&
+            scores[i].score === currentScore &&
+            scores[i].time === currentTime
+        ) {
+          row.className = 'current-score-row';
+        }
+      }
+
+      if (currentRank > 5) {
+        const separatorRow = tbody.insertRow();
+        for (let i = 0; i < 4; i++) {
+          const cell = separatorRow.insertCell();
+          cell.textContent = '...';
+        }
+
+        const currentRow = tbody.insertRow();
+        currentRow.className = 'current-score-row';
+        [
+          `${currentRank}${['st', 'nd', 'rd'][currentRank - 1] || 'th'}`,
+          this.game.playerName,
+          currentScore,
+          currentTime,
+        ].forEach((text) => {
+          const cell = currentRow.insertCell();
+          cell.textContent = text;
+        });
+      }
+
+      const buttonContainer = document.createElement('div');
+      buttonContainer.className = 'scores-button-container';
+
+      const menuButton = document.createElement('button');
+      menuButton.textContent = 'Main Menu';
+      menuButton.addEventListener('click', () => {
+        document.querySelector('body').__game.returnToMainMenu();
+      });
+
+      buttonContainer.appendChild(menuButton);
+      gameOverOverlay.appendChild(gameOverMessage);
+      gameOverOverlay.appendChild(table);
+      gameOverOverlay.appendChild(buttonContainer);
+
+      document.getElementById('tilemap').appendChild(gameOverOverlay);
     }
   }
 }
