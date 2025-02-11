@@ -7,7 +7,7 @@ export default class Player {
     this.element = document.getElementById('player');
     this.x = 80;
     this.y = 70;
-    this.life = 1;
+    this.life = 4;
     this.speed = 2;
     this.flame = 1;
     this.name = '';

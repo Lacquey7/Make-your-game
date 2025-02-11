@@ -14,7 +14,7 @@ export let timerGlobal = {
 };
 export let scoreGlobal = 0;
 
-let level = 3;
+let level = 1;
 
 export default class Game {
   constructor() {
@@ -309,6 +309,20 @@ export default class Game {
     this.bonus = ['Bonus1', 'Bonus2', 'Bonus3'];
     this.key = this.level;
     this.map = map(11, 13);
+    // let map = [
+    //   [16, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 15],
+    //   [1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 18],
+    //   [4, 5, 3, 5, 3, 5, 3, 5, 3, 5, 3, 5, 18],
+    //   [4, 6, 5, 14, 5, 14, 14, 14, 5, 14, 5, 5, 18],
+    //   [1, 8, 3, 5, 3, 5, 3, 5, 3, 14, 3, 5, 18],
+    //   [4, 5, 5, 5, 14, 14, 5, 5, 5, 14, 5, 5, 18],
+    //   [4, 6, 3, 14, 3, 5, 3, 5, 3, 14, 3, 5, 18],
+    //   [1, 8, 14, 5, 5, 14, 5, 5, 5, 14, 5, 5, 18],
+    //   [4, 5, 3, 5, 3, 14, 3, 5, 3, 5, 3, 5, 18],
+    //   [1, 8, 5, 14, 5, 14, 14, 5, 5, 5, 14, 14, 18],
+    //   [9, 10, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 17],
+    // ];
+
     this.cle = 1;
 
     this.totalBlockBreakable = this.countBlockBreakable();
@@ -450,6 +464,17 @@ export default class Game {
       return count + row.filter((cell) => cell === 4).length;
     }, 0);
   }
+  // countBlockBreakable(map) {
+  //   return map.reduce((count, row) => {
+  //     return count + row.filter((cell) => cell === 5).length;
+  //   }, 0);
+  // }
+
+  // countBlockHerbe(map) {
+  //   return map.reduce((count, row) => {
+  //     return count + row.filter((cell) => cell === 4).length;
+  //   }, 0);
+  // }
 
   dropBomb() {
     console.log('Drop Bomb');
@@ -472,26 +497,6 @@ export default class Game {
     // Création de la bombe en lui passant sa position et la longueur de l'explosion
     const bomb = new Bomb(bombX, bombY, flameLength, this.player, this.bot, this.HUD);
     bomb.dropBomb();
-  }
-
-  endGame() {
-    console.log('Fin du jeu');
-    this.removeEventListeners();
-    this.isPaused = true;
-    this.HUD.pauseTimer();
-
-    // Sauvegarder le score actuel
-    const currentScore = parseInt(document.getElementById('score').textContent);
-    scoreGlobal = currentScore;
-
-    // Sauvegarder le temps écoulé
-    timerGlobal.elapsedTime = this.HUD.getElapsedTime();
-
-    // Envoyer le score au serveur
-    this.sendScore(this.playerName, currentScore, timerGlobal.elapsedTime);
-
-    // Retourner au menu principal
-    this.returnToMainMenu();
   }
 
   startGameLoop() {

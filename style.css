@@ -336,13 +336,15 @@ button:hover {
 .porte {
   position: absolute;
   top: -10px;
-  left: -5px;
-  width: 70px;
-  height: 70px;
+  width: 64px;
+  height: 64px;
   display: block;
-  background-size: 600px auto;
+  background-size: 700px auto;
+  /* background-size: 900px auto; */
+  background-repeat: no-repeat;
   transform: scale(0.8);
   z-index: 10;
+  image-rendering: pixelated;
 }
 
 /* #porte {

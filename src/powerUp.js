@@ -21,9 +21,21 @@ export default class Bonus {
     this.items = document.querySelectorAll('.bonus, .key, .porte');
     this.key = document.querySelectorAll('.key');
     this.obstacles = obstacles;
+
+    this.lastCollisionCheck = 0;
+    this.collisionCooldown = 1000; // 1 second cooldown
+    this.isProcessingCollision = false; // New flag
   }
 
   checkCollisions() {
+    const now = Date.now();
+    if (now - this.lastCollisionCheck < this.collisionCooldown || this.isProcessingCollision) {
+      return; // Skip if cooldown not elapsed or already processing
+    }
+
+    this.lastCollisionCheck = now;
+    this.isProcessingCollision = true;
+
     const playerRect = this.player.getBoundingClientRect();
 
     for (const item of this.items) {
@@ -40,8 +52,6 @@ export default class Bonus {
         const bonusType = item.classList[1];
         const key = item.className;
         const porte = item.className;
-
-        // Supprimer l'item immédiatement
         const itemToRemove = item;
 
         requestAnimationFrame(() => {
@@ -50,21 +60,30 @@ export default class Bonus {
             itemToRemove.remove();
             this.hud.updateScore(100);
           } else if (porte === 'porte') {
+            console.log(this.playerInstance.getKey);
             if (this.playerInstance.getKey === 1) {
-              console.log('portail ouvert');
-              // setTimeout(() => {
-              //   document.querySelector('body').__game.nextLevel();
-              // }, 150);
-              document.querySelector('body').__game.nextLevel();
+              this.animateCoffre(); // Start chest animation
+              setTimeout(() => {
+                document.querySelector('body').__game.nextLevel();
+              }, 600); // Wait for animation to complete
+            } else {
+              this.showItemsLocked();
             }
           } else {
             this.activateBonus(bonusType);
             itemToRemove.remove();
             this.hud.updateScore(100);
           }
+
+          setTimeout(() => {
+            this.isProcessingCollision = false;
+          }, this.collisionCooldown);
         });
 
-        break; // Sortir de la boucle après avoir traité une collision
+        break;
+      }
+      if (!this.isCollidingBonus(playerCollisionRect, itemRect)) {
+        this.isProcessingCollision = false;
       }
     }
   }
@@ -75,7 +94,7 @@ export default class Bonus {
 
   activateBonus(bonusType) {
     switch (bonusType) {
-      case 'Bonus1': // Bonus vie
+      case 'Bonus1': // Bonus speed ;
         this.playerInstance.speed = Math.min(this.playerInstance.speed + 0.5, 8);
         this.hud.updateSpeed();
         break;
@@ -85,8 +104,13 @@ export default class Bonus {
         this.hud.updateFlame();
         break;
 
-      case 'Bonus3': // Bonus vitesse
+      case 'Bonus3': // Bonus life
+        if (this.playerInstance.life === 4) {
+          console.log('max life');
+          this.showFullLifeMessage();
+        }
         this.playerInstance.life = Math.min(this.playerInstance.life + 1, 4);
+        console.log(this.playerInstance.life);
         this.hud.updateHearts();
         break;
       case 'key':
@@ -94,6 +118,77 @@ export default class Bonus {
         this.hud.updateKey();
         break;
     }
+  }
+  showFullLifeMessage() {
+    // Créer l'élément du message
+    const message = document.createElement('div');
+    message.textContent = 'Full Life';
+    message.style.position = 'fixed';
+    message.style.top = '50%';
+    message.style.left = '50%';
+    message.style.transform = 'translate(-50%, -50%)';
+    message.style.fontSize = '24px';
+    message.style.fontWeight = 'bold';
+    message.style.color = 'red';
+    message.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+    message.style.padding = '10px';
+    message.style.borderRadius = '10px';
+    message.style.zIndex = '1000';
+
+    // Ajouter l'élément à la page
+    document.body.appendChild(message);
+
+    // Supprimer le message après 2 secondes
+    setTimeout(() => {
+      message.remove();
+    }, 2000);
+  }
+
+  showItemsLocked() {
+    // Créer l'élément du message
+    const message = document.createElement('div');
+    message.textContent = 'Pas de clé';
+    message.style.position = 'fixed';
+    message.style.top = '50%';
+    message.style.left = '50%';
+    message.style.transform = 'translate(-50%, -50%)';
+    message.style.fontSize = '24px';
+    message.style.fontWeight = 'bold';
+    message.style.color = 'red';
+    message.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+    message.style.padding = '10px';
+    message.style.borderRadius = '10px';
+    message.style.zIndex = '1000';
+
+    // Ajouter l'élément à la page
+    document.body.appendChild(message);
+
+    // Supprimer le message après 2 secondes
+    setTimeout(() => {
+      message.remove();
+    }, 2000);
+  }
+
+  animateCoffre() {
+    const porte = document.querySelector('.porte');
+    if (!porte) return;
+
+    // Chest sprite positions in the sprite sheet
+    const frames = [
+      '-145px -95px', // Frame 1
+      '-145px -159px', // Frame 2
+      '-145px -223px', // Frame 3
+    ];
+
+    let frameIndex = 0;
+    const animationInterval = setInterval(() => {
+      porte.style.backgroundPosition = frames[frameIndex];
+      frameIndex++;
+
+      if (frameIndex >= frames.length) {
+        clearInterval(animationInterval);
+      }
+    }, 150); // Change frame every 150ms
   }
 }
 

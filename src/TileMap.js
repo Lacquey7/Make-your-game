@@ -7,6 +7,24 @@ export default class TileMap {
     this.bonus = bonus;
     this.cleCurrent = cleCurrent;
     this.totalBlockBreakable = totalBlockBreakable;
+
+    // this.imageB1 = this.#image('back/b1.png');
+    // this.imageB4 = this.#image('back/b4.png');
+    // this.imageB9 = this.#image('back/b9.png');
+    // this.imageB14 = this.#image('back/b14.png');
+    // this.imageB10 = this.#image('back/b10.png');
+    // this.imageB11 = this.#image('back/b11.png');
+    // this.imageB3 = this.#image('back/b3.png');
+    // this.imageB15 = this.#image('back/b15.png');
+    // this.imageB16 = this.#image('back/b16.png');
+    // this.imageB17 = this.#image('back/b17.png');
+    // this.image5 = this.#image('back/b5.png');
+    // this.imageB18 = this.#image('back/b18.png');
+    // this.imageB19 = this.#image('back/b19.png');
+    // this.imageB20 = this.#image('back/b20.png');
+    // this.imgeB6 = this.#image('back/b6.png');
+    // this.imageB8 = this.#image('back/b8.png');
+
     this.imageBordureLeftRight = this.#image('block.png');
     this.imageBordureBackFront = this.#image('bordureRelief.png');
     this.imageBlockUnbreakable = this.#image('bordureRelief.png');
@@ -16,7 +34,7 @@ export default class TileMap {
     this.imageBonus2 = this.#image('power.png');
     this.imageBonus3 = this.#image('heart.png');
     this.imageKey = this.#image('keyOrigin.png');
-    this.imagePorte = this.#image('portail.png');
+    this.imagePorte = this.#image('t.png');
 
     this.tilesInitialized = false;
     this.randomBlockGetBonus = this.randomBlockGetBonus();
@@ -37,11 +55,9 @@ export default class TileMap {
   draw() {
     const tilemapElement = document.getElementById('tilemap');
 
-    // Sauvegarder les éléments player et bot
     const playerElement = document.getElementById('player');
     const botElement = document.getElementById('bot');
 
-    // Créer un conteneur pour la grille
     const gridContainer = document.createElement('div');
     gridContainer.classList.add('grid-container');
 
@@ -53,63 +69,43 @@ export default class TileMap {
         let image = null;
         switch (tile) {
           case 1:
-            tileDiv.classList.add('border');
             image = this.imageBordureLeftRight;
-            tileDiv.style.backgroundImage = `url(${image.src})`;
+            this.getTileAtBordure(tileDiv, image);
             break;
           case 2:
-            tileDiv.classList.add('border');
             image = this.imageBordureBackFront;
-            tileDiv.style.backgroundImage = `url(${image.src})`;
+            this.getTileAtBordure(tileDiv, image);
             break;
           case 3:
-            tileDiv.classList.add('block-unbreakable');
             image = this.imageBlockUnbreakable;
-            tileDiv.style.backgroundImage = `url(${image.src})`;
+            this.getTileBlockUnbreakable(tileDiv, image);
             break;
           case 4:
             this.currentHerbe++;
             if (this.currentHerbe === this.totalBlockHerbe - 1) {
-              tileDiv.classList.add('herbe');
               image = this.imageHerbe;
-              tileDiv.style.backgroundImage = `url(${image.src})`;
+              this.getTileAtHerbe(tileDiv, image);
               image = this.imagePorte;
-              const porteDiv = document.createElement('div');
-              porteDiv.classList.add('porte');
-              tileDiv.style.position = 'relative';
-              porteDiv.style.backgroundImage = `url(${image.src})`;
-              // porteDiv.style.backgroundPosition = '0px 0px';
-              tileDiv.appendChild(porteDiv);
+              this.createPorte(tileDiv, image);
             } else {
-              tileDiv.classList.add('herbe');
               image = this.imageHerbe;
-              tileDiv.style.backgroundImage = `url(${image.src})`;
+              this.getTileAtHerbe(tileDiv, image);
             }
-
             break;
-          case 5:
-            tileDiv.classList.add('block-breakable');
-            this.currentBlock++;
 
+          case 5:
+            image = this.imageBlockBreakable;
+            this.currentBlock++;
             if (this.randomBlockGetBonus.includes(this.currentBlock)) {
-              tileDiv.dataset.breakable = 'true';
-              image = this.imageBlockBreakable;
-              tileDiv.style.backgroundImage = `url(${image.src})`;
-              this.#addRandomBonus(tileDiv);
+              this.getTileBlockBreakable(tileDiv, image, this.#addRandomBonus(tileDiv));
               tileDiv.addEventListener('click', () => this.destroyBlock(tileDiv));
             } else if (this.randomBlockGetKey.includes(this.currentBlock)) {
-              tileDiv.dataset.breakable = 'true';
-              image = this.imageBlockBreakable;
-              tileDiv.style.backgroundImage = `url(${image.src})`;
-              this.#addRandomKey(tileDiv);
+              this.getTileBlockBreakable(tileDiv, image, this.#addRandomKey(tileDiv));
               tileDiv.addEventListener('click', () => this.destroyBlock(tileDiv));
             } else {
-              tileDiv.dataset.breakable = 'true';
-              image = this.imageBlockBreakable;
-              tileDiv.style.backgroundImage = `url(${image.src})`;
+              this.getTileBlockBreakable(tileDiv, image);
               tileDiv.addEventListener('click', () => this.destroyBlock(tileDiv));
             }
-
             break;
         }
         gridContainer.appendChild(tileDiv);
@@ -168,9 +164,8 @@ export default class TileMap {
     const bonusImage = document.createElement('div');
 
     bonusImage.classList.add('bonus', this.bonus[r]);
-    bonusImage.style.display = 'none'; // Le bonus sera caché initialement
+    bonusImage.style.display = 'none';
 
-    // Assurez-vous que le parent a une position relative
     tileDiv.style.position = 'relative';
     tileDiv.appendChild(bonusImage);
   }
@@ -190,5 +185,38 @@ export default class TileMap {
       tileDiv.classList.remove('block-breakable');
       keyImage.style.display = 'block';
     }
+  }
+
+  getTileAtBordure(tileDiv, image) {
+    tileDiv.classList.add('border');
+    tileDiv.style.backgroundImage = `url(${image.src})`;
+  }
+
+  getTileAtHerbe(tileDiv, image) {
+    tileDiv.classList.add('herbe');
+    tileDiv.style.backgroundImage = `url(${image.src})`;
+  }
+  getTileBlockBreakable(tileDiv, image) {
+    tileDiv.classList.add('block-breakable');
+    tileDiv.dataset.breakable = 'true';
+    tileDiv.style.backgroundImage = `url(${image.src})`;
+  }
+
+  getTileBlockUnbreakable(tileDiv, image) {
+    tileDiv.classList.add('block-unbreakable');
+    tileDiv.style.backgroundImage = `url(${image.src})`;
+  }
+  createPorte(tileDiv, image) {
+    const porteDiv = document.createElement('div');
+    porteDiv.classList.add('porte');
+    tileDiv.style.position = 'relative';
+    porteDiv.style.backgroundImage = `url(${image.src})`;
+    tileDiv.appendChild(porteDiv);
+    porteDiv.style.backgroundPosition = '-145px -95px';
+    // porteDiv.style.backgroundPosition = '-200px -156px';
+
+    //porteDiv.style.backgroundPosition = '-145px -159px';
+    //porteDiv.style.backgroundPosition = '-145px -223px';
+    //porteDiv.style.backgroundPosition = '-100px -220px';
   }
 }

@@ -25,7 +25,6 @@ export let map = (rows, cols) => {
   mapper[1][1] = 4; // Coin en haut à gauche
   mapper[1][2] = 4;
   mapper[2][1] = 4;
-
   mapper[rows - 2][cols - 2] = 4; // Coin en bas à droite
   mapper[rows - 2][cols - 3] = 4;
   mapper[rows - 3][cols - 2] = 4;
