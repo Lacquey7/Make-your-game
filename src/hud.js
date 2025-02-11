@@ -14,6 +14,7 @@ export default class HUD {
     createHUD() {
         // Création des deux HUDs (haut et bas)
         this.createTopHUD();
+        console.log();
         this.createBottomHUD();
 
         const tilemap = document.getElementById('tilemap');
