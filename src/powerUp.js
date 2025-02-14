@@ -191,31 +191,3 @@ export default class Bonus {
     }, 150); // Change frame every 150ms
   }
 }
-
-//   setPorteStyles(porteDiv) {
-//     Object.assign(porteDiv.style, {
-//       width: '32px',
-//       height: '32px',
-//       backgroundSize: 'cover',
-//       backgroundRepeat: 'no-repeat',
-//     });
-//   }
-
-//   animatePorte() {
-//     const porte = document.querySelector('.porte');
-//     const images = ['assets/img/map/porte1.png', 'assets/img/map/porte2.png', 'assets/img/map/porte3.png', 'assets/img/map/porte4.png'];
-//     this.animateP(porte, images);
-//   }
-
-//   animateP(porte, images) {
-//     this.setPorteStyles(porte);
-//     let index = 0;
-//     const interval = setInterval(() => {
-//       porte.style.backgroundImage = `url(${images[index]})`;
-//       index++;
-//       if (index >= images.length) {
-//         clearInterval(interval);
-//       }
-//     }, 150);
-//   }
-// }

@@ -31,13 +31,13 @@ export default class Player {
     this.updatePosition();
   }
 
-  addKey() {
-    this.getKey++;
-    if (this.getKey === this.totalKey) {
-      this.getKey = 0;
-      this.level++;
-    }
-  }
+  // addKey() {
+  //   this.getKey++;
+  //   if (this.getKey === this.totalKey) {
+  //     this.getKey = 0;
+  //     this.level++;
+  //   }
+  // }
   decreaseLife() {
     this.life--;
     // Mettre à jour le HUD

@@ -13,94 +13,75 @@ export default class HUD {
   }
 
   createHUD() {
-    this.createTopHUD();
-    this.createBottomHUD();
+    this.hudContainer = document.createElement('div');
+    this.hudContainer.className = 'hud-container';
 
+    // Create sections
+    const leftSection = this.createSection('left');
+    const centerSection = this.createSection('center');
+    const rightSection = this.createSection('right');
+
+    // Left section (hearts, speed, power)
+    this.createStatsSection(leftSection);
+
+    // Center section (timer and score)
+    this.createInfoSection(centerSection);
+
+    // Right section (keys)
+    this.createKeySection(rightSection);
+
+    // Add all sections to HUD
+    this.hudContainer.append(leftSection, centerSection, rightSection);
+
+    // Add HUD to document
     const tilemap = document.getElementById('tilemap');
-    tilemap.appendChild(this.topHudElement);
-    tilemap.appendChild(this.hudElement);
+    tilemap.appendChild(this.hudContainer);
   }
 
-  createTopHUD() {
-    this.topHudElement = document.createElement('div');
-    this.topHudElement.style.position = 'absolute';
-    this.topHudElement.style.top = '-40px';
-    this.topHudElement.style.left = '0';
-    this.topHudElement.style.right = '0';
-    this.topHudElement.style.display = 'flex';
-    this.topHudElement.style.justifyContent = 'space-between';
-    this.topHudElement.style.padding = '5px 20px';
-    this.topHudElement.style.zIndex = '1000';
+  createSection(position) {
+    const section = document.createElement('div');
+    section.className = `hud-section ${position}`;
+    return section;
+  }
 
-    const heartsContainer = document.createElement('div');
-    heartsContainer.id = 'hearts-container';
-    heartsContainer.style.display = 'flex';
-    heartsContainer.style.gap = '5px';
+  createStatsSection(container) {
+    const heartsContainer = this.createContainer('hearts-container');
+    const speedContainer = this.createContainer('speed-container');
+    const powerContainer = this.createContainer('power-container');
+
     this.updateHearts(heartsContainer);
-
-    const speedContainer = document.createElement('div');
-    speedContainer.id = 'speed-container';
-    speedContainer.style.display = 'flex';
-    speedContainer.style.gap = '5px';
     this.updateSpeed(speedContainer);
-
-    const powerContainer = document.createElement('div');
-    powerContainer.id = 'power-container';
-    powerContainer.style.display = 'flex';
-    powerContainer.style.gap = '5px';
     this.updatePower(powerContainer);
 
-    const keyContainer = document.createElement('div');
-    keyContainer.id = 'key-container';
-    keyContainer.style.display = 'flex';
-    keyContainer.style.gap = '5px';
-    this.updateKey(keyContainer);
-
-    this.topHudElement.appendChild(heartsContainer);
-    this.topHudElement.appendChild(speedContainer);
-    this.topHudElement.appendChild(powerContainer);
-    this.topHudElement.appendChild(keyContainer);
+    container.append(heartsContainer, speedContainer, powerContainer);
   }
-
-  createBottomHUD() {
-    this.hudElement = document.createElement('div');
-    this.hudElement.className = 'game-hud';
-    this.hudElement.style.position = 'absolute';
-    this.hudElement.style.bottom = '10px';
-    this.hudElement.style.left = '0';
-    this.hudElement.style.right = '0';
-    this.hudElement.style.display = 'flex';
-    this.hudElement.style.justifyContent = 'space-between';
-    this.hudElement.style.padding = '0 20px';
-    this.hudElement.style.color = 'white';
-    this.hudElement.style.fontFamily = 'MaPolicePerso, sans-serif';
-    this.hudElement.style.fontSize = '16px';
-
-    const scoreContainer = document.createElement('div');
-    scoreContainer.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
-    scoreContainer.style.padding = '5px 15px';
-    scoreContainer.style.borderRadius = '20px';
+  createInfoSection(container) {
+    const timerElement = document.createElement('div');
+    timerElement.id = 'timer';
+    timerElement.className = 'hud-info';
+    timerElement.textContent = '00:00';
 
     const scoreElement = document.createElement('div');
     scoreElement.id = 'score';
+    scoreElement.className = 'hud-info';
     scoreElement.textContent = scoreGlobal.toString();
-    scoreContainer.appendChild(scoreElement);
 
-    const timerContainer = document.createElement('div');
-    timerContainer.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
-    timerContainer.style.padding = '5px 15px';
-    timerContainer.style.borderRadius = '20px';
-
-    const timerElement = document.createElement('div');
-    timerElement.id = 'timer';
-    timerElement.textContent = '00:00';
-    timerContainer.appendChild(timerElement);
-
-    this.hudElement.appendChild(scoreContainer);
-    this.hudElement.appendChild(timerContainer);
+    container.append(timerElement, scoreElement);
     this.startTimer();
   }
 
+  createKeySection(container) {
+    const keyContainer = this.createContainer('key-container');
+    this.updateKey(keyContainer);
+    container.appendChild(keyContainer);
+  }
+
+  createContainer(id) {
+    const container = document.createElement('div');
+    container.id = id;
+    container.className = 'hud-container-item';
+    return container;
+  }
   startTimer() {
     if (!timerGlobal.startTime) {
       timerGlobal.startTime = Date.now() - timerGlobal.elapsedTime;
@@ -115,7 +96,7 @@ export default class HUD {
         const timerElement = document.getElementById('timer');
         if (timerElement) {
           timerElement.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-          timerGlobal.elapsedTime = (currentTime - timerGlobal.startTime);
+          timerGlobal.elapsedTime = currentTime - timerGlobal.startTime;
         }
       }
     }, 1000);
@@ -278,10 +259,7 @@ export default class HUD {
       });
 
       const tbody = table.createTBody();
-      let currentRank = scores.findIndex((score) =>
-          score.name === this.game.playerName &&
-          score.score === currentScore
-      ) + 1;
+      let currentRank = scores.findIndex((score) => score.name === this.game.playerName && score.score === currentScore) + 1;
       if (currentRank === 0) currentRank = scores.length + 1;
 
       for (let i = 0; i < 5 && i < scores.length; i++) {
@@ -297,9 +275,7 @@ export default class HUD {
         scoreCell.textContent = scores[i].score;
         timeCell.textContent = scores[i].time;
 
-        if (scores[i].name === this.game.playerName &&
-            scores[i].score === currentScore &&
-            scores[i].time === currentTime) {
+        if (scores[i].name === this.game.playerName && scores[i].score === currentScore && scores[i].time === currentTime) {
           row.className = 'current-score-row';
         }
       }
@@ -313,11 +289,7 @@ export default class HUD {
 
         const currentRow = tbody.insertRow();
         currentRow.className = 'current-score-row';
-        [`${currentRank}${['st', 'nd', 'rd'][currentRank - 1] || 'th'}`,
-          this.game.playerName,
-          currentScore,
-          currentTime
-        ].forEach((text) => {
+        [`${currentRank}${['st', 'nd', 'rd'][currentRank - 1] || 'th'}`, this.game.playerName, currentScore, currentTime].forEach((text) => {
           const cell = currentRow.insertCell();
           cell.textContent = text;
         });

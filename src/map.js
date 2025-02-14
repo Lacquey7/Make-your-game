@@ -1,16 +1,25 @@
 export let map = (rows, cols) => {
   let mapper = [];
+
   for (let row = 0; row < rows; row++) {
     let newRow = [];
 
     for (let col = 0; col < cols; col++) {
-      // Bords indestructibles
-      if (row === 0 || row === rows - 1 || col === 0 || col === cols - 1) {
-        newRow.push(1); // Bord de la map
+      // Première ligne : 1 sur les bords, 3 au centre
+      if (row === 0) {
+        newRow.push(col === 0 || col === cols - 1 ? 1 : 3);
       }
-      // Zones avec murs fixes à l'intérieur (tous les 2 blocs)
+      // Dernière ligne : uniquement des 3
+      else if (row === rows - 1) {
+        newRow.push(3);
+      }
+      // Côtés verticaux indestructibles
+      else if (col === 0 || col === cols - 1) {
+        newRow.push(1);
+      }
+      // Murs fixes internes
       else if (row % 2 === 0 && col % 2 === 0) {
-        newRow.push(3); // Mur fixe (indestructible)
+        newRow.push(3);
       }
       // Zones semi-aléatoires
       else {

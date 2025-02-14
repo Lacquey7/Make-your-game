@@ -8,23 +8,6 @@ export default class TileMap {
     this.cleCurrent = cleCurrent;
     this.totalBlockBreakable = totalBlockBreakable;
 
-    // this.imageB1 = this.#image('back/b1.png');
-    // this.imageB4 = this.#image('back/b4.png');
-    // this.imageB9 = this.#image('back/b9.png');
-    // this.imageB14 = this.#image('back/b14.png');
-    // this.imageB10 = this.#image('back/b10.png');
-    // this.imageB11 = this.#image('back/b11.png');
-    // this.imageB3 = this.#image('back/b3.png');
-    // this.imageB15 = this.#image('back/b15.png');
-    // this.imageB16 = this.#image('back/b16.png');
-    // this.imageB17 = this.#image('back/b17.png');
-    // this.image5 = this.#image('back/b5.png');
-    // this.imageB18 = this.#image('back/b18.png');
-    // this.imageB19 = this.#image('back/b19.png');
-    // this.imageB20 = this.#image('back/b20.png');
-    // this.imgeB6 = this.#image('back/b6.png');
-    // this.imageB8 = this.#image('back/b8.png');
-
     this.imageBordureLeftRight = this.#image('block.png');
     this.imageBordureBackFront = this.#image('bordureRelief.png');
     this.imageBlockUnbreakable = this.#image('bordureRelief.png');
@@ -214,7 +197,6 @@ export default class TileMap {
     tileDiv.appendChild(porteDiv);
     porteDiv.style.backgroundPosition = '-145px -95px';
     // porteDiv.style.backgroundPosition = '-200px -156px';
-
     //porteDiv.style.backgroundPosition = '-145px -159px';
     //porteDiv.style.backgroundPosition = '-145px -223px';
     //porteDiv.style.backgroundPosition = '-100px -220px';

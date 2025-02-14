@@ -144,8 +144,8 @@ export class Bomb {
               this.createFlame(targetDiv);
             }
           }, i * 50);
-          direction.isActive = false;  // Arrêter la propagation après le bloc destructible
-          break;  // Sortir de la boucle pour cette direction
+          direction.isActive = false; // Arrêter la propagation après le bloc destructible
+          break; // Sortir de la boucle pour cette direction
         } else {
           // Si c'est un espace vide, créer juste la flamme
           setTimeout(() => {
@@ -157,7 +157,6 @@ export class Bomb {
       }
     }
   }
-
 
   destroyBlock(targetDiv) {
     targetDiv.classList.remove('block-breakable');
@@ -194,7 +193,14 @@ export class Bomb {
     flame.style.backgroundImage = "url('/assets/img/bomb/explosion.png')";
     flame.style.width = '32px';
     flame.style.height = '32px';
-    flame.style.backgroundPosition = '64px 64px';
+    //0px 0px
+    // -32px 0
+    // -64px 0
+    // 0 -32px
+    // -32px -32px
+    // -64px -32px
+
+    //flame.style.backgroundPosition = '0px 0px';
     flame.style.margin = 'auto';
     flame.style.scale = '1.3';
     flame.style.zIndex = '0';
@@ -202,6 +208,8 @@ export class Bomb {
     flame.style.top = '16px';
 
     explosionContainer.appendChild(flame);
+    this.flameElement = flame;
+    this.animateFlame();
 
     this.checkCollisionWithPlayerOrBot(flame);
 
@@ -283,5 +291,10 @@ export class Bomb {
     }
 
     return document.querySelector(`.grid-container > div:nth-child(${index})`);
+  }
+  animateFlame() {
+    const flame = this.flameElement;
+    if (!flame) return;
+    flame.classList.add('flame-animation');
   }
 }
