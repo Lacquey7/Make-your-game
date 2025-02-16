@@ -346,7 +346,7 @@ button:hover {
   z-index: 10;
   image-rendering: pixelated;
 }
-.hud-container {
+/* .hud-container {
   width: 832px;
   height: 60px;
   background-color: rgba(0, 0, 0, 0.8);
@@ -365,7 +365,7 @@ button:hover {
   height: 704px;
   position: relative;
   border: 2px solid #fff;
-}
+} */
 
 /* Styles pour le contenu du HUD */
 .hud-section {
@@ -451,4 +451,52 @@ button:hover {
   z-index: 0;
   left: 16px;
   top: 16px;
+}
+
+.stat-value {
+  color: white;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 14px;
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.5);
+  padding: 5px 10px;
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+  min-width: 100px;
+  text-align: center;
+}
+
+.hud-container-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.game-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 832px;
+}
+
+/* Update HUD container */
+.hud-container {
+  width: 856px;
+  height: 60px;
+  background-color: rgba(0, 0, 0, 0.8);
+  border: 2px solid #fff;
+  border-radius: 8px;
+  display: none; /* Hide by default */
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  box-sizing: border-box;
+  margin-bottom: 10px;
+}
+
+/* Update tilemap */
+.tilemap {
+  width: 100%;
+  height: 704px;
+  position: relative;
+  border: 2px solid #fff;
 }

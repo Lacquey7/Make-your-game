@@ -54,6 +54,11 @@ export default class Game {
 
   menu() {
     console.log('Menu principal');
+    const hudContainer = document.querySelector('.hud-container');
+    if (hudContainer) {
+      hudContainer.style.display = 'none';
+    }
+
     const divTileMap = document.querySelector('#tilemap');
     divTileMap.innerHTML = ''; // Nettoyer le contenu existant
 
@@ -263,6 +268,12 @@ export default class Game {
 
     const divTileMap = document.querySelector('#tilemap');
     divTileMap.innerHTML = ''; // Nettoyer le contenu existant
+
+    // Show HUD container
+    const hudContainer = document.querySelector('.hud-container');
+    if (hudContainer) {
+      hudContainer.style.display = 'flex';
+    }
 
     const player = document.createElement('div');
     player.id = 'player';

@@ -13,8 +13,9 @@ export default class HUD {
   }
 
   createHUD() {
-    this.hudContainer = document.createElement('div');
-    this.hudContainer.className = 'hud-container';
+    this.hudContainer = document.querySelector('.hud-container');
+    // this.hudContainer = document.createElement('div');
+    // this.hudContainer.className = 'hud-container';
 
     // Create sections
     const leftSection = this.createSection('left');
@@ -34,8 +35,8 @@ export default class HUD {
     this.hudContainer.append(leftSection, centerSection, rightSection);
 
     // Add HUD to document
-    const tilemap = document.getElementById('tilemap');
-    tilemap.appendChild(this.hudContainer);
+    // const tilemap = document.getElementById('tilemap');
+    // tilemap.appendChild(this.hudContainer);
   }
 
   createSection(position) {
@@ -159,17 +160,19 @@ export default class HUD {
   updateSpeed(container = document.getElementById('speed-container')) {
     if (!container) return;
     container.innerHTML = '';
-    for (let i = 0; i < this.player.speed; i++) {
-      container.appendChild(this.createSpeedIcon());
-    }
+    const speedValue = document.createElement('div');
+    speedValue.className = 'stat-value';
+    speedValue.innerHTML = `Speed: ${this.player.speed}`;
+    container.appendChild(speedValue);
   }
 
   updatePower(container = document.getElementById('power-container')) {
     if (!container) return;
     container.innerHTML = '';
-    for (let i = 0; i < this.player.flame; i++) {
-      container.appendChild(this.createPowerIcon());
-    }
+    const powerValue = document.createElement('div');
+    powerValue.className = 'stat-value';
+    powerValue.innerHTML = `Power: ${this.player.flame}`;
+    container.appendChild(powerValue);
   }
 
   updateKey(container = document.getElementById('key-container')) {
