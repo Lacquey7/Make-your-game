@@ -419,28 +419,22 @@ button:hover {
 } */
 @keyframes flameSprite {
   0% {
-    /* background-position: 0 0px; */
-    background-color: #4caf50;
+    background-position: 0 0px;
   }
   16.66% {
-    /* background-position: -32px 0px; */
-    background-color: #f44336;
+    background-position: -32px 0px;
   }
   33.33% {
-    /* background-position: -64px 0px; */
-    background-color: #f59b06;
+    background-position: -64px 0px;
   }
   50% {
-    /* background-position: 0 -32px; */
-    background-color: purple;
+    background-position: 0 -32px;
   }
   66.66% {
-    /* background-position: -32px -32px; */
-    background-color: white;
+    background-position: -32px -32px;
   }
   83.33% {
-    /* background-position: -63px -32px; */
-    background-color: black;
+    background-position: -63px -32px;
   }
   100% {
     background-position: 0 0;
@@ -448,7 +442,7 @@ button:hover {
 }
 
 .flame-animation {
-  animation: flameSprite 900ms steps(2) infinite;
+  animation: flameSprite 500ms steps(1) infinite;
   background-image: url('/assets/img/bomb/explosion.png');
   width: 32px;
   height: 32px;
